@@ -1,0 +1,29 @@
+{
+  "total_entries": 150,
+  "tag_distribution": {
+    "freelance": 42,
+    "austin": 30,
+    "milestone": 29,
+    "finances": 28,
+    "design": 24,
+    "identity": 21,
+    "productivity": 20,
+    "work": 18,
+    "portfolio": 18,
+    "social": 16,
+    "future": 15,
+    "adhd": 14,
+    "learning": 13,
+    "debt": 12,
+    "anxiety": 12
+  },
+  "themes": {
+    "work_freelance": 60,
+    "ai_usage": 9,
+    "social": 16,
+    "austin_life": 30,
+    "self_care": 7,
+    "finances": 38,
+    "creativity": 8
+  }
+}

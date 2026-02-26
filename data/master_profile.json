@@ -1,0 +1,166 @@
+{
+  "persona_id": "p05",
+  "name": "Theo Nakamura",
+  "age": 23,
+  "location": "Austin, TX",
+  "occupation": "Freelance Graphic Designer + Part-time Barista",
+  "household": "Shares a house with 3 roommates, East Austin",
+  "income_approx": "$38,000/year (combined, highly variable)",
+  "debt": 6000,
+  "has_adhd": true,
+  "goals": [
+    "Make freelancing full-time within 2 years",
+    "Build a recognizable design brand/portfolio",
+    "Pay off $6k in credit card debt",
+    "Learn motion design and 3D tools",
+    "Figure out what city feels like home long-term"
+  ],
+  "pain_points": [
+    "Feast-or-famine freelance income",
+    "Undercharging clients and not knowing how to fix it",
+    "Social anxiety making networking hard",
+    "ADHD making it hard to finish projects",
+    "Comparison to peers who seem more successful"
+  ],
+  "strengths": [
+    "creative",
+    "adaptable",
+    "authentic"
+  ],
+  "growth_areas": [
+    "follow-through",
+    "financial planning",
+    "self-belief"
+  ],
+  "ai_tools": [
+    "ChatGPT",
+    "Midjourney",
+    "Runway ML",
+    "Adobe Firefly"
+  ],
+  "data_sources": {
+    "transactions": {
+      "total_entries": 120,
+      "revenue": {
+        "total": 36400.0,
+        "count": 26
+      },
+      "subscriptions": {
+        "total": 2383.8399999999997,
+        "count": 27,
+        "items": [
+          "Figma",
+          "School of Motion",
+          "Various"
+        ]
+      },
+      "learning": {
+        "total": 2200.0,
+        "count": 11
+      },
+      "rent": {
+        "total": 7875.0,
+        "count": 9
+      },
+      "debt_payments": {
+        "total": 812.0,
+        "count": 7
+      },
+      "months_tracked": 20,
+      "avg_monthly_revenue": 1820.0,
+      "invoice_win_rate": 0.13
+    },
+    "lifelog": {
+      "total_entries": 150,
+      "tag_distribution": {
+        "freelance": 42,
+        "austin": 30,
+        "milestone": 29,
+        "finances": 28,
+        "design": 24,
+        "identity": 21,
+        "productivity": 20,
+        "work": 18,
+        "portfolio": 18,
+        "social": 16,
+        "future": 15,
+        "adhd": 14,
+        "learning": 13,
+        "debt": 12,
+        "anxiety": 12
+      },
+      "themes": {
+        "work_freelance": 60,
+        "ai_usage": 9,
+        "social": 16,
+        "austin_life": 30,
+        "self_care": 7,
+        "finances": 38,
+        "creativity": 8
+      }
+    },
+    "conversations": {
+      "total_sessions": 8,
+      "topics": [
+        "identity",
+        "skills",
+        "social_media",
+        "learning",
+        "design",
+        "comparison",
+        "mental_health",
+        "productivity",
+        "freelance",
+        "business_development",
+        "writing",
+        "portfolio",
+        "boundaries",
+        "business",
+        "reflection",
+        "year_end",
+        "personal_growth",
+        "pricing",
+        "clients",
+        "adhd",
+        "confidence"
+      ],
+      "sample_texts": [
+        "USER: I undercharged a client again. $600 for a brand identity that took 40 hours. How do I stop doing this? ASSISTANT: Pricing anxiety is almost always the root cause. The fix isn't a rate card \u2014 it'",
+        "USER: I have ADHD and I'm struggling to finish projects. Any strategies that actually work? ASSISTANT: A few things that work specifically for ADHD: body doubling (work alongside someone, even on vide",
+        "USER: I want to build a following on Instagram for my design work. Where do I start? ASSISTANT: The fastest path is process content \u2014 show how you think, not just what you make. Behind-the-scenes sket"
+      ]
+    },
+    "emails": {
+      "total_emails": 80,
+      "by_type": {
+        "sent": 44,
+        "inbox": 36
+      },
+      "thread_count": 0
+    },
+    "calendar": {
+      "total_events": 80,
+      "by_type": {
+        "event": 80
+      },
+      "event_samples": [
+        "Design meetup \u2014 Austin Creatives (2h) - Canopy",
+        "New client onboarding call (45m) - Zoom",
+        "Portfolio shoot \u2014 product photos for case study (3",
+        "Coffee shop shift (6h) - Caf\u00e9 Rowan",
+        "Tax prep attempt (2h) - Coffee shop"
+      ]
+    },
+    "social": {
+      "total_posts": 50,
+      "by_platform": {
+        "unknown": 50
+      },
+      "sample_posts": [
+        "My ADHD brain is genuinely built for creative work. The hyperfocus is a superpow",
+        "Raised my hourly rate for the first time. Said it out loud on a call. Didn't die",
+        "New brand identity project just wrapped. Really happy with this one. Full case s"
+      ]
+    }
+  }
+}

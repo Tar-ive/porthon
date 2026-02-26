@@ -1,0 +1,31 @@
+{
+  "total_entries": 120,
+  "revenue": {
+    "total": 36400.0,
+    "count": 26
+  },
+  "subscriptions": {
+    "total": 2383.8399999999997,
+    "count": 27,
+    "items": [
+      "Figma",
+      "School of Motion",
+      "Various"
+    ]
+  },
+  "learning": {
+    "total": 2200.0,
+    "count": 11
+  },
+  "rent": {
+    "total": 7875.0,
+    "count": 9
+  },
+  "debt_payments": {
+    "total": 812.0,
+    "count": 7
+  },
+  "months_tracked": 20,
+  "avg_monthly_revenue": 1820.0,
+  "invoice_win_rate": 0.13
+}

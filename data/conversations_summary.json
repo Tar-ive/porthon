@@ -1,0 +1,31 @@
+{
+  "total_sessions": 8,
+  "topics": [
+    "identity",
+    "skills",
+    "social_media",
+    "learning",
+    "design",
+    "comparison",
+    "mental_health",
+    "productivity",
+    "freelance",
+    "business_development",
+    "writing",
+    "portfolio",
+    "boundaries",
+    "business",
+    "reflection",
+    "year_end",
+    "personal_growth",
+    "pricing",
+    "clients",
+    "adhd",
+    "confidence"
+  ],
+  "sample_texts": [
+    "USER: I undercharged a client again. $600 for a brand identity that took 40 hours. How do I stop doing this? ASSISTANT: Pricing anxiety is almost always the root cause. The fix isn't a rate card \u2014 it'",
+    "USER: I have ADHD and I'm struggling to finish projects. Any strategies that actually work? ASSISTANT: A few things that work specifically for ADHD: body doubling (work alongside someone, even on vide",
+    "USER: I want to build a following on Instagram for my design work. Where do I start? ASSISTANT: The fastest path is process content \u2014 show how you think, not just what you make. Behind-the-scenes sket"
+  ]
+}
