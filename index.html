@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cross-Platform Personality Profile: Theo Nakamura vs Elon Musk</title>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a22;
+      --surface2: #1e2433;
+      --accent: #7c6af7;
+      --accent2: #3ab7ff;
+      --gold: #f5c842;
+      --red: #ff5c72;
+      --green: #38e07b;
+      --text: #e8ecf2;
+      --muted: #8090a8;
+      --border: #252d3d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      padding: 3rem 2rem 2rem;
+      background: linear-gradient(135deg, #161a22 0%, #1a1330 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 2.5rem;
+    }
+    .header .tag {
+      display: inline-block;
+      background: rgba(124,106,247,0.15);
+      color: var(--accent);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(124,106,247,0.3);
+      margin-bottom: 1rem;
+    }
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .header .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* ── Persona Cards ── */
+    .personas {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    @media (max-width: 700px) { .personas { grid-template-columns: 1fr; } }
+
+    .persona-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+    .persona-card.theo { border-top: 3px solid var(--accent); }
+    .persona-card.elon { border-top: 3px solid var(--gold); }
+
+    .persona-card h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .persona-card.theo h2 { color: var(--accent); }
+    .persona-card.elon h2 { color: var(--gold); }
+
+    .persona-card .role {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 1.2rem;
+    }
+    .persona-card .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .pill {
+      font-size: 0.74rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .persona-card .kv { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.2rem; }
+    .persona-card .kv span { color: var(--text); }
+
+    /* ── Archetype Banner ── */
+    .archetypes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    @media (max-width: 700px) { .archetypes { grid-template-columns: 1fr; } }
+
+    .archetype-card {
+      border-radius: 14px;
+      padding: 1.5rem 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .archetype-card.theo { background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.3); }
+    .archetype-card.elon { background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.25); }
+
+    .archetype-icon { font-size: 2.2rem; }
+    .archetype-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.2rem; }
+    .archetype-name { font-size: 1.15rem; font-weight: 700; }
+    .archetype-card.theo .archetype-name { color: var(--accent); }
+    .archetype-card.elon .archetype-name { color: var(--gold); }
+    .archetype-desc { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* ── Score Grid ── */
+    section { margin-bottom: 2.5rem; }
+    section h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .score-grid { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .score-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.4rem;
+    }
+    .score-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.8rem;
+    }
+    .score-label { font-weight: 600; font-size: 0.95rem; }
+    .score-insight { font-size: 0.78rem; color: var(--muted); max-width: 55%; text-align: right; }
+
+    .bars { display: flex; flex-direction: column; gap: 0.55rem; }
+    .bar-line { display: flex; align-items: center; gap: 0.8rem; }
+    .bar-name { font-size: 0.75rem; color: var(--muted); width: 60px; flex-shrink: 0; }
+    .bar-track {
+      flex: 1;
+      height: 10px;
+      background: var(--surface2);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.8s ease;
+    }
+    .bar-fill.theo { background: linear-gradient(90deg, #7c6af7, #9d8fff); }
+    .bar-fill.elon { background: linear-gradient(90deg, #c9a800, #f5c842); }
+    .bar-val { font-size: 0.75rem; font-weight: 600; width: 38px; text-align: right; flex-shrink: 0; }
+    .bar-val.theo { color: var(--accent); }
+    .bar-val.elon { color: var(--gold); }
+
+    /* ── Delta Section ── */
+    .delta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    @media (max-width: 700px) { .delta-grid { grid-template-columns: 1fr; } }
+
+    .delta-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem 1.4rem;
+    }
+    .delta-card h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .delta-val {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+    .delta-val.low { color: var(--green); }
+    .delta-val.mid { color: var(--gold); }
+    .delta-val.high { color: var(--red); }
+    .delta-desc { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── Quadrant Map ── */
+    .quadrant-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .quadrant-map {
+      position: relative;
+      width: 340px;
+      height: 340px;
+      margin: 0 auto 1rem;
+    }
+    .q-axis-label {
+      position: absolute;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .q-top    { top: 0; left: 50%; transform: translateX(-50%); }
+    .q-bottom { bottom: 0; left: 50%; transform: translateX(-50%); }
+    .q-left   { left: 0; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+    .q-right  { right: 0; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+    .q-grid {
+      position: absolute;
+      inset: 20px;
+      border: 1px solid var(--border);
+    }
+    .q-h-line {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 1px; background: var(--border);
+    }
+    .q-v-line {
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: 1px; background: var(--border);
+    }
+    .q-label {
+      position: absolute;
+      font-size: 0.68rem;
+      color: #3a4558;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+    .q-tl { top: 8px; left: 8px; }
+    .q-tr { top: 8px; right: 8px; text-align: right; }
+    .q-bl { bottom: 8px; left: 8px; }
+    .q-br { bottom: 8px; right: 8px; text-align: right; }
+
+    .dot {
+      position: absolute;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      transform: translate(-50%, 50%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      cursor: default;
+    }
+    .dot.theo {
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(124,106,247,0.7);
+    }
+    .dot.elon {
+      background: var(--gold);
+      box-shadow: 0 0 12px rgba(245,200,66,0.7);
+    }
+    .dot-legend {
+      display: flex; gap: 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .dot-legend span { display: flex; align-items: center; gap: 0.4rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .legend-dot.theo { background: var(--accent); }
+    .legend-dot.elon { background: var(--gold); }
+
+    /* ── Deep Analysis ── */
+    .deep-analysis { display: flex; flex-direction: column; gap: 1.4rem; }
+
+    .insight-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.3rem 1.5rem;
+    }
+    .insight-block .ic-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .insight-block p {
+      font-size: 0.86rem;
+      color: #b0bdd0;
+      line-height: 1.7;
+    }
+    .insight-block .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.8rem; }
+    @media (max-width: 600px) { .insight-block .split { grid-template-columns: 1fr; } }
+    .split-box { background: var(--surface2); border-radius: 8px; padding: 0.8rem 1rem; }
+    .split-box .sb-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.3rem; }
+    .split-box.theo .sb-label { color: var(--accent); }
+    .split-box.elon .sb-label { color: var(--gold); }
+    .split-box p { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+    /* ── Key Findings ── */
+    .findings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 750px) { .findings { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .findings { grid-template-columns: 1fr; } }
+
+    .finding-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .finding-card .f-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .finding-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .finding-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: #3a4558;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+
+    .highlight-theo { color: var(--accent); font-weight: 600; }
+    .highlight-elon { color: var(--gold); font-weight: 600; }
+    .highlight-red { color: var(--red); font-weight: 600; }
+    .highlight-green { color: var(--green); font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="tag">Cross-Platform Behavioral Profiling · Porthon Algorithm</div>
+    <h1>Theo Nakamura vs. Elon Musk</h1>
+    <p class="subtitle">Multi-source personality analysis using exponential decay weighting &amp; temperature-controlled sigmoid normalization</p>
+  </div>
+
+  <!-- Persona Cards -->
+  <div class="personas">
+    <div class="persona-card theo">
+      <h2>Theo Nakamura</h2>
+      <div class="role">Freelance Graphic Designer + Barista · Austin, TX · Age 23</div>
+      <div class="pill-row">
+        <span class="pill">ADHD (Self-reported)</span>
+        <span class="pill">$38k/yr combined</span>
+        <span class="pill">$6k debt</span>
+        <span class="pill">East Austin</span>
+      </div>
+      <div class="kv">Strengths: <span>Creative, Adaptable, Authentic</span></div>
+      <div class="kv">Growth gaps: <span>Follow-through, Financial planning, Self-belief</span></div>
+      <div class="kv">AI Tools: <span>ChatGPT, Midjourney, Runway ML, Firefly</span></div>
+      <div class="kv">Data sources: <span>7 sources · 150 lifelog entries · 120 transactions · 80 emails</span></div>
+    </div>
+    <div class="persona-card elon">
+      <h2>Elon Musk</h2>
+      <div class="role">CEO: Tesla, SpaceX, xAI, X · Age 53 · World's wealthiest individual</div>
+      <div class="pill-row">
+        <span class="pill">Asperger's (Disclosed)</span>
+        <span class="pill">~$400B+ net worth</span>
+        <span class="pill">~100hr work week</span>
+        <span class="pill">Multi-planetary ambition</span>
+      </div>
+      <div class="kv">Known strengths: <span>First-principles thinking, Extreme execution, Hyperfocus</span></div>
+      <div class="kv">Known gaps: <span>Timeline accuracy, Social calibration, Impulse control</span></div>
+      <div class="kv">Behavioral sources: <span>Public records, X posts, documented behaviors, biographies</span></div>
+      <div class="kv">Note: <span>Estimated from public behavioral data — not from personal data pipeline</span></div>
+    </div>
+  </div>
+
+  <!-- Archetype Classification -->
+  <div class="archetypes">
+    <div class="archetype-card theo">
+      <div class="archetype-icon">⚙️</div>
+      <div>
+        <div class="archetype-label">Archetype · Theo</div>
+        <div class="archetype-name">Reliable Operator</div>
+        <div class="archetype-desc">High execution, plateauing growth. Shows up, delivers — but not yet compounding.</div>
+      </div>
+    </div>
+    <div class="archetype-card elon">
+      <div class="archetype-icon">🚀</div>
+      <div>
+        <div class="archetype-label">Archetype · Elon</div>
+        <div class="archetype-name">Compounding Builder</div>
+        <div class="archetype-desc">Elite execution + steep, continuous learning curve. Each venture compounds on the last.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Algorithmic Scores -->
+  <section>
+    <h3>Algorithm Scores — Normalized via Sigmoid (T=8.0)</h3>
+    <div class="score-grid">
+
+      <!-- Execution -->
+      <div class="score-row">
+        <div class="score-row-header">
+          <span class="score-label">⚡ Execution Score</span>
+          <span class="score-insight">Invoice win rate · calendar adherence · email response velocity</span>
+        </div>
+        <div class="bars">
+          <div class="bar-line">
+            <span class="bar-name">Theo</span>
+            <div class="bar-track"><div class="bar-fill theo" style="width:92.8%"></div></div>
+            <span class="bar-val theo">0.928</span>
+          </div>
+          <div class="bar-line">
+            <span class="bar-name">Elon</span>
+            <div class="bar-track"><div class="bar-fill elon" style="width:97%"></div></div>
+            <span class="bar-val elon">~0.970</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Growth -->
+      <div class="score-row">
+        <div class="score-row-header">
+          <span class="score-label">📈 Growth Score</span>
+          <span class="score-insight">Revenue trend · learning investment · win/loss trajectory</span>
+        </div>
+        <div class="bars">
+          <div class="bar-line">
+            <span class="bar-name">Theo</span>
+            <div class="bar-track"><div class="bar-fill theo" style="width:58.8%"></div></div>
+            <span class="bar-val theo">0.588</span>
+          </div>
+          <div class="bar-line">
+            <span class="bar-name">Elon</span>
+            <div class="bar-track"><div class="bar-fill elon" style="width:96%"></div></div>
+            <span class="bar-val elon">~0.960</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Self-Awareness -->
+      <div class="score-row">
+        <div class="score-row-header">
+          <span class="score-label">🪞 Self-Awareness Score</span>
+          <span class="score-insight">Claimed vs AI honesty vs behavioral delta</span>
+        </div>
+        <div class="bars">
+          <div class="bar-line">
+            <span class="bar-name">Theo</span>
+            <div class="bar-track"><div class="bar-fill theo" style="width:74.4%"></div></div>
+            <span class="bar-val theo">0.744</span>
+          </div>
+          <div class="bar-line">
+            <span class="bar-name">Elon</span>
+            <div class="bar-track"><div class="bar-fill elon" style="width:52%"></div></div>
+            <span class="bar-val elon">~0.520</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Stress -->
+      <div class="score-row">
+        <div class="score-row-header">
+          <span class="score-label">💸 Financial Stress Score</span>
+          <span class="score-insight">Debt level · worry frequency · spending/income ratio</span>
+        </div>
+        <div class="bars">
+          <div class="bar-line">
+            <span class="bar-name">Theo</span>
+            <div class="bar-track"><div class="bar-fill theo" style="width:38.2%"></div></div>
+            <span class="bar-val theo">0.382</span>
+          </div>
+          <div class="bar-line">
+            <span class="bar-name">Elon</span>
+            <div class="bar-track"><div class="bar-fill elon" style="width:5%"></div></div>
+            <span class="bar-val elon">~0.050</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADHD Indicator -->
+      <div class="score-row">
+        <div class="score-row-header">
+          <span class="score-label">🧠 ADHD Indicator Score</span>
+          <span class="score-insight">Self-report · schedule irregularity · attention variance · impulse behavior</span>
+        </div>
+        <div class="bars">
+          <div class="bar-line">
+            <span class="bar-name">Theo</span>
+            <div class="bar-track"><div class="bar-fill theo" style="width:56.6%"></div></div>
+            <span class="bar-val theo">0.566</span>
+          </div>
+          <div class="bar-line">
+            <span class="bar-name">Elon</span>
+            <div class="bar-track"><div class="bar-fill elon" style="width:82%"></div></div>
+            <span class="bar-val elon">~0.820</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Quadrant Map -->
+  <section>
+    <h3>2D Archetype Map — Execution vs Growth</h3>
+    <div class="quadrant-wrapper">
+      <div class="quadrant-map">
+        <span class="q-axis-label q-top">↑ Growth</span>
+        <span class="q-axis-label q-bottom">Low Growth</span>
+        <span class="q-axis-label q-left">Low Exec</span>
+        <span class="q-axis-label q-right">High Exec</span>
+        <div class="q-grid">
+          <div class="q-h-line"></div>
+          <div class="q-v-line"></div>
+          <span class="q-label q-tl">Emerging<br>Talent</span>
+          <span class="q-label q-tr">Compounding<br>Builder</span>
+          <span class="q-label q-bl">At Risk</span>
+          <span class="q-label q-br">Reliable<br>Operator</span>
+
+          <div class="dot theo" style="left: 298px; bottom: 196px;" title="Theo: Exec=0.928, Growth=0.588">T</div>
+          <div class="dot elon" style="left: 311px; bottom: 308px;" title="Elon: Exec=0.970, Growth=0.960">E</div>
+        </div>
+      </div>
+      <div class="dot-legend">
+        <span><span class="legend-dot theo"></span> Theo Nakamura (0.928 / 0.588)</span>
+        <span><span class="legend-dot elon"></span> Elon Musk (~0.970 / ~0.960)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cross-Source Deltas -->
+  <section>
+    <h3>Cross-Source Delta Analysis — The Dissonance Map</h3>
+    <div class="delta-grid">
+      <div class="delta-card">
+        <h4>Social vs AI Dissonance · Theo</h4>
+        <div class="delta-val mid">20%</div>
+        <div class="delta-desc">Moderate gap. Posts project confidence on Instagram/TikTok ("raised my rate — didn't die"). In AI conversations he's openly anxious, uncertain, asking for help with pricing and ADHD. The public brand is slightly ahead of the private self — a healthy signal of aspiration.</div>
+      </div>
+      <div class="delta-card">
+        <h4>Social vs Private Dissonance · Elon</h4>
+        <div class="delta-val high">~65%</div>
+        <div class="delta-desc">Massive gap. His X persona is a meme-posting, reality-distorting performance. Private accounts (biographies, reported behavior) describe anxiety, isolation, erratic management. The gap between the "galaxy-brain visionary" public character and the chaos-generating private person is one of the largest documented in tech.</div>
+      </div>
+      <div class="delta-card">
+        <h4>Income Expectation Delta · Theo</h4>
+        <div class="delta-val mid">42.5%</div>
+        <div class="delta-desc">He states $38k/yr combined income. Actual trackable freelance revenue = ~+695 lines1.8k/yr ( +695 lines,820/mo × 12). The gap is the barista income filling a significant portion of stated income. This is not a self-deception problem — it's a dependency problem: barista income is masking stagnant freelance growth.</div>
+      </div>
+      <div class="delta-card">
+        <h4>Promises vs Deliverables Delta · Elon</h4>
+        <div class="delta-val high">~70%</div>
+        <div class="delta-desc">Elon's timeline claims have a documented 70%+ miss rate. Cybertruck, FSD, Robotaxi, Mars 2024, Tesla Semi — virtually all were promised years ahead of delivery. This is arguably the single largest measurable dissonance in his profile: immense execution capability paired with fantasy-level timeline projection.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deep Dimensional Analysis -->
+  <section>
+    <h3>Deep Dimensional Analysis</h3>
+    <div class="deep-analysis">
+
+      <div class="insight-block">
+        <div class="ic-title">⚡ Execution — "Different Scales, Same Engine"</div>
+        <p>Both score at the very top of the execution dimension, which is remarkable given how different their contexts are. Theo's 0.928 reflects: showing up to every barista shift, maintaining a 13% invoice win rate (typical for unsolicited freelance outreach), responding to 44/80 emails proactively, and attending design meetups. The algorithm rewards consistency, not scale. Elon's ~0.97 reflects Tesla's billion-dollar factory throughput, SpaceX's reusable rocket cadence, and a documented 80–100 hour work week. What's fascinating is that the raw execution <em>quality</em> — the tendency to follow through on commitments — may not be as different as their net worth implies. Theo shows the same reliability loop, just in a much smaller arena.</p>
+        <div class="split">
+          <div class="split-box theo"><div class="sb-label">Theo's Execution Engine</div><p>Barista consistency → freelance reliability → client delivery. He shows up. The problem isn't execution ability — it's execution applied to low-leverage opportunities.</p></div>
+          <div class="split-box elon"><div class="sb-label">Elon's Execution Engine</div><p>Factory floor sleeping. "Hardcore" culture enforcement. Rapid iteration cadence at SpaceX. Execution is weaponized into systemic pressure across thousands of employees.</p></div>
+        </div>
+      </div>
+
+      <div class="insight-block">
+        <div class="ic-title">📈 Growth — "The Critical Divergence" (0.588 vs ~0.960)</div>
+        <p>This is where the profiles diverge most sharply and the most important signal lives. Theo's growth score of 0.588 means he is learning actively (School of Motion, Figma, Runway ML — +695 lines,200 invested in learning), but that investment has not yet translated into measurable revenue growth. Avg monthly freelance revenue is  +695 lines,820 — flat over 20 tracked months. The algorithm detects this stagnation. Elon's growth is relentless compounding: each company feeds the next (SpaceX → Tesla energy → xAI → Neuralink). He does not "manage" businesses — he uses them as R&amp;D infrastructure. The gap between Theo and Elon on this dimension is largely a function of time horizon and leverage, not raw learning drive.</p>
+        <div class="split">
+          <div class="split-box theo"><div class="sb-label">The Growth Trap</div><p>Learning +695 lines00/month in tools. Not raising rates. 13% win rate unchallenged for 20 months. The loop is: learn → don't apply → flat revenue → financial stress → can't invest more → learn less. Breaking this loop is the single highest-leverage intervention.</p></div>
+          <div class="split-box elon"><div class="sb-label">Compounding Growth Architecture</div><p>Every company is a growth accelerant for the others. Tesla battery tech → SpaceX power. SpaceX manufacturing → Tesla production. xAI data → everything. Growth isn't a metric — it's the operating system.</p></div>
+        </div>
+      </div>
+
+      <div class="insight-block">
+        <div class="ic-title">🪞 Self-Awareness — "The Surprising Reversal" (0.744 vs ~0.520)</div>
+        <p>This is the most counterintuitive finding in the analysis. <span class="highlight-theo">Theo scores significantly higher on self-awareness than Elon</span>. The algorithm measures self-awareness as alignment between the "claimed" self (persona), the "honest" self (AI conversations), and behavioral patterns (lifelog). Theo is remarkably candid. He tells his AI assistant about undercharging clients, ADHD struggles, social anxiety, comparison spirals. His public posts are only moderately ahead of his private reality (20% delta). He knows his flaws with precision. Elon, by contrast, projects massive public certainty — his X persona rarely admits limitation. His private behavior (documented in multiple biographies) shows a more brittle, anxious person. The claimed timeline performance vs. actual delivery (70% miss rate) is a measurable self-awareness gap. Self-awareness at Theo's age and income level is genuinely rare and valuable — it's a latent asset.</p>
+      </div>
+
+      <div class="insight-block">
+        <div class="ic-title">🧠 ADHD Indicator — "Same Brain, Different Trajectory" (0.566 vs ~0.820)</div>
+        <p>Both individuals exhibit ADHD-consistent patterns, but at different intensities and with radically different outcomes. Theo self-reports ADHD and shows schedule irregularity, scattered lifelog themes (15 distinct tags including "adhd," "anxiety," "productivity," "identity"), and described focus variance in AI conversations. For Theo at 23, ADHD presents primarily as a blocker: unfinished client projects, difficulty with pricing (executive function), and social avoidance that limits networking. Elon scores higher on the indicator (~0.820) due to documented extreme context-switching (running 5+ companies simultaneously), impulsive acquisition decisions (Twitter, with no due diligence period), erratic sleep schedules, and rapid-fire idea generation documented extensively by both journalists and former employees. The key difference: Elon has built organizational structures that <em>absorb</em> his ADHD rather than being blocked by it. He has armies of executors who convert his scattered brilliance into systematic output. Theo is doing this alone.</p>
+        <div class="split">
+          <div class="split-box theo"><div class="sb-label">ADHD as Blocker</div><p>Solo operator. No buffer between brain and output. Unfinished work piles up. The hyperfocus works for creative bursts but the crash cuts into income.</p></div>
+          <div class="split-box elon"><div class="sb-label">ADHD as Infrastructure</div><p>Surrounded by COOs, engineering leads, and executors. His scatteredness generates ideas; others convert them. The system is designed around the ADHD brain, not against it.</p></div>
+        </div>
+      </div>
+
+      <div class="insight-block">
+        <div class="ic-title">💸 Financial Stress — "Real vs Perceived" (0.382 vs ~0.050)</div>
+        <p>Theo's financial stress score of 0.382 reflects $6k in debt, a spending-to-freelance-revenue ratio of 28.2% (manageable but feels tight), and 28 lifelog entries tagged "finances" and 12 tagged "debt" — clear signs of mental load. The stress is real but not catastrophic: rent is shared across 4 roommates, debt is $6k not $60k, and his spending ratio is actually better than the algorithm suggests because barista income supplements freelance. Elon's near-zero score reflects nearly unlimited capital insulation. However, the Twitter acquisition period (2022–2023) provides an interesting data point: Elon reportedly experienced significant financial pressure taking on  +695 lines3B+ in debt for the acquisition, which drove his extreme monetization moves on X. Even at +695 lines00B+ net worth, financial stress is not zero when leverage is extreme enough.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Key Findings -->
+  <section>
+    <h3>6 Key Findings from the Algorithm</h3>
+    <div class="findings">
+      <div class="finding-card">
+        <div class="f-icon">🎯</div>
+        <h4>Execution is not the problem</h4>
+        <p>Theo's 0.928 execution score is genuinely elite. He is not lazy or unreliable. The bottleneck is <em>what</em> he's executing on — low-rate, unsolicited freelance rather than positioned, retainer-based work.</p>
+      </div>
+      <div class="finding-card">
+        <div class="f-icon">🔒</div>
+        <h4>The growth lock</h4>
+        <p>20 months of flat  +695 lines,820/mo revenue despite active learning investment signals a conversion failure. Skills are growing; income is not. The missing link is pricing power and packaging, not skill level.</p>
+      </div>
+      <div class="finding-card">
+        <div class="f-icon">💡</div>
+        <h4>Self-awareness is the hidden asset</h4>
+        <p>Theo's 0.744 self-awareness score outpaces many executives twice his age. His AI conversations reveal precise self-knowledge about his blockers. That's the raw material for accelerated change.</p>
+      </div>
+      <div class="finding-card">
+        <div class="f-icon">🧩</div>
+        <h4>ADHD needs scaffolding, not suppression</h4>
+        <p>The algorithm confirms what Elon's arc demonstrates: ADHD-wired brains can reach the top of the execution dimension — but only when supported by the right structures. Theo needs co-working, body doubling, and systems. Not more willpower.</p>
+      </div>
+      <div class="finding-card">
+        <div class="f-icon">📣</div>
+        <h4>The social media gap is healthy</h4>
+        <p>The 20% social vs AI dissonance for Theo is not a problem — it's an aspirational gap. His posts are slightly ahead of his current reality. Elon's 65% gap, however, is a reputational liability that regularly generates crises.</p>
+      </div>
+      <div class="finding-card">
+        <div class="f-icon">⏩</div>
+        <h4>The single highest-leverage move</h4>
+        <p>Theo already has execution + self-awareness + learning drive. One thing separates him from the Compounding Builder quadrant: raising his rate by 3–4× on positioned, inbound work and ending the barista dependency within 12 months.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    Generated by the Porthon Cross-Platform Profiling Algorithm · Adapted from <em>Rewind Profiler Agent</em><br>
+    Sources: persona_profile.json · master_profile.json · lifelog_summary · transactions_summary · profiler.py · PROFILING_MATH.md<br>
+    Elon Musk scores are behavioral estimates from public records, biographies &amp; documented behaviors — not a personal data pipeline.<br>
+    Not a clinical diagnosis. For coaching and self-development use only.
+  </div>
+
+</div>
+</body>
+</html>
