@@ -102,6 +102,55 @@ def _apply_decay(self, values: list[float]) -> float:
 
 ---
 
+## Data Source Schema
+
+### JSONL Files (Common Schema)
+All JSONL files share this structure:
+```json
+{
+  "id": "string",
+  "ts": "ISO timestamp",
+  "source": "string",
+  "type": "string",
+  "text": "string",
+  "tags": ["string"],
+  "refs": [],
+  "pii_level": "synthetic"
+}
+```
+
+### persona_profile.json
+```json
+{
+  "persona_id": "p05",
+  "name": "Theo Nakamura",
+  "age": 23,
+  "location": "Austin, TX",
+  "job": "Freelance Graphic Designer + Part-time Barista",
+  "employer": "Self-employed + Local coffee shop",
+  "household": "Shares a house with 3 roommates, East Austin",
+  "income_approx": "$38,000/year (combined, highly variable)",
+  "goals": ["string"],
+  "pain_points": ["string"],
+  "personality": {
+    "communication_style": "string",
+    "privacy_sensitivity": "string",
+    "ai_assistant_tone": "string",
+    "strengths": ["string"],
+    "growth_areas": ["string"]
+  },
+  "tech_usage": {
+    "ai_tools": ["string"],
+    "productivity": ["string"],
+    "social": ["string"],
+    "wearables": "string",
+    "frequency": "string"
+  }
+}
+```
+
+---
+
 ## Scoring Dimensions
 
 ### 1. Execution Score
@@ -118,6 +167,21 @@ def _apply_decay(self, values: list[float]) -> float:
 execution = (invoice_win_rate × 0.4) + (calendar_adherence × 0.3) + (response_speed × 0.3)
 ```
 
+**Field Mapping:**
+
+| Source | JSON/JSONL Field | Computed Signal |
+|--------|------------------|-----------------|
+| `transactions.jsonl` | `tags` contains `"revenue"` → count | `revenue.count` = invoice wins |
+| `transactions.jsonl` | Estimate 200 invoices sent | `invoice_win_rate = revenue.count / 200` |
+| `calendar.jsonl` | `total_events` / 100 | `calendar_adherence` = min(0.9, events/100) |
+| `emails.jsonl` | `type` = `"sent"` vs `"inbox"` | `response_speed` = sent/(sent+inbox) |
+
+**Example (Theo):**
+- `transactions.revenue.count` = 26 wins
+- `invoice_win_rate` = 26/200 = 0.13 (13%)
+- `calendar.total_events` = 80 → adherence = 0.8
+- `emails.by_type.sent` = 44, `inbox` = 36 → response = 0.55
+
 ---
 
 ### 2. Growth Score
@@ -133,6 +197,25 @@ execution = (invoice_win_rate × 0.4) + (calendar_adherence × 0.3) + (response_
 ```
 growth = (revenue_trend × 0.35) + (win_ratio × 0.35) + (learning_intensity × 0.3)
 ```
+
+**Field Mapping:**
+
+| Source | JSON/JSONL Field | Computed Signal |
+|--------|------------------|-----------------|
+| `transactions.jsonl` | `revenue.total` / `months_tracked` | `avg_monthly_revenue` |
+| `transactions.jsonl` | `revenue.total` | Normalize: $6000/mo = 0.5 |
+| `lifelog.jsonl` | Count entries with `tags` containing `"milestone"` | `win_count` |
+| `lifelog.jsonl` | Count entries with `tags` containing `"anxiety"` or `"debt"` | `loss_count` |
+| `calendar.jsonl` | Count events with `text` containing `"learning"`, `"class"`, `"course"` | `learning_events` |
+| `transactions.jsonl` | `learning.total` = sum of `tags` containing `"learning"` | `learning_investment` |
+
+**Example (Theo):**
+- `transactions.revenue.total` = $36,400 over 20 months = $1,820/mo
+- `growth (revenue)` = min(1.0, 1820/6000) = 0.30
+- `lifelog.tag_distribution.milestone` = 29 wins
+- `lifelog.tag_distribution.anxiety` + `debt` = 24 losses
+- `win_ratio` = 29/(29+24) = 0.55
+- `transactions.learning.total` = $2,200
 
 ---
 
@@ -151,6 +234,22 @@ delta = |claimed - ai_honest|
 awareness = 1.0 - delta
 self_awareness = (awareness × 0.6 + behavioral × 0.4)
 ```
+
+**Field Mapping:**
+
+| Source | JSON/JSONL Field | Computed Signal |
+|--------|------------------|-----------------|
+| `persona_profile.json` | `goals[]`, `pain_points[]` | Self-reported narrative coherence |
+| `persona_profile.json` | `personality.strengths[]` vs `growth_areas[]` | `claimed_balance` = strengths/areas ratio |
+| `conversations.jsonl` | `total_sessions` | `ai_engagement` = sessions/10 |
+| `conversations.jsonl` | `tags` contains `"adhd"`, `"confidence"`, `"pricing"` | `vulnerability_score` = sensitive topics touched |
+| `lifelog.jsonl` | `tag_distribution` keys (diversity of themes) | `behavioral_diversity` = unique tags/15 |
+
+**Example (Theo):**
+- `conversations.total_sessions` = 8 → ai_engagement = 0.8
+- `conversations.topics` includes: `"adhd"`, `"pricing"`, `"confidence"`, `"comparison"` → high vulnerability
+- `lifelog.tag_distribution` has 15+ unique themes → behavioral_diversity = 1.0
+- `self_awareness` = (0.8 × 0.6 + 1.0 × 0.4) = 0.88
 
 ---
 
@@ -172,6 +271,24 @@ spending_stress = min(1.0, max(0, (spending/income - 0.5) × 2))
 financial_stress = (debt_stress × 0.3) + (worry_rate × 0.35) + (spending_stress × 0.35)
 ```
 
+**Field Mapping:**
+
+| Source | JSON/JSONL Field | Computed Signal |
+|--------|------------------|-----------------|
+| `persona_profile.json` | Extract from `goals[]`: "Pay off $6k in credit card debt" | `debt` = 6000 |
+| `persona_profile.json` | `pain_points[]` contains `"Feast-or-famine freelance income"` | `income_volatility` flag |
+| `lifelog.jsonl` | Count `tags` containing `"finances"`, `"debt"`, `"money"` | `financial_worry_count` |
+| `lifelog.jsonl` | Count `tags` containing `"anxiety"` | `anxiety_count` |
+| `transactions.jsonl` | `subscriptions.total` + `rent.total` | Monthly expenses |
+| `transactions.jsonl` | `revenue.total` / `months_tracked` | Monthly income |
+| `transactions.jsonl` | `debt_payments.total` | Total debt paid |
+
+**Example (Theo):**
+- `debt` = $6,000 → debt_stress = 6,000/20,000 = 0.30
+- `lifelog.tag_distribution.finances` = 28, `debt` = 12 → worry = 40/10 = 1.0 (capped)
+- Monthly income = $1,820, expenses = ($2,384 + $7,875)/20 = $511/mo (but rent is split)
+- `financial_stress` = (0.30 × 0.3) + (1.0 × 0.35) + (0.2 × 0.35) = 0.52
+
 ---
 
 ### 5. ADHD Indicator Score
@@ -180,14 +297,33 @@ financial_stress = (debt_stress × 0.3) + (worry_rate × 0.35) + (spending_stres
 
 **Sources:**
 - Persona: Self-reported ADHD
-- Lifelog: Focus variance (high = ADHD-like)
+- Lifelog: Focus variance (diverse tags = scattered attention)
 - Calendar: Schedule irregularity
-- Transactions: Impulse spending rate
+- Transactions: Impulse spending
 
 **Formula:**
 ```
-adhd_indicator = (self_report × 0.25) + (focus_variance × 0.25) + (schedule_irregularity × 0.25) + (impulse_spending × 0.25)
+adhd_indicator = (self_report × 0.25) + (attention_variety × 0.25) + (schedule_irregularity × 0.25) + (impulse_spending × 0.25)
 ```
+
+**Field Mapping:**
+
+| Source | JSON/JSONL Field | Computed Signal |
+|--------|------------------|-----------------|
+| `persona_profile.json` | `pain_points[]` contains `"ADHD making it hard to finish projects"` | `has_adhd` = true → 0.9 |
+| `lifelog.jsonl` | Count unique `tags` | `attention_variety` = unique_tags/15 |
+| `lifelog.jsonl` | Count `tags` containing `"adhd"` | `adhd_mentions` |
+| `calendar.jsonl` | Count unique event types (in `text`) | `schedule_diversity` |
+| `calendar.jsonl` | Events with inconsistent times (morning vs night shifts) | `schedule_irregularity` |
+| `transactions.jsonl` | Count `tags` containing `"food"`, `"hobbies"` without `"groceries"` | `impulse_spending_count` |
+| `conversations.jsonl` | `tags` contains `"adhd"`, `"productivity"`, `"focus"` | `adhd_discussion` |
+
+**Example (Theo):**
+- `persona.pain_points` includes ADHD → self_report = 0.9
+- `lifelog.tag_distribution` has 15+ unique tags → attention_variety = 1.0
+- `calendar.text` includes varied events (shifts, client calls, skate days) → irregularity = 0.8
+- Transactions show frequent small food/hobby purchases → impulse = 0.5
+- `adhd_indicator` = (0.9 × 0.25) + (1.0 × 0.25) + (0.8 × 0.25) + (0.5 × 0.25) = 0.80
 
 ---
 
@@ -236,17 +372,22 @@ High delta = potential coaching opportunity
 
 ### Deltas to Track
 
-1. **Social vs AI Dissonance**
-   - Social posts confidence vs AI conversation vulnerability
-   - Large gap = performer vs authentic self
+**Field Mapping:**
 
-2. **Income Expectation Delta**
-   - Claimed income vs actual income
-   - Overestimation = potential disappointment
+| Delta Type | Source A Field | Source B Field | Interpretation |
+|------------|---------------|----------------|----------------|
+| **Social vs AI** | `social_posts.jsonl`: Count posts with `tags` containing `"success"`, `"milestone"` | `conversations.jsonl`: Count sessions with `tags` containing `"anxiety"`, `"doubt"`, `"struggle"` | Public confidence vs private vulnerability |
+| **Income Expectation** | `persona_profile.json`: `income_approx` (parse "$38,000/year") | `transactions.jsonl`: `revenue.total` / `months_tracked` × 12 | Stated vs actual income |
+| **Goals vs Actions** | `persona_profile.json`: `goals[]` | `calendar.jsonl`: Events matching goal keywords | What they say they want vs how they spend time |
+| **Professional vs Private** | `emails.jsonl`: `type` = `"sent"` count | `lifelog.jsonl`: Tags containing `"exhausted"`, `"drained"` | Professional energy vs personal energy |
 
-3. **Professional vs Private Dissonance**
-   - Email energy vs Lifelog energy
-   - Different personas in different contexts
+**Example (Theo):**
+
+| Delta | Source A | Source B | Delta Value | Interpretation |
+|-------|----------|----------|-------------|----------------|
+| Social vs AI | 15 posts with "wins" | 5 conversations about "struggle" | 0.67 | Significant gap - performs success publicly |
+| Income Expectation | $38,000 claimed | $21,840 actual ($1,820 × 12) | 0.43 | Overstates income by 43% |
+| Goals vs Actions | Goal: "Make freelancing full-time" | Calendar: 20% barista shifts | 0.80 | Actions don't match stated goal |
 
 ---
 
