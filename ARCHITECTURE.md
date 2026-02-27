@@ -1,507 +1,613 @@
-# System Architecture: Memory-Augmented Profiling Framework
+# System Architecture: Hyperfocus Monetization & Career Trajectory Advisor
 
-> Integrating **NLWeb** (Microsoft's conversational protocol layer) + **LongMemEval** 3-stage memory framework + our **profiling algorithm** to build a personalized AI system with natural language interfaces, MCP compatibility, and long-term memory evaluation.
-
----
-
-## What Changed: Why NLWeb
-
-NLWeb is **not** a memory system — it's a **conversational protocol layer** that sits in front of any data backend. Think of it as "HTML for the AI web." It provides:
-
-1. **A REST/MCP protocol** (`/ask`, `/mcp`) that returns Schema.org JSON
-2. **A query processing pipeline**: decontextualize → retrieve → rank → respond
-3. **Mixed-mode programming**: dozens of small, precise LLM calls controlled by code
-4. **Tool system**: Search, Item Details, Ensemble Queries — extensible
-5. **Built-in memory hooks**: detect what to remember, pass context across turns
-6. **Fast-track path**: parallel optimistic execution for common queries
-
-**For our project, NLWeb becomes the interface layer** — the conversational API that humans and AI agents use to query Theo's profile. Our LongMemEval memory system becomes NLWeb's backend. The profiler becomes a custom NLWeb tool.
+> An ADHD-optimized career intelligence platform that captures hyperfocus episodes from conversation data, maps skill acquisition to market demand, and provides dopamine-friendly micro-milestone career pathing — powered by NLWeb (conversational protocol), LongMemEval memory framework (temporal knowledge graph), and Alchemy (on-chain skill credentials + token rewards).
 
 ---
 
-## Architecture Diagram
+## The Problem → The System
+
+```
+ADHD Brain                              What Our System Does
+─────────────                           ────────────────────
+Hyperfocus on Python for 3 weeks  →  Captures depth + duration from chat data
+  then pivots to Blender 3D       →  Maps as skill cluster, not "quitting"
+  then back to Python + ML        →  Detects convergence: "3D + ML = spatial computing"
+                                  →  Matches to market: "Unity ML, AR/VR roles paying $140k"
+                                  →  Generates micro-milestone learning path
+                                  →  Mints skill credentials on-chain (Alchemy)
+                                  →  Gamified dopamine loop: complete step → token reward
+```
+
+---
+
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         CLIENTS / CONSUMERS                                 │
+│                         CLIENTS                                             │
 │                                                                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│  │ Questline UI │  │ Profiler HTML│  │ MCP Agents   │  │ External     │   │
-│  │ (React TSX)  │  │ (Comparison) │  │ (Claude,     │  │ NLWeb Sites  │   │
-│  │              │  │              │  │  Copilot...) │  │ (federated)  │   │
+│  │ Questline UI │  │ MCP Agents   │  │ Hiring       │  │ Enterprise   │   │
+│  │ (User App)   │  │ (Claude,     │  │ Marketplace  │  │ Talent API   │   │
+│  │              │  │  Copilot...) │  │ (Web App)    │  │ (B2B)        │   │
+│  │ • Skill map  │  │              │  │              │  │              │   │
+│  │ • Milestones │  │ Query user's │  │ Match ADHD   │  │ Search for   │   │
+│  │ • Career path│  │ profile as   │  │ pros to      │  │ cognitive    │   │
+│  │ • Rewards    │  │ an MCP tool  │  │ aligned roles│  │ profiles     │   │
 │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
 │         └──────────────────┴─────────────────┴─────────────────┘           │
 │                                    │                                        │
-│                          REST /ask + /mcp                                   │
-│                         Schema.org JSON responses                           │
+│                     REST /ask + /mcp (Schema.org JSON)                      │
 └────────────────────────────────────┼────────────────────────────────────────┘
                                      │
                                      ▼
-┌═════════════════════════════════════════════════════════════════════════════┐
+╔═════════════════════════════════════════════════════════════════════════════╗
 ║                     NLWeb CONVERSATIONAL LAYER                              ║
-║                     (Protocol + Query Processing Engine)                     ║
 ║                                                                             ║
 ║  ┌─────────────────────────────────────────────────────────────────────┐   ║
-║  │                    REQUEST INITIALIZATION                           │   ║
-║  │                                                                     │   ║
-║  │  POST /ask {query, site, prev, mode, streaming}                    │   ║
-║  │  POST /mcp {call_tool: "ask", query, ...}                         │   ║
-║  │                                                                     │   ║
-║  │  NLWebHandler → NLWebHandlerState → session context                │   ║
-║  └──────────────────────────┬──────────────────────────────────────────┘   ║
-║                             │                                              ║
-║  ┌──────────────────────────▼──────────────────────────────────────────┐   ║
 ║  │              PARALLEL PRE-RETRIEVAL ANALYSIS                        │   ║
-║  │              (~5-10 LLM micro-calls in parallel)                    │   ║
 ║  │                                                                     │   ║
-║  │  ┌────────────────┐ ┌────────────────┐ ┌────────────────┐          │   ║
-║  │  │ Relevance      │ │ Decontextualize│ │ Memory         │          │   ║
-║  │  │ Detection      │ │                │ │ Detection      │          │   ║
-║  │  │                │ │ "How's his     │ │                │          │   ║
-║  │  │ Is this about  │ │  debt?" →      │ │ "Remember:     │          │   ║
-║  │  │ Theo's profile?│ │ "How is Theo   │ │  Theo prefers  │          │   ║
-║  │  │                │ │  Nakamura's    │ │  informal      │          │   ║
-║  │  │                │ │  credit card   │ │  tone"         │          │   ║
-║  │  │                │ │  debt?"        │ │                │          │   ║
-║  │  └────────────────┘ └────────────────┘ └───────┬────────┘          │   ║
-║  │  ┌────────────────┐ ┌────────────────┐         │                   │   ║
-║  │  │ Required Info   │ │ Query Rewrite  │  ┌──────▼──────────┐       │   ║
-║  │  │                │ │                │  │ MEMORY STORE     │       │   ║
-║  │  │ "Need time     │ │ Expand for     │  │ (persistent)     │       │   ║
-║  │  │  range for     │ │ retrieval      │  │                  │       │   ║
-║  │  │  trend query"  │ │                │  │ User preferences │       │   ║
-║  │  └────────────────┘ └────────────────┘  │ + session facts  │       │   ║
-║  │                                          └─────────────────┘       │   ║
-║  │  ── FAST TRACK ──────────────────────────────────────────────      │   ║
-║  │  Launched in parallel: optimistic retrieval for simple queries      │   ║
-║  └──────────────────────────┬──────────────────────────────────────────┘   ║
-║                             │                                              ║
-║  ┌──────────────────────────▼──────────────────────────────────────────┐   ║
-║  │              TOOL SELECTION & ROUTING                                │   ║
-║  │              (LLM selects from tools.xml)                           │   ║
+║  │  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐      │   ║
+║  │  │ Decontextualize │ │ Hyperfocus      │ │ Memory          │      │   ║
+║  │  │                 │ │ Detection       │ │ Extraction      │      │   ║
+║  │  │ "How's that     │ │                 │ │                 │      │   ║
+║  │  │  going?" →      │ │ Is user in a    │ │ Extract skills, │      │   ║
+║  │  │ "How is Theo's  │ │ hyperfocus      │ │ interests,      │      │   ║
+║  │  │  Blender        │ │ episode? What   │ │ engagement      │      │   ║
+║  │  │  learning       │ │ domain? What    │ │ signals from    │      │   ║
+║  │  │  going?"        │ │ depth level?    │ │ every turn      │      │   ║
+║  │  └─────────────────┘ └────────┬────────┘ └────────┬────────┘      │   ║
+║  │                               │                    │               │   ║
+║  │                    ┌──────────▼────────────────────▼──────────┐    │   ║
+║  │                    │  COGNITIVE FINGERPRINT UPDATER            │    │   ║
+║  │                    │                                          │    │   ║
+║  │                    │  • What problem types sustain attention?  │    │   ║
+║  │                    │  • What triggers disengagement?           │    │   ║
+║  │                    │  • What's the typical hyperfocus cycle?   │    │   ║
+║  │                    │  • Which domains show accelerated depth?  │    │   ║
+║  │                    └──────────┬───────────────────────────────┘    │   ║
+║  └───────────────────────────────┼─────────────────────────────────────┘   ║
+║                                  │                                         ║
+║  ┌───────────────────────────────▼─────────────────────────────────────┐   ║
+║  │              TOOL ROUTING (LLM selects from tools.xml)              │   ║
 ║  │                                                                     │   ║
-║  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │   ║
-║  │  │ Profile      │  │ Memory       │  │ Pattern      │              │   ║
-║  │  │ Search Tool  │  │ Query Tool   │  │ Analysis Tool│              │   ║
-║  │  │              │  │              │  │              │              │   ║
-║  │  │ "What are    │  │ "What did    │  │ "What's      │              │   ║
-║  │  │  Theo's      │  │  Theo say    │  │  driving     │              │   ║
-║  │  │  skills?"    │  │  about rates │  │  his spending│              │   ║
-║  │  │              │  │  in January?"│  │  spikes?"    │              │   ║
-║  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘              │   ║
-║  │  ┌──────┴───────┐  ┌──────┴───────┐  ┌──────┴───────┐              │   ║
-║  │  │ Scenario     │  │ Comparison   │  │ Action       │              │   ║
-║  │  │ Projection   │  │ Tool         │  │ Recommender  │              │   ║
-║  │  │ Tool         │  │              │  │ Tool         │              │   ║
-║  │  │              │  │ "Compare     │  │              │              │   ║
-║  │  │ "What if     │  │  Theo vs     │  │ "What should │              │   ║
-║  │  │  trends      │  │  Elon on     │  │  Theo do     │              │   ║
-║  │  │  continue?"  │  │  financial   │  │  this week?" │              │   ║
-║  │  │              │  │  literacy"   │  │              │              │   ║
-║  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘              │   ║
-║  │         └─────────────────┴─────────────────┘                      │   ║
-║  │                           │                                         │   ║
-║  └───────────────────────────┼─────────────────────────────────────────┘   ║
-║                              │ Tools call into Memory Backend ↓            ║
-╚══════════════════════════════╪═════════════════════════════════════════════╝
-                               │
-                               ▼
+║  │  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐      │   ║
+║  │  │ Skill Portfolio │ │ Career Match    │ │ Hyperfocus      │      │   ║
+║  │  │ Tool            │ │ Tool            │ │ Tracker Tool    │      │   ║
+║  │  │                 │ │                 │ │                 │      │   ║
+║  │  │ "What skills    │ │ "What jobs fit  │ │ "What am I      │      │   ║
+║  │  │  do I actually  │ │  my actual      │ │  deep into      │      │   ║
+║  │  │  have?"         │ │  strengths?"    │ │  right now?"    │      │   ║
+║  │  └─────────────────┘ └─────────────────┘ └─────────────────┘      │   ║
+║  │  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐      │   ║
+║  │  │ Learning Path   │ │ Milestone       │ │ Cognitive       │      │   ║
+║  │  │ Generator Tool  │ │ & Reward Tool   │ │ Profile Tool    │      │   ║
+║  │  │                 │ │                 │ │                 │      │   ║
+║  │  │ "Optimize my    │ │ "What's my next │ │ "What's my      │      │   ║
+║  │  │  path to land   │ │  milestone?"    │ │  cognitive      │      │   ║
+║  │  │  a motion       │ │  (triggers      │ │  fingerprint?"  │      │   ║
+║  │  │  design role"   │ │   on-chain      │ │                 │      │   ║
+║  │  │                 │ │   reward)       │ │                 │      │   ║
+║  │  └─────────────────┘ └─────────────────┘ └─────────────────┘      │   ║
+║  └─────────────────────────────┬───────────────────────────────────────┘   ║
+╚════════════════════════════════╪════════════════════════════════════════════╝
+                                 │
+                    ┌────────────┼────────────┐
+                    ▼            ▼            ▼
+┌────────────────────────┐ ┌─────────┐ ┌──────────────────────┐
+│  MEMORY BACKEND        │ │   KG    │ │  ALCHEMY LAYER       │
+│  (LongMemEval 3-Stage) │ │ (Neo4j) │ │  (On-Chain)          │
+└────────────────────────┘ └─────────┘ └──────────────────────┘
+         │                      │              │
+         ▼                      ▼              ▼
+   ┌─────────────────────────────────────────────────────────┐
+   │              DETAILED BELOW                              │
+   └─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Layer 1: Memory Backend (LongMemEval 3-Stage)
+
+### Indexing
+
+```
+Data Sources (porthon/data/)
+┌──────────┬──────────────┬──────────┬──────────┬──────────┬──────────┐
+│AI Chat   │Calendar      │Emails    │Lifelog   │Social    │Transac-  │
+│Turns     │Events        │          │          │Posts     │tions     │
+│          │              │          │          │          │          │
+│Hyperfocus│Learning time │Client    │Reflec-   │Public    │Tool subs │
+│episodes, │blocks, skill │invoices, │tions,    │skill     │(Figma,   │
+│coaching  │sessions      │proposals │mood,     │showcases │School of │
+│depth     │              │          │energy    │          │Motion)   │
+└────┬─────┴──────┬───────┴────┬─────┴────┬─────┴────┬─────┴────┬─────┘
+     └────────────┴────────────┴──────────┴──────────┴──────────┘
+                              │
+                    ┌─────────▼──────────┐
+                    │ ROUND-LEVEL        │
+                    │ DECOMPOSITION      │
+                    │ Each entry = 1 unit │
+                    └─────────┬──────────┘
+                              │
+                    ┌─────────▼──────────┐
+                    │ SKILL-AUGMENTED    │
+                    │ KEY EXPANSION      │
+                    │                    │
+                    │ LLM extracts:      │
+                    │ • Skills mentioned  │
+                    │ • Depth indicators  │
+                    │ • Engagement level  │
+                    │ • Domain tags       │
+                    │ • Time invested     │
+                    └─────────┬──────────┘
+                              │
+                    ┌─────────▼──────────┐
+                    │ TIME-AWARE         │
+                    │ ASSOCIATION        │
+                    │                    │
+                    │ Every fact stamped  │
+                    │ with source ts →    │
+                    │ enables hyperfocus  │
+                    │ episode detection   │
+                    │ (burst of related   │
+                    │ queries in window)  │
+                    └─────────┬──────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │ QDRANT VECTOR DB    │
+                    │                     │
+                    │ Schema.org objects:  │
+                    │ DataFeedItem with   │
+                    │ skill metadata      │
+                    └─────────────────────┘
+```
+
+### Retrieval
+
+Hybrid: dense embeddings + BM25 + KG traversal + temporal window filtering → Reciprocal Rank Fusion
+
+### Reading
+
+NLWeb's ranking.py + post_ranking.py with Chain-of-Note synthesis. Extended with knowledge update resolution (skill levels change over time).
+
+---
+
+## Layer 2: Knowledge Graph (Neo4j)
+
+This is the **core profiling engine**. The KG maps the ADHD cognitive landscape.
+
+```
+                        ┌─────────────────┐
+                        │  (:Person)       │
+                        │  name: Theo      │
+                        │  adhd: true      │
+                        │  cognitive_fp:   │
+                        │    {...}         │
+                        └────────┬────────┘
+                                 │
+          ┌──────────────────────┼──────────────────────┐
+          │                      │                      │
+          ▼                      ▼                      ▼
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│ (:SkillCluster) │  │ (:SkillCluster) │  │ (:SkillCluster) │
+│ name: "Visual   │  │ name: "Web &    │  │ name: "Business │
+│  Design"        │  │  Interactive"   │  │  & Freelance"   │
+│ depth: 7/10     │  │ depth: 4/10     │  │ depth: 3/10     │
+│ momentum: ↑     │  │ momentum: →     │  │ momentum: ↑     │
+└────┬────────────┘  └────┬────────────┘  └────┬────────────┘
+     │                    │                    │
+     ▼                    ▼                    ▼
+┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+│(:Skill)  │  │(:Skill)  │  │(:Skill)  │  │(:Skill)  │
+│Figma     │  │Blender   │  │Motion    │  │Pricing   │
+│level: 8  │  │level: 2  │  │Design    │  │Strategy  │
+│hrs: 2000+│  │hrs: 40   │  │level: 3  │  │level: 4  │
+│src: conv,│  │src: conv,│  │hrs: 60   │  │src: conv │
+│ txn, post│  │ social   │  │src: conv,│  │          │
+│          │  │          │  │ txn, cal │  │          │
+└──────────┘  └──────────┘  └──────────┘  └──────────┘
+
+Edges:
+─[:HAS_SKILL {since, evidence_count, last_active}]→
+─[:HYPERFOCUSED_ON {start_ts, end_ts, depth_score, trigger}]→
+─[:CONVERGES_WITH]→  (Figma + Motion Design → "UI Animation")
+─[:MARKETS_TO]→ (:Opportunity {role, salary_range, demand_trend})
+─[:SUSTAINS_ENGAGEMENT {avg_duration, problem_type}]→
+─[:TRIGGERS_DISENGAGEMENT {pattern, context}]→
+─[:LEARNED_DURING {episode_id}]→ (:HyperfocusEpisode)
+─[:MILESTONE_COMPLETED {ts}]→ (:Milestone {on_chain_id})
+```
+
+### Cognitive Fingerprint (stored on Person node)
+
+```json
+{
+  "sustained_engagement": {
+    "visual_problem_solving": {"avg_mins": 180, "flow_probability": 0.8},
+    "code_debugging": {"avg_mins": 120, "flow_probability": 0.6},
+    "financial_planning": {"avg_mins": 25, "flow_probability": 0.1}
+  },
+  "hyperfocus_cycle": {
+    "avg_episode_days": 18,
+    "avg_depth_before_pivot": 4,
+    "return_rate": 0.6
+  },
+  "learning_style": {
+    "prefers": "project-based",
+    "avoids": "sequential curriculum",
+    "optimal_session": "90-120 min"
+  },
+  "dopamine_triggers": ["visible_progress", "social_validation", "novelty"]
+}
+```
+
+---
+
+## Layer 3: Alchemy On-Chain Integration
+
+Alchemy provides the **web3 infrastructure** for three key features:
+
+```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│              LONGMEMEVAL MEMORY BACKEND                                     │
-│              (3-Stage: Index → Retrieve → Read)                             │
-│                                                                             │
-│  ╔═══════════════════════════════════════════════════════════════════════╗  │
-│  ║  STAGE 1: INDEXING                                                    ║  │
-│  ║                                                                       ║  │
-│  ║  Data Ingestion (porthon/data/)                                      ║  │
-│  ║  ┌──────────┬──────────┬──────────┬──────────┬──────────┬─────────┐  ║  │
-│  ║  │calendar  │conversa- │emails    │lifelog   │social    │transac- │  ║  │
-│  ║  │.jsonl    │tions.jsonl│.jsonl   │.jsonl    │posts.jsonl│tions   │  ║  │
-│  ║  └────┬─────┴────┬─────┴────┬─────┴────┬─────┴────┬─────┴────┬────┘  ║  │
-│  ║       └──────────┴──────────┴──────────┴──────────┴──────────┘       ║  │
-│  ║                              │                                        ║  │
-│  ║                    Unified Schema (already shared):                    ║  │
-│  ║                    {id, ts, source, type, text, tags, refs}           ║  │
-│  ║                              │                                        ║  │
-│  ║               ┌──────────────▼──────────────┐                         ║  │
-│  ║               │  ROUND-LEVEL DECOMPOSITION  │                         ║  │
-│  ║               │  Each JSONL entry = 1 round  │                         ║  │
-│  ║               └──────────────┬──────────────┘                         ║  │
-│  ║                              │                                        ║  │
-│  ║               ┌──────────────▼──────────────┐                         ║  │
-│  ║               │  FACT-AUGMENTED KEY          │                         ║  │
-│  ║               │  EXPANSION (LLM)             │                         ║  │
-│  ║               │                              │                         ║  │
-│  ║               │  text + extracted_facts →     │                         ║  │
-│  ║               │  expanded search key          │                         ║  │
-│  ║               │  (+9.4% recall per paper)     │                         ║  │
-│  ║               └──────────────┬──────────────┘                         ║  │
-│  ║                              │                                        ║  │
-│  ║               ┌──────────────▼──────────────┐                         ║  │
-│  ║               │  TIME-AWARE FACT             │                         ║  │
-│  ║               │  ASSOCIATION                 │                         ║  │
-│  ║               │                              │                         ║  │
-│  ║               │  Each fact stamped with ts   │                         ║  │
-│  ║               │  from source event           │                         ║  │
-│  ║               └──────────────┬──────────────┘                         ║  │
-│  ║                              │                                        ║  │
-│  ╚══════════════════════════════╪════════════════════════════════════════╝  │
-│                                 │                                          │
-│  ╔══════════════════════════════╪════════════════════════════════════════╗  │
-│  ║  DUAL STORAGE LAYER          ▼                                        ║  │
-│  ║                                                                       ║  │
-│  ║  ┌───────────────────────────────┐  ┌──────────────────────────────┐  ║  │
-│  ║  │     VECTOR DB (Qdrant)        │  │   KNOWLEDGE GRAPH (Neo4j)    │  ║  │
-│  ║  │                               │  │                              │  ║  │
-│  ║  │  NLWeb retriever.py connects  │  │  Nodes:                      │  ║  │
-│  ║  │  here via DB abstraction      │  │  (:Person), (:Skill),        │  ║  │
-│  ║  │                               │  │  (:Goal), (:Financial),      │  ║  │
-│  ║  │  Collections:                 │  │  (:Activity), (:Emotion),    │  ║  │
-│  ║  │  • theo_memories (all rounds) │  │  (:Event), (:Location)       │  ║  │
-│  ║  │  • theo_facts (extracted)     │  │                              │  ║  │
-│  ║  │                               │  │  Edges:                      │  ║  │
-│  ║  │  Each entry = Schema.org obj: │  │  -[:HAS_SKILL]->             │  ║  │
-│  ║  │  {                            │  │  -[:PURSUING]->              │  ║  │
-│  ║  │    "@type": "DataFeedItem",   │  │  -[:EARNS_FROM]->           │  ║  │
-│  ║  │    "dateCreated": ts,         │  │  -[:STRUGGLES_WITH]->       │  ║  │
-│  ║  │    "name": key,               │  │  -[:UPDATED_TO {ts}]->      │  ║  │
-│  ║  │    "description": value,      │  │  -[:CO_OCCURS_WITH]->       │  ║  │
-│  ║  │    "keywords": tags,          │  │                              │  ║  │
-│  ║  │    "sourceOrganization": src  │  │  Queried by KG traversal    │  ║  │
-│  ║  │  }                            │  │  tool in NLWeb pipeline      │  ║  │
-│  ║  │                               │  │                              │  ║  │
-│  ║  │  NLWeb expects Schema.org!    │  │                              │  ║  │
-│  ║  └───────────────────────────────┘  └──────────────────────────────┘  ║  │
-│  ╚═══════════════════════════════════════════════════════════════════════╝  │
-│                                 │                                          │
-│  ╔══════════════════════════════╪════════════════════════════════════════╗  │
-│  ║  STAGE 2: RETRIEVAL          │                                        ║  │
-│  ║  (Called by NLWeb tools)      ▼                                        ║  │
-│  ║                                                                       ║  │
-│  ║  NLWeb's retriever.py → our custom retrieval backend:                 ║  │
-│  ║                                                                       ║  │
-│  ║  1. Dense search (embeddings) → semantic similarity                   ║  │
-│  ║  2. Sparse search (BM25) → keyword matching                          ║  │
-│  ║  3. KG traversal → structural relationships                          ║  │
-│  ║  4. Temporal filter → LLM-inferred time range pruning                ║  │
-│  ║  5. Reciprocal Rank Fusion → merge all result sets                   ║  │
-│  ║                                                                       ║  │
-│  ║  Returns: ranked Schema.org objects with scores                       ║  │
-│  ╚═══════════════════════════════════════════════════════════════════════╝  │
-│                                 │                                          │
-│  ╔══════════════════════════════╪════════════════════════════════════════╗  │
-│  ║  STAGE 3: READING            ▼                                        ║  │
-│  ║  (NLWeb ranking.py + post_ranking.py)                                 ║  │
-│  ║                                                                       ║  │
-│  ║  NLWeb's ranking pipeline handles this natively:                      ║  │
-│  ║  • Each retrieved item scored by LLM (with snippet generation)        ║  │
-│  ║  • Post-ranking: summarize/generate mode applies Chain-of-Note        ║  │
-│  ║  • mode=list → ranked items with scores                               ║  │
-│  ║  • mode=summarize → summary + ranked items                            ║  │
-│  ║  • mode=generate → RAG-style answer synthesis                         ║  │
-│  ║                                                                       ║  │
-│  ║  We extend with:                                                      ║  │
-│  ║  • Knowledge update resolution (prefer most recent for conflicts)     ║  │
-│  ║  • Abstention detection (no evidence → "I don't know")               ║  │
-│  ║  • Cross-source evidence synthesis (Chain-of-Note)                    ║  │
-│  ╚═══════════════════════════════════════════════════════════════════════╝  │
-└─────────────────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│              PROFILING ENGINE                                                │
-│              (Custom NLWeb Tools)                                            │
-│                                                                             │
-│  Registered in tools.xml as NLWeb-native tools:                             │
+│                     ALCHEMY INTEGRATION                                     │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  PROFILE SEARCH TOOL                                                 │   │
-│  │  ─────────────────────                                               │   │
-│  │  Handles: "What are Theo's skills?" / "Tell me about Theo"          │   │
-│  │  Action: Vector search → rank → return Schema.org PersonProfile      │   │
-│  │  Returns: {"@type": "Person", "knowsAbout": [...], ...}             │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  MEMORY QUERY TOOL                                                   │   │
-│  │  ────────────────────                                                │   │
-│  │  Handles: "What did Theo say about pricing in January?"             │   │
-│  │  Action: Time-aware retrieval → Chain-of-Note synthesis             │   │
-│  │  Tests: IE, TR, KU abilities from LongMemEval                      │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  PATTERN ANALYSIS TOOL                                               │   │
-│  │  ──────────────────────                                              │   │
-│  │  Handles: "What patterns do you see in Theo's data?"                │   │
-│  │  Action: KG traversal + temporal windowing → cross-domain patterns  │   │
-│  │  Output:                                                             │   │
-│  │    Single-domain: "Spending up 14% over 6 months"                   │   │
-│  │    Cross-domain:  "After heavy work weeks, delivery spending 3x"    │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  DIMENSION SCORING TOOL                                              │   │
-│  │  ──────────────────────                                              │   │
-│  │  Handles: "Score Theo's financial literacy" / "Show all stats"      │   │
-│  │  Action: Aggregate from KG + vector DB → compute per PROFILING_MATH │   │
-│  │  Output: {"@type": "Rating", "ratingValue": 6, "bestRating": 10,   │   │
-│  │           "name": "Financial Literacy", "ratingExplanation": "..."}  │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  SCENARIO PROJECTION TOOL                                            │   │
-│  │  ────────────────────────                                            │   │
-│  │  Handles: "What happens if trends continue?" / "Best case?"         │   │
-│  │  Action: Extrapolate dimension scores → generate 1y/5y/10y paths    │   │
-│  │  Output: Drift / Rebalance / Transformation scenarios + actions     │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  COMPARISON TOOL                                                     │   │
-│  │  ────────────────                                                    │   │
-│  │  Handles: "Compare Theo vs Elon" (Ensemble Query pattern)           │   │
-│  │  Action: Load both profiles → radar chart data → delta analysis     │   │
-│  │  Output: Schema.org CompareAction with dimension-by-dimension data  │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  ACTION RECOMMENDER TOOL                                             │   │
-│  │  ───────────────────────                                             │   │
-│  │  Handles: "What should Theo do this week?"                          │   │
-│  │  Action: Current scores + patterns + selected scenario → actions    │   │
-│  │  Output: Weekly action items with rationale tied to data patterns   │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│              OUTPUT / PRESENTATION                                           │
-│                                                                             │
-│  NLWeb returns Schema.org JSON → clients render as needed:                  │
-│                                                                             │
-│  ┌──────────────────────┐   ┌─────────────────────────────────────────┐    │
-│  │  QUESTLINE UI        │   │  PROFILER COMPARISON                    │    │
-│  │  (remixed.tsx)       │   │  (theo_vs_elon.html)                    │    │
-│  │                      │   │                                         │    │
-│  │  Consumes /ask with  │   │  Consumes /ask with                     │    │
-│  │  mode=list for       │   │  Comparison Tool →                      │    │
-│  │  patterns, scores    │   │  radar charts, bars,                    │    │
-│  │                      │   │  delta cards                            │    │
-│  │  mode=generate for   │   │                                         │    │
-│  │  chat agent          │   │                                         │    │
-│  └──────────────────────┘   └─────────────────────────────────────────┘    │
-│                                                                             │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  MCP SERVER (built into NLWeb)                                       │   │
+│  │  1. ON-CHAIN SKILL CREDENTIALS (Soulbound NFTs)                     │   │
 │  │                                                                      │   │
-│  │  Any MCP client (Claude Desktop, Copilot, custom agents) can:       │   │
-│  │  • list_tools → see all 7 profiling tools                           │   │
-│  │  • call_tool("ask", {query: "Theo's financial health"})             │   │
-│  │  • Get Schema.org JSON back                                          │   │
+│  │  When user completes a skill milestone:                              │   │
+│  │  → System mints a Soulbound Token (SBT) via Alchemy Wallet API     │   │
+│  │  → Token contains: skill name, level, evidence hash, timestamp      │   │
+│  │  → Non-transferable (it's YOUR skill, not tradeable)                │   │
+│  │  → Verifiable by any employer/client                                │   │
 │  │                                                                      │   │
-│  │  This means: any AI agent can query Theo's profile natively.        │   │
-│  │  The profile becomes an MCP-accessible knowledge source.            │   │
+│  │  Alchemy APIs used:                                                  │   │
+│  │  • Smart Wallets (account abstraction) — gasless minting for user   │   │
+│  │  • NFT API — verify/display credentials                             │   │
+│  │  • Webhooks — listen for mint confirmation                          │   │
+│  │                                                                      │   │
+│  │  Schema.org output:                                                  │   │
+│  │  {                                                                   │   │
+│  │    "@type": "EducationalOccupationalCredential",                    │   │
+│  │    "name": "Motion Design — Level 3",                               │   │
+│  │    "credentialCategory": "skill-credential",                        │   │
+│  │    "recognizedBy": {"@type": "Organization", "name": "Porthon"},   │   │
+│  │    "dateCreated": "2024-07-15",                                     │   │
+│  │    "proof": {                                                        │   │
+│  │      "type": "BlockchainVerification",                              │   │
+│  │      "chain": "base",                                               │   │
+│  │      "tokenId": "0x...",                                            │   │
+│  │      "contract": "0x..."                                            │   │
+│  │    }                                                                 │   │
+│  │  }                                                                   │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│              EVALUATION (LongMemEval Benchmark)                              │
-│                                                                             │
-│  1. CONVERT porthon/data → LongMemEval timestamped sessions                │
-│  2. GENERATE 500 questions across 5 ability types                          │
-│  3. FEED sessions sequentially through NLWeb's /ask endpoint               │
-│     (memory detection stores facts; subsequent queries retrieve them)       │
-│  4. EVALUATE with evaluate_qa.py (GPT-4o judge)                           │
-│  5. MEASURE:                                                                │
-│     • QA Accuracy per ability (IE, MR, KU, TR, ABS)                       │
-│     • Retrieval Recall@K and NDCG@K                                        │
-│     • Profiling accuracy vs master_profile.json ground truth               │
-│     • Response latency (NLWeb fast-track vs full pipeline)                 │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  EVALUATION QUESTIONS (examples from Theo's data)                    │   │
+│  │  2. MICRO-MILESTONE TOKEN REWARDS (Dopamine Loop)                   │   │
 │  │                                                                      │   │
-│  │  IE:  "How much did Theo charge for the brand identity project?"    │   │
-│  │  MR:  "Compare Theo's pricing confidence in Jan vs April"           │   │
-│  │  KU:  "What is Theo's current hourly rate?" (changed over time)     │   │
-│  │  TR:  "What skill was Theo learning in May 2024?"                   │   │
-│  │  ABS: "What car does Theo drive?" → "I don't know"                  │   │
+│  │  ADHD brains need immediate feedback. Each milestone step:          │   │
+│  │                                                                      │   │
+│  │  ┌──────┐   ┌──────────┐   ┌──────────┐   ┌──────────────┐        │   │
+│  │  │Learn │ → │ System   │ → │ Alchemy  │ → │ User sees    │        │   │
+│  │  │a     │   │ verifies │   │ mints    │   │ token +      │        │   │
+│  │  │thing │   │ from chat│   │ reward   │   │ progress bar │        │   │
+│  │  │      │   │ evidence │   │ token    │   │ IMMEDIATELY  │        │   │
+│  │  └──────┘   └──────────┘   └──────────┘   └──────────────┘        │   │
+│  │                                                                      │   │
+│  │  Token economics:                                                    │   │
+│  │  • Micro-rewards for each learning step (ERC-20 utility token)     │   │
+│  │  • Accumulate → unlock premium features / marketplace visibility    │   │
+│  │  • Streak bonuses for consistent engagement (ADHD-friendly)         │   │
+│  │                                                                      │   │
+│  │  Alchemy APIs used:                                                  │   │
+│  │  • Smart Wallets — embedded wallet, no MetaMask friction            │   │
+│  │  • Bundler API — batch milestone rewards into single tx             │   │
+│  │  • Transaction Simulation — preview reward before minting           │   │
+│  │  • Token Balances API — display reward portfolio                    │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  3. HIRING MARKETPLACE (On-Chain Verification)                      │   │
+│  │                                                                      │   │
+│  │  Employers/clients can:                                              │   │
+│  │  • Query profiles via NLWeb /mcp endpoint                           │   │
+│  │  • Verify skill credentials on-chain (Alchemy NFT API)             │   │
+│  │  • See cognitive profile match score for their role                  │   │
+│  │  • Hire with confidence: skills are evidence-based, not self-report │   │
+│  │                                                                      │   │
+│  │  Marketplace smart contract:                                         │   │
+│  │  • Escrow for freelance gigs (Alchemy Wallet API)                  │   │
+│  │  • Fee on successful match (revenue model)                          │   │
+│  │  • Reputation accrual from completed gigs                           │   │
+│  │                                                                      │   │
+│  │  Alchemy APIs used:                                                  │   │
+│  │  • NFT API — query skill SBTs for candidate profiles                │   │
+│  │  • Token Balances — verify engagement history                       │   │
+│  │  • Webhooks — notify on escrow release                              │   │
+│  │  • Alchemy MCP Server — AI agents can search marketplace            │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## How NLWeb Fits: Layer by Layer
+## NLWeb Custom Tools (tools.xml)
 
-### 1. NLWeb as Protocol Layer (NEW)
+| Tool | Trigger | What It Does | Backend |
+|------|---------|--------------|---------|
+| **Skill Portfolio** | "What skills do I have?" | Builds dynamic portfolio from conversational evidence across ALL sources. Not a resume — a living proof-of-skill map. | Vector DB + KG aggregate |
+| **Career Match** | "What jobs fit me?" | Maps skill clusters + cognitive fingerprint → market opportunities. Filters by engagement sustainability (won't suggest roles that trigger disengagement). | KG (:Opportunity) nodes + market API |
+| **Hyperfocus Tracker** | "What am I deep into right now?" | Detects current hyperfocus episode from temporal pattern of recent queries. Shows domain, depth, duration, and whether it's converging with past skills. | Temporal query on Vector DB |
+| **Learning Path Generator** | "How do I get to [role]?" | Generates ADHD-optimized learning path: micro-milestones, project-based, builds on existing hyperfocus patterns. Avoids sequential curriculum. | KG skill gaps + cognitive fingerprint |
+| **Milestone & Reward** | "What's my next milestone?" | Returns next micro-milestone. On completion, triggers Alchemy mint of skill credential + reward token. Immediate feedback. | KG milestones + Alchemy APIs |
+| **Cognitive Profile** | "What's my cognitive fingerprint?" | Shows which problem types sustain engagement, typical hyperfocus cycle, learning style, dopamine triggers. | KG Person node |
 
-NLWeb provides the **conversational interface protocol** — the `/ask` and `/mcp` endpoints that all clients use. This replaces building a custom API.
+---
 
-| NLWeb Component | Our Usage |
-|----------------|-----------|
-| `baseHandler.py` | Orchestrates query → tool selection → retrieval → response |
-| `query_analysis/` | Decontextualizes multi-turn queries, detects memory requests |
-| `retriever.py` | Connects to our Qdrant vector DB (NLWeb supports Qdrant natively) |
-| `ranking.py` | LLM-based scoring of retrieved items |
-| `post_ranking.py` | Summarize/generate modes for Chain-of-Note reading |
-| `router.py` + `tools.xml` | Routes queries to our 7 custom profiling tools |
-| `memory.py` | Detects facts to remember across sessions |
-| `fastTrack.py` | Parallel optimistic path for simple profile lookups |
-| `prompts.py` | XML-based prompts, specializable per data type |
-| `/mcp` endpoint | Makes profile queryable by any MCP agent |
+## Hyperfocus Detection Algorithm
 
-### 2. Schema.org as Data Format (NEW)
+The **key differentiator** — detecting hyperfocus episodes from conversational data:
 
-NLWeb's core insight: **Schema.org is the semantic layer**. All our data must be stored as Schema.org objects in the vector DB.
+```
+INPUT: Timestamped conversation entries from Vector DB
 
-```json
-// A memory entry in the vector DB
+ALGORITHM:
+1. TEMPORAL WINDOWING
+   - Sliding window (7 days) across all entries
+   - Count entries per domain tag per window
+
+2. BURST DETECTION
+   - If entries_in_domain(window) > 2σ above user's baseline → HYPERFOCUS CANDIDATE
+   - Example: Theo normally mentions "Blender" 0.5x/week
+     Week of May 10: 8 mentions → burst detected
+
+3. DEPTH SCORING
+   - Analyze question complexity progression within burst:
+     Day 1: "How do I start with Blender?" → depth=1 (intro)
+     Day 3: "How to do UV unwrapping?" → depth=4 (intermediate)
+     Day 5: "Best topology for subdivision modeling?" → depth=7 (advanced)
+   - LLM scores each question's expertise level (1-10)
+
+4. ENGAGEMENT DURATION
+   - Track hours between first and last entry in burst
+   - Cross-reference with calendar (learning blocks) and transactions (course purchases)
+
+5. CONVERGENCE DETECTION (KG)
+   - When burst domain has (:CONVERGES_WITH) edge to existing skill cluster:
+     "Blender + Figma → 3D UI Design" (emerging market signal)
+   - Alert user: "Your Blender deep-dive + Figma expertise = spatial design niche"
+
+OUTPUT:
 {
-  "@type": "DataFeedItem",
-  "@id": "c_0001",
-  "dateCreated": "2024-01-18T23:00:00-05:00",
-  "name": "Pricing anxiety discussion",
-  "description": "USER: I undercharged a client again...",
-  "keywords": ["freelance", "pricing", "confidence"],
-  "sourceOrganization": "ai_chat",
-  "additionalProperty": [
-    {"@type": "PropertyValue", "name": "extracted_facts",
-     "value": "Theo charges $600 for brand identity; has pricing anxiety"},
-    {"@type": "PropertyValue", "name": "pii_level", "value": "synthetic"}
-  ]
+  "episode_id": "hf_042",
+  "domain": "3D Modeling / Blender",
+  "start": "2024-05-10",
+  "duration_days": 12,
+  "depth_progression": [1, 2, 4, 5, 7],
+  "peak_depth": 7,
+  "convergences": ["UI Design → Spatial/3D UI"],
+  "market_signal": "3D UI designers: 340% demand increase, avg $95/hr",
+  "recommended_next": "Complete one 3D UI prototype to reach milestone level"
 }
 ```
 
-```json
-// A profiling dimension score
-{
-  "@type": "Rating",
-  "name": "Financial Literacy",
-  "ratingValue": 6,
-  "bestRating": 10,
-  "worstRating": 0,
-  "ratingExplanation": "Savings rate 18% — up from 12% six months ago",
-  "additionalProperty": [
-    {"@type": "PropertyValue", "name": "trend", "value": "up"},
-    {"@type": "PropertyValue", "name": "previous_value", "value": 5}
-  ]
-}
+---
+
+## Data Flow (Complete)
+
+```
+User conversations (AI chat, coaching, questions)
+  + Calendar (learning blocks, client meetings)
+  + Emails (invoices, proposals → client evidence)
+  + Lifelog (reflections, energy, mood)
+  + Social (public skill showcases)
+  + Transactions (tool subscriptions, course purchases)
+       │
+       ▼
+[Schema.org Transform] → DataFeedItem objects
+       │
+       ▼
+[LongMemEval Indexing]
+  → Round-level decomposition
+  → Skill-augmented key expansion (LLM extracts skills + depth + engagement)
+  → Time-aware association
+       │
+       ├──────────────────────────────┐
+       ▼                              ▼
+[Qdrant Vector DB]            [Neo4j Knowledge Graph]
+  Schema.org items              Person → SkillClusters → Skills
+  with skill metadata           → HyperfocusEpisodes → Milestones
+  + embeddings                  → Opportunities → CognitiveFingerprint
+       │                              │
+       └──────────────┬───────────────┘
+                      │
+                      ▼
+[NLWeb Handler Pipeline]
+  Decontextualize → Hyperfocus Detection → Memory Extraction
+  → Tool Selection → Retrieve → Rank → Respond
+       │
+       ├── /ask → Questline UI (skill map, milestones, career paths)
+       ├── /mcp → AI agents (Claude, Copilot query profile as tool)
+       │
+       ├── Milestone completed? → Alchemy Smart Wallet
+       │     → Mint Soulbound Skill Credential (NFT)
+       │     → Issue reward token (ERC-20)
+       │     → Immediate UI feedback (dopamine)
+       │
+       └── Hiring marketplace
+              → Employer queries /mcp for candidate profiles
+              → Verifies credentials on-chain (Alchemy NFT API)
+              → Match score based on cognitive profile alignment
+              → Escrow + fee on successful match
 ```
 
-### 3. Custom NLWeb Tools (NEW)
+---
 
-We register 7 tools in `tools.xml` that the NLWeb router selects from based on query intent:
+## NLWeb Custom Prompts
 
-| Tool | Trigger Queries | Backend |
-|------|----------------|---------|
-| Profile Search | "Who is Theo?" / "Theo's skills" | Vector DB search |
-| Memory Query | "What did he say about..." | Time-aware retrieval + CoN |
-| Pattern Analysis | "What patterns..." / "Why does..." | KG traversal + temporal |
-| Dimension Scoring | "Score his..." / "Show stats" | KG aggregate + profiling math |
-| Scenario Projection | "What if..." / "Best case" | Score extrapolation |
-| Comparison | "Compare Theo vs..." | Multi-profile ensemble |
-| Action Recommender | "What should he do..." | Scores + patterns → actions |
+### Hyperfocus Detection (Pre-Retrieval)
 
-### 4. Memory Detection → Long-Term Storage (NEW)
+```xml
+<Prompt ref="DetectHyperfocusPrompt">
+  <promptString>
+    Analyze this user interaction for signals of a hyperfocus episode.
 
-NLWeb's `DetectMemoryRequestPrompt` becomes our **online memory indexing hook**:
+    Look for:
+    - Deep, specific questions about a single domain
+    - Rapid skill progression (beginner → advanced questions)
+    - Extended engagement duration
+    - Emotional investment (excitement, curiosity, urgency)
+    - Cross-referencing with other skills they know
+
+    The user's query is: {request.rawQuery}.
+    Recent queries (last 7 days): {request.previousQueries}.
+    Known skill clusters: {user.skillClusters}.
+  </promptString>
+  <returnStruc>
+    {
+      "is_hyperfocus": "True or False",
+      "domain": "The domain being hyperfocused on",
+      "depth_level": "1-10 expertise level of current question",
+      "convergences": ["domains this connects to"],
+      "engagement_signal": "high/medium/low"
+    }
+  </returnStruc>
+</Prompt>
+```
+
+### Memory Extraction (Extended for Skills)
 
 ```xml
 <Prompt ref="DetectMemoryRequestPrompt">
   <promptString>
-    Analyze the following interaction with the user.
-    Does this interaction reveal personal information, preferences,
-    life events, financial details, goals, or emotional states
-    about the user that should be remembered for future interactions?
-    Extract ALL implicit facts, not just explicit memory requests.
+    Analyze this interaction for implicit skill evidence and personal facts.
+
+    Extract ALL of these if present:
+    - Skills demonstrated or discussed (with depth level)
+    - Tools/technologies mentioned
+    - Problems being solved (what type sustains engagement?)
+    - Emotional state (confidence, frustration, excitement)
+    - Career goals or aspirations mentioned
+    - Financial information (rates, income, expenses)
+    - Time investments (hours spent on learning/projects)
+
+    Do NOT require explicit "remember this" — extract implicitly.
+
     The interaction is: {request.rawQuery}.
   </promptString>
   <returnStruc>
     {
-      "facts_detected": ["fact1", "fact2", ...],
-      "should_update_kg": "True or False",
+      "skills_detected": [{"name": "...", "depth": 1-10, "evidence": "..."}],
+      "tools_mentioned": ["..."],
+      "engagement_type": "problem_type that sustained attention",
+      "emotional_state": "...",
+      "career_signals": ["..."],
+      "financial_facts": ["..."],
       "kg_updates": [{"entity": "...", "relation": "...", "value": "..."}]
     }
   </returnStruc>
 </Prompt>
 ```
 
-This is the **key integration point**: every query through NLWeb automatically triggers memory extraction → indexing into both Vector DB and KG.
-
-### 5. NLWeb's Fast Track = Our Profiling Cache
-
-For common queries like "Show Theo's stats" or "What are his scores?", the fast-track path serves pre-computed profiling results from cache, bypassing the full retrieval pipeline. Only novel or temporal queries go through the full 3-stage memory pipeline.
-
 ---
 
-## Data Flow (Revised)
+## Gamification: Micro-Milestone Structure
 
 ```
-porthon/data/*.jsonl
-       │
-       ▼
-[Schema.org Transform] ── convert to DataFeedItem objects
-       │
-       ▼
-[LongMemEval Indexing] ── decompose → fact-augment → timestamp
-       │                │
-       ▼                ▼
-[Qdrant Vector DB]  [Neo4j Knowledge Graph]
-       │                │
-       ▼                ▼
-[NLWeb retriever.py] ← connects to both stores
-       │
-       ▼
-[NLWeb Handler Pipeline]
-  │  decontextualize → tool select → retrieve → rank → respond
-  │
-  ├─ /ask  → JSON (Schema.org) → Questline UI / Profiler HTML
-  ├─ /mcp  → MCP protocol → Claude Desktop / Copilot / agents
-  │
-  └─ Memory Detection → new facts indexed back into stores
+ADHD-Optimized Milestone Design:
+─────────────────────────────────
+
+❌ Traditional: "Complete 12-week Motion Design course"
+   (ADHD brain: too far away, no dopamine, abandoned by week 3)
+
+✅ Ours: Break into micro-milestones with IMMEDIATE on-chain rewards
+
+  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+  │ Milestone 1  │ ──→ │ Milestone 2  │ ──→ │ Milestone 3  │
+  │              │     │              │     │              │
+  │ "Animate     │     │ "Ease a      │     │ "Animate     │
+  │  your logo   │     │  bounce      │     │  a UI        │
+  │  in AE"      │     │  effect"     │     │  transition" │
+  │              │     │              │     │              │
+  │ ⏱ ~2 hours  │     │ ⏱ ~1 hour   │     │ ⏱ ~3 hours  │
+  │ 🪙 +10 token │     │ 🪙 +10 token │     │ 🪙 +15 token │
+  │ 🏅 SBT mint  │     │              │     │ 🏅 SBT mint  │
+  │ (Level 1)    │     │              │     │ (Level 2)    │
+  └─────────────┘     └─────────────┘     └─────────────┘
+
+  Each completion:
+  1. User tells system "I did it" (or system detects from chat)
+  2. NLWeb Milestone Tool verifies evidence from conversation
+  3. Alchemy Smart Wallet mints reward (gasless for user)
+  4. UI shows: progress bar moves + token count + streak counter
+  5. IMMEDIATE dopamine hit
+
+  Streak bonus: 3 milestones in 7 days → 2x tokens
+  (Leverages ADHD tendency for burst productivity)
 ```
 
 ---
 
-## Implementation Plan
+## Business Model Integration
 
-### Phase 1: NLWeb + Qdrant Setup
-1. Fork NLWeb, configure Qdrant as vector store
-2. Ingest porthon/data as Schema.org DataFeedItem objects
-3. Run fact-augmented key expansion during ingestion
-4. Verify basic `/ask` queries work against Theo's data
-
-### Phase 2: Custom Tools
-5. Implement 7 profiling tools in `tools.xml` + Python handlers
-6. Connect profiling math (PROFILING_MATH.md) to Dimension Scoring tool
-7. Implement KG (Neo4j) population from extracted facts
-8. Add KG traversal to Pattern Analysis tool
-
-### Phase 3: Memory Pipeline
-9. Customize `DetectMemoryRequestPrompt` for implicit fact extraction
-10. Implement knowledge update resolution (UPDATED_TO edges in KG)
-11. Add temporal query expansion per LongMemEval paper
-12. Test multi-session memory across sequential NLWeb calls
-
-### Phase 4: Output Integration
-13. Wire Questline UI to consume NLWeb `/ask` responses
-14. Wire Profiler Comparison HTML to use Comparison tool
-15. Expose `/mcp` endpoint for agent access
-
-### Phase 5: LongMemEval Evaluation
-16. Convert porthon data → LongMemEval session format
-17. Generate evaluation questions for Theo's data
-18. Run benchmark through NLWeb pipeline
-19. Report accuracy, recall, latency metrics
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  REVENUE STREAMS                                                 │
+│                                                                  │
+│  1. FREEMIUM USER PLATFORM                                      │
+│     Free: Skill portfolio, basic hyperfocus tracking             │
+│     Premium ($15/mo): Career pathing, learning paths,            │
+│       advanced cognitive profile, milestone rewards              │
+│                                                                  │
+│  2. HIRING MARKETPLACE FEES                                     │
+│     • 10-15% placement fee on successful matches                │
+│     • Employers pay for access to cognitive-profile search       │
+│     • "ADHD-aligned roles" filter → premium listing fee         │
+│                                                                  │
+│  3. ENTERPRISE TALENT LICENSE (B2B)                             │
+│     • Companies license the cognitive profiling engine           │
+│     • Identify ADHD employees + match to optimal roles           │
+│     • Reduce turnover by aligning work to cognitive strengths   │
+│     • API access via NLWeb /mcp → agents query talent pool      │
+│                                                                  │
+│  4. ON-CHAIN (Alchemy-powered)                                  │
+│     • Skill credential verification fees (employers pay)         │
+│     • Marketplace escrow fees                                    │
+│     • Premium token features (boost marketplace visibility)      │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Why This Architecture
+## Implementation Phases
 
-| Decision | Rationale |
-|----------|-----------|
-| **NLWeb as interface** | Don't build a custom API — get REST + MCP + streaming + Schema.org for free. Microsoft-backed, MIT licensed. |
-| **Schema.org data format** | NLWeb's LLMs understand Schema.org natively. Our data becomes interoperable with 100M+ websites. |
-| **NLWeb tools = profiling tools** | The tool router pattern is exactly what we need — different query intents map to different profiling capabilities. |
-| **Memory detection hook** | NLWeb already has the pre-retrieval memory prompt. We extend it for implicit fact extraction (LongMemEval's key insight). |
-| **Fast-track caching** | Profile scores don't change every query. NLWeb's fast-track path avoids redundant retrieval for common lookups. |
-| **MCP native** | Any AI agent can query the profile. The profile becomes a tool, not just a dashboard. |
-| **Qdrant** | NLWeb supports it natively. No adapter needed. |
-| **Dual store preserved** | Vector DB for semantic retrieval (NLWeb native), KG for structural profiling (custom tool). Both needed. |
+### Phase 1: Core Memory + Skill Extraction
+1. NLWeb + Qdrant setup with porthon/data ingestion
+2. Skill-augmented key expansion during indexing
+3. Neo4j KG: Person → SkillCluster → Skill schema
+4. Basic Skill Portfolio and Cognitive Profile tools
+
+### Phase 2: Hyperfocus Detection
+5. Temporal windowing algorithm on Vector DB
+6. Burst detection + depth scoring
+7. Convergence detection via KG traversal
+8. Hyperfocus Tracker tool + Learning Path Generator
+
+### Phase 3: Alchemy Integration
+9. Smart Wallet setup (embedded, gasless)
+10. Soulbound skill credential contract (Base chain)
+11. Micro-milestone reward token (ERC-20)
+12. Milestone & Reward tool wired to Alchemy APIs
+
+### Phase 4: Career Matching
+13. Market demand data integration (job APIs)
+14. Career Match tool: skills + cognitive profile → opportunities
+15. Hiring marketplace smart contract (escrow + fees)
+16. Employer-facing NLWeb /mcp interface
+
+### Phase 5: UI + Launch
+17. Questline UI: skill map, milestones, rewards, career paths
+18. Hiring marketplace web app
+19. Enterprise talent API (B2B)
+20. MCP server exposure for AI agent access
