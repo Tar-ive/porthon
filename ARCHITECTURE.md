@@ -1,427 +1,507 @@
 # System Architecture: Memory-Augmented Profiling Framework
 
-> Integrating the LongMemEval 3-stage memory framework (Indexing → Retrieval → Reading) with our profiling algorithm to build a personalized AI system evaluated on long-term memory benchmarks.
+> Integrating **NLWeb** (Microsoft's conversational protocol layer) + **LongMemEval** 3-stage memory framework + our **profiling algorithm** to build a personalized AI system with natural language interfaces, MCP compatibility, and long-term memory evaluation.
 
 ---
 
-## High-Level Architecture
+## What Changed: Why NLWeb
+
+NLWeb is **not** a memory system — it's a **conversational protocol layer** that sits in front of any data backend. Think of it as "HTML for the AI web." It provides:
+
+1. **A REST/MCP protocol** (`/ask`, `/mcp`) that returns Schema.org JSON
+2. **A query processing pipeline**: decontextualize → retrieve → rank → respond
+3. **Mixed-mode programming**: dozens of small, precise LLM calls controlled by code
+4. **Tool system**: Search, Item Details, Ensemble Queries — extensible
+5. **Built-in memory hooks**: detect what to remember, pass context across turns
+6. **Fast-track path**: parallel optimistic execution for common queries
+
+**For our project, NLWeb becomes the interface layer** — the conversational API that humans and AI agents use to query Theo's profile. Our LongMemEval memory system becomes NLWeb's backend. The profiler becomes a custom NLWeb tool.
+
+---
+
+## Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        DATA INGESTION LAYER                                 │
+│                         CLIENTS / CONSUMERS                                 │
 │                                                                             │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
-│  │calendar  │ │conversa- │ │ emails   │ │ lifelog  │ │social    │         │
-│  │.jsonl    │ │tions.jsonl│ │.jsonl    │ │.jsonl    │ │posts.jsonl│        │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘         │
-│       │             │            │             │             │               │
-│  ┌────┴─────┐ ┌─────┴────┐ ┌────┴─────┐ ┌────┴─────┐ ┌────┴─────┐        │
-│  │transac-  │ │files_    │ │persona_  │ │consent   │ │summaries/│         │
-│  │tions.jsonl│ │index.jsonl│ │profile  │ │.json     │ │*.json    │         │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘         │
-│       └─────────────┴────────────┴─────────────┴─────────────┘              │
-│                              │                                              │
-│                    ┌─────────▼──────────┐                                   │
-│                    │  UNIFIED SCHEMA    │                                   │
-│                    │  NORMALIZER        │                                   │
-│                    │                    │                                   │
-│                    │  {id, ts, source,  │                                   │
-│                    │   type, text, tags,│                                   │
-│                    │   refs, pii_level} │                                   │
-│                    └─────────┬──────────┘                                   │
-└──────────────────────────────┼──────────────────────────────────────────────┘
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │ Questline UI │  │ Profiler HTML│  │ MCP Agents   │  │ External     │   │
+│  │ (React TSX)  │  │ (Comparison) │  │ (Claude,     │  │ NLWeb Sites  │   │
+│  │              │  │              │  │  Copilot...) │  │ (federated)  │   │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
+│         └──────────────────┴─────────────────┴─────────────────┘           │
+│                                    │                                        │
+│                          REST /ask + /mcp                                   │
+│                         Schema.org JSON responses                           │
+└────────────────────────────────────┼────────────────────────────────────────┘
+                                     │
+                                     ▼
+┌═════════════════════════════════════════════════════════════════════════════┐
+║                     NLWeb CONVERSATIONAL LAYER                              ║
+║                     (Protocol + Query Processing Engine)                     ║
+║                                                                             ║
+║  ┌─────────────────────────────────────────────────────────────────────┐   ║
+║  │                    REQUEST INITIALIZATION                           │   ║
+║  │                                                                     │   ║
+║  │  POST /ask {query, site, prev, mode, streaming}                    │   ║
+║  │  POST /mcp {call_tool: "ask", query, ...}                         │   ║
+║  │                                                                     │   ║
+║  │  NLWebHandler → NLWebHandlerState → session context                │   ║
+║  └──────────────────────────┬──────────────────────────────────────────┘   ║
+║                             │                                              ║
+║  ┌──────────────────────────▼──────────────────────────────────────────┐   ║
+║  │              PARALLEL PRE-RETRIEVAL ANALYSIS                        │   ║
+║  │              (~5-10 LLM micro-calls in parallel)                    │   ║
+║  │                                                                     │   ║
+║  │  ┌────────────────┐ ┌────────────────┐ ┌────────────────┐          │   ║
+║  │  │ Relevance      │ │ Decontextualize│ │ Memory         │          │   ║
+║  │  │ Detection      │ │                │ │ Detection      │          │   ║
+║  │  │                │ │ "How's his     │ │                │          │   ║
+║  │  │ Is this about  │ │  debt?" →      │ │ "Remember:     │          │   ║
+║  │  │ Theo's profile?│ │ "How is Theo   │ │  Theo prefers  │          │   ║
+║  │  │                │ │  Nakamura's    │ │  informal      │          │   ║
+║  │  │                │ │  credit card   │ │  tone"         │          │   ║
+║  │  │                │ │  debt?"        │ │                │          │   ║
+║  │  └────────────────┘ └────────────────┘ └───────┬────────┘          │   ║
+║  │  ┌────────────────┐ ┌────────────────┐         │                   │   ║
+║  │  │ Required Info   │ │ Query Rewrite  │  ┌──────▼──────────┐       │   ║
+║  │  │                │ │                │  │ MEMORY STORE     │       │   ║
+║  │  │ "Need time     │ │ Expand for     │  │ (persistent)     │       │   ║
+║  │  │  range for     │ │ retrieval      │  │                  │       │   ║
+║  │  │  trend query"  │ │                │  │ User preferences │       │   ║
+║  │  └────────────────┘ └────────────────┘  │ + session facts  │       │   ║
+║  │                                          └─────────────────┘       │   ║
+║  │  ── FAST TRACK ──────────────────────────────────────────────      │   ║
+║  │  Launched in parallel: optimistic retrieval for simple queries      │   ║
+║  └──────────────────────────┬──────────────────────────────────────────┘   ║
+║                             │                                              ║
+║  ┌──────────────────────────▼──────────────────────────────────────────┐   ║
+║  │              TOOL SELECTION & ROUTING                                │   ║
+║  │              (LLM selects from tools.xml)                           │   ║
+║  │                                                                     │   ║
+║  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │   ║
+║  │  │ Profile      │  │ Memory       │  │ Pattern      │              │   ║
+║  │  │ Search Tool  │  │ Query Tool   │  │ Analysis Tool│              │   ║
+║  │  │              │  │              │  │              │              │   ║
+║  │  │ "What are    │  │ "What did    │  │ "What's      │              │   ║
+║  │  │  Theo's      │  │  Theo say    │  │  driving     │              │   ║
+║  │  │  skills?"    │  │  about rates │  │  his spending│              │   ║
+║  │  │              │  │  in January?"│  │  spikes?"    │              │   ║
+║  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘              │   ║
+║  │  ┌──────┴───────┐  ┌──────┴───────┐  ┌──────┴───────┐              │   ║
+║  │  │ Scenario     │  │ Comparison   │  │ Action       │              │   ║
+║  │  │ Projection   │  │ Tool         │  │ Recommender  │              │   ║
+║  │  │ Tool         │  │              │  │ Tool         │              │   ║
+║  │  │              │  │ "Compare     │  │              │              │   ║
+║  │  │ "What if     │  │  Theo vs     │  │ "What should │              │   ║
+║  │  │  trends      │  │  Elon on     │  │  Theo do     │              │   ║
+║  │  │  continue?"  │  │  financial   │  │  this week?" │              │   ║
+║  │  │              │  │  literacy"   │  │              │              │   ║
+║  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘              │   ║
+║  │         └─────────────────┴─────────────────┘                      │   ║
+║  │                           │                                         │   ║
+║  └───────────────────────────┼─────────────────────────────────────────┘   ║
+║                              │ Tools call into Memory Backend ↓            ║
+╚══════════════════════════════╪═════════════════════════════════════════════╝
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                 STAGE 1: INDEXING (LongMemEval Framework)                    │
+│              LONGMEMEVAL MEMORY BACKEND                                     │
+│              (3-Stage: Index → Retrieve → Read)                             │
+│                                                                             │
+│  ╔═══════════════════════════════════════════════════════════════════════╗  │
+│  ║  STAGE 1: INDEXING                                                    ║  │
+│  ║                                                                       ║  │
+│  ║  Data Ingestion (porthon/data/)                                      ║  │
+│  ║  ┌──────────┬──────────┬──────────┬──────────┬──────────┬─────────┐  ║  │
+│  ║  │calendar  │conversa- │emails    │lifelog   │social    │transac- │  ║  │
+│  ║  │.jsonl    │tions.jsonl│.jsonl   │.jsonl    │posts.jsonl│tions   │  ║  │
+│  ║  └────┬─────┴────┬─────┴────┬─────┴────┬─────┴────┬─────┴────┬────┘  ║  │
+│  ║       └──────────┴──────────┴──────────┴──────────┴──────────┘       ║  │
+│  ║                              │                                        ║  │
+│  ║                    Unified Schema (already shared):                    ║  │
+│  ║                    {id, ts, source, type, text, tags, refs}           ║  │
+│  ║                              │                                        ║  │
+│  ║               ┌──────────────▼──────────────┐                         ║  │
+│  ║               │  ROUND-LEVEL DECOMPOSITION  │                         ║  │
+│  ║               │  Each JSONL entry = 1 round  │                         ║  │
+│  ║               └──────────────┬──────────────┘                         ║  │
+│  ║                              │                                        ║  │
+│  ║               ┌──────────────▼──────────────┐                         ║  │
+│  ║               │  FACT-AUGMENTED KEY          │                         ║  │
+│  ║               │  EXPANSION (LLM)             │                         ║  │
+│  ║               │                              │                         ║  │
+│  ║               │  text + extracted_facts →     │                         ║  │
+│  ║               │  expanded search key          │                         ║  │
+│  ║               │  (+9.4% recall per paper)     │                         ║  │
+│  ║               └──────────────┬──────────────┘                         ║  │
+│  ║                              │                                        ║  │
+│  ║               ┌──────────────▼──────────────┐                         ║  │
+│  ║               │  TIME-AWARE FACT             │                         ║  │
+│  ║               │  ASSOCIATION                 │                         ║  │
+│  ║               │                              │                         ║  │
+│  ║               │  Each fact stamped with ts   │                         ║  │
+│  ║               │  from source event           │                         ║  │
+│  ║               └──────────────┬──────────────┘                         ║  │
+│  ║                              │                                        ║  │
+│  ╚══════════════════════════════╪════════════════════════════════════════╝  │
+│                                 │                                          │
+│  ╔══════════════════════════════╪════════════════════════════════════════╗  │
+│  ║  DUAL STORAGE LAYER          ▼                                        ║  │
+│  ║                                                                       ║  │
+│  ║  ┌───────────────────────────────┐  ┌──────────────────────────────┐  ║  │
+│  ║  │     VECTOR DB (Qdrant)        │  │   KNOWLEDGE GRAPH (Neo4j)    │  ║  │
+│  ║  │                               │  │                              │  ║  │
+│  ║  │  NLWeb retriever.py connects  │  │  Nodes:                      │  ║  │
+│  ║  │  here via DB abstraction      │  │  (:Person), (:Skill),        │  ║  │
+│  ║  │                               │  │  (:Goal), (:Financial),      │  ║  │
+│  ║  │  Collections:                 │  │  (:Activity), (:Emotion),    │  ║  │
+│  ║  │  • theo_memories (all rounds) │  │  (:Event), (:Location)       │  ║  │
+│  ║  │  • theo_facts (extracted)     │  │                              │  ║  │
+│  ║  │                               │  │  Edges:                      │  ║  │
+│  ║  │  Each entry = Schema.org obj: │  │  -[:HAS_SKILL]->             │  ║  │
+│  ║  │  {                            │  │  -[:PURSUING]->              │  ║  │
+│  ║  │    "@type": "DataFeedItem",   │  │  -[:EARNS_FROM]->           │  ║  │
+│  ║  │    "dateCreated": ts,         │  │  -[:STRUGGLES_WITH]->       │  ║  │
+│  ║  │    "name": key,               │  │  -[:UPDATED_TO {ts}]->      │  ║  │
+│  ║  │    "description": value,      │  │  -[:CO_OCCURS_WITH]->       │  ║  │
+│  ║  │    "keywords": tags,          │  │                              │  ║  │
+│  ║  │    "sourceOrganization": src  │  │  Queried by KG traversal    │  ║  │
+│  ║  │  }                            │  │  tool in NLWeb pipeline      │  ║  │
+│  ║  │                               │  │                              │  ║  │
+│  ║  │  NLWeb expects Schema.org!    │  │                              │  ║  │
+│  ║  └───────────────────────────────┘  └──────────────────────────────┘  ║  │
+│  ╚═══════════════════════════════════════════════════════════════════════╝  │
+│                                 │                                          │
+│  ╔══════════════════════════════╪════════════════════════════════════════╗  │
+│  ║  STAGE 2: RETRIEVAL          │                                        ║  │
+│  ║  (Called by NLWeb tools)      ▼                                        ║  │
+│  ║                                                                       ║  │
+│  ║  NLWeb's retriever.py → our custom retrieval backend:                 ║  │
+│  ║                                                                       ║  │
+│  ║  1. Dense search (embeddings) → semantic similarity                   ║  │
+│  ║  2. Sparse search (BM25) → keyword matching                          ║  │
+│  ║  3. KG traversal → structural relationships                          ║  │
+│  ║  4. Temporal filter → LLM-inferred time range pruning                ║  │
+│  ║  5. Reciprocal Rank Fusion → merge all result sets                   ║  │
+│  ║                                                                       ║  │
+│  ║  Returns: ranked Schema.org objects with scores                       ║  │
+│  ╚═══════════════════════════════════════════════════════════════════════╝  │
+│                                 │                                          │
+│  ╔══════════════════════════════╪════════════════════════════════════════╗  │
+│  ║  STAGE 3: READING            ▼                                        ║  │
+│  ║  (NLWeb ranking.py + post_ranking.py)                                 ║  │
+│  ║                                                                       ║  │
+│  ║  NLWeb's ranking pipeline handles this natively:                      ║  │
+│  ║  • Each retrieved item scored by LLM (with snippet generation)        ║  │
+│  ║  • Post-ranking: summarize/generate mode applies Chain-of-Note        ║  │
+│  ║  • mode=list → ranked items with scores                               ║  │
+│  ║  • mode=summarize → summary + ranked items                            ║  │
+│  ║  • mode=generate → RAG-style answer synthesis                         ║  │
+│  ║                                                                       ║  │
+│  ║  We extend with:                                                      ║  │
+│  ║  • Knowledge update resolution (prefer most recent for conflicts)     ║  │
+│  ║  • Abstention detection (no evidence → "I don't know")               ║  │
+│  ║  • Cross-source evidence synthesis (Chain-of-Note)                    ║  │
+│  ╚═══════════════════════════════════════════════════════════════════════╝  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              PROFILING ENGINE                                                │
+│              (Custom NLWeb Tools)                                            │
+│                                                                             │
+│  Registered in tools.xml as NLWeb-native tools:                             │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                    SESSION DECOMPOSITION                             │   │
-│  │                                                                      │   │
-│  │  Raw events → decomposed into ROUNDS (user-turn + context)          │   │
-│  │  Per LongMemEval: round-level granularity > session-level           │   │
-│  │                                                                      │   │
-│  │  calendar_event → {key: event_text, value: full_event, ts: ...}     │   │
-│  │  ai_chat_turn  → {key: user_msg,    value: full_turn,  ts: ...}    │   │
-│  │  email         → {key: subject+body, value: full_email, ts: ...}   │   │
-│  │  lifelog       → {key: activity,     value: full_entry, ts: ...}   │   │
-│  │  social_post   → {key: post_text,    value: full_post,  ts: ...}   │   │
-│  │  transaction   → {key: description,  value: full_txn,   ts: ...}   │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-│                              │                                              │
-│  ┌───────────────────────────▼──────────────────────────────────────────┐   │
-│  │                FACT-AUGMENTED KEY EXPANSION                          │   │
-│  │                                                                      │   │
-│  │  LLM extracts user facts from each round:                           │   │
-│  │                                                                      │   │
-│  │  Input:  "USER: I undercharged a client again. $600 for a brand     │   │
-│  │           identity that took 40 hours..."                            │   │
-│  │                                                                      │   │
-│  │  Extracted facts:                                                    │   │
-│  │    → "Theo charges $600 for brand identity"                         │   │
-│  │    → "Theo spends 40 hours on brand identity projects"              │   │
-│  │    → "Theo has pricing anxiety"                                     │   │
-│  │                                                                      │   │
-│  │  Key = original_text ⊕ extracted_facts (concatenated)               │   │
-│  │  +9.4% recall improvement (per LongMemEval paper)                   │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-│                              │                                              │
-│  ┌───────────────────────────▼──────────────────────────────────────────┐   │
-│  │              TIME-AWARE FACT ASSOCIATION                             │   │
-│  │                                                                      │   │
-│  │  Each fact is stamped with its source timestamp:                     │   │
-│  │    {fact: "Theo charges $600", ts: "2024-01-18T23:00:00-05:00"}    │   │
-│  │    {fact: "Theo raised rate",  ts: "2024-04-13T14:00:00-05:00"}    │   │
-│  │                                                                      │   │
-│  │  Enables temporal reasoning:                                         │   │
-│  │    "What was Theo's pricing strategy in Q1 vs Q2?"                  │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-│                              │                                              │
-│                              ▼                                              │
+│  │  PROFILE SEARCH TOOL                                                 │   │
+│  │  ─────────────────────                                               │   │
+│  │  Handles: "What are Theo's skills?" / "Tell me about Theo"          │   │
+│  │  Action: Vector search → rank → return Schema.org PersonProfile      │   │
+│  │  Returns: {"@type": "Person", "knowsAbout": [...], ...}             │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                    DUAL STORAGE LAYER                                │   │
-│  │                                                                      │   │
-│  │  ┌─────────────────────┐    ┌─────────────────────────────────┐     │   │
-│  │  │   VECTOR DB          │    │   KNOWLEDGE GRAPH (KG)          │     │   │
-│  │  │   (Qdrant/Chroma)   │    │   (Neo4j / NetworkX)            │     │   │
-│  │  │                     │    │                                  │     │   │
-│  │  │  Stores:            │    │  Nodes:                          │     │   │
-│  │  │  • Embedding(key)   │    │  • Person (Theo)                 │     │   │
-│  │  │  • value (full text)│    │  • Skill (Figma, Blender...)     │     │   │
-│  │  │  • metadata {ts,    │    │  • Goal (full-time freelance)    │     │   │
-│  │  │    source, tags}    │    │  • Location (Austin, TX)         │     │   │
-│  │  │                     │    │  • Activity (barista, design)    │     │   │
-│  │  │  Index type:        │    │  • Financial (debt, income)      │     │   │
-│  │  │  • Dense (Stella/   │    │  • Emotion (anxiety, confidence) │     │   │
-│  │  │    GTE embeddings)  │    │  • Event (calendar items)        │     │   │
-│  │  │  • Sparse (BM25)    │    │                                  │     │   │
-│  │  │  • Hybrid fusion    │    │  Edges:                          │     │   │
-│  │  │                     │    │  • HAS_SKILL, WANTS, LIVES_IN   │     │   │
-│  │  │                     │    │  • EARNS_FROM, STRUGGLES_WITH   │     │   │
-│  │  │                     │    │  • MENTIONED_AT (temporal)       │     │   │
-│  │  │                     │    │  • UPDATED_TO (knowledge update) │     │   │
-│  │  │                     │    │  • CO_OCCURS_WITH (cross-domain) │     │   │
-│  │  └─────────────────────┘    └─────────────────────────────────┘     │   │
+│  │  MEMORY QUERY TOOL                                                   │   │
+│  │  ────────────────────                                                │   │
+│  │  Handles: "What did Theo say about pricing in January?"             │   │
+│  │  Action: Time-aware retrieval → Chain-of-Note synthesis             │   │
+│  │  Tests: IE, TR, KU abilities from LongMemEval                      │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  PATTERN ANALYSIS TOOL                                               │   │
+│  │  ──────────────────────                                              │   │
+│  │  Handles: "What patterns do you see in Theo's data?"                │   │
+│  │  Action: KG traversal + temporal windowing → cross-domain patterns  │   │
+│  │  Output:                                                             │   │
+│  │    Single-domain: "Spending up 14% over 6 months"                   │   │
+│  │    Cross-domain:  "After heavy work weeks, delivery spending 3x"    │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  DIMENSION SCORING TOOL                                              │   │
+│  │  ──────────────────────                                              │   │
+│  │  Handles: "Score Theo's financial literacy" / "Show all stats"      │   │
+│  │  Action: Aggregate from KG + vector DB → compute per PROFILING_MATH │   │
+│  │  Output: {"@type": "Rating", "ratingValue": 6, "bestRating": 10,   │   │
+│  │           "name": "Financial Literacy", "ratingExplanation": "..."}  │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  SCENARIO PROJECTION TOOL                                            │   │
+│  │  ────────────────────────                                            │   │
+│  │  Handles: "What happens if trends continue?" / "Best case?"         │   │
+│  │  Action: Extrapolate dimension scores → generate 1y/5y/10y paths    │   │
+│  │  Output: Drift / Rebalance / Transformation scenarios + actions     │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  COMPARISON TOOL                                                     │   │
+│  │  ────────────────                                                    │   │
+│  │  Handles: "Compare Theo vs Elon" (Ensemble Query pattern)           │   │
+│  │  Action: Load both profiles → radar chart data → delta analysis     │   │
+│  │  Output: Schema.org CompareAction with dimension-by-dimension data  │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  ACTION RECOMMENDER TOOL                                             │   │
+│  │  ───────────────────────                                             │   │
+│  │  Handles: "What should Theo do this week?"                          │   │
+│  │  Action: Current scores + patterns + selected scenario → actions    │   │
+│  │  Output: Weekly action items with rationale tied to data patterns   │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                 STAGE 2: RETRIEVAL (LongMemEval Framework)                   │
+│              OUTPUT / PRESENTATION                                           │
+│                                                                             │
+│  NLWeb returns Schema.org JSON → clients render as needed:                  │
+│                                                                             │
+│  ┌──────────────────────┐   ┌─────────────────────────────────────────┐    │
+│  │  QUESTLINE UI        │   │  PROFILER COMPARISON                    │    │
+│  │  (remixed.tsx)       │   │  (theo_vs_elon.html)                    │    │
+│  │                      │   │                                         │    │
+│  │  Consumes /ask with  │   │  Consumes /ask with                     │    │
+│  │  mode=list for       │   │  Comparison Tool →                      │    │
+│  │  patterns, scores    │   │  radar charts, bars,                    │    │
+│  │                      │   │  delta cards                            │    │
+│  │  mode=generate for   │   │                                         │    │
+│  │  chat agent          │   │                                         │    │
+│  └──────────────────────┘   └─────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                    QUERY PROCESSING                                  │   │
+│  │  MCP SERVER (built into NLWeb)                                       │   │
 │  │                                                                      │   │
-│  │  User query → LLM expands with:                                     │   │
-│  │    1. Time-aware expansion:                                          │   │
-│  │       "How has Theo's pricing changed?" →                           │   │
-│  │       "pricing, rates, invoicing | time_range: all"                 │   │
+│  │  Any MCP client (Claude Desktop, Copilot, custom agents) can:       │   │
+│  │  • list_tools → see all 7 profiling tools                           │   │
+│  │  • call_tool("ask", {query: "Theo's financial health"})             │   │
+│  │  • Get Schema.org JSON back                                          │   │
 │  │                                                                      │   │
-│  │    2. Semantic expansion:                                            │   │
-│  │       "Is Theo confident?" →                                        │   │
-│  │       "confidence, self-doubt, imposter syndrome, pricing anxiety"  │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-│                              │                                              │
-│  ┌───────────────────────────▼──────────────────────────────────────────┐   │
-│  │                 HYBRID RETRIEVAL                                     │   │
-│  │                                                                      │   │
-│  │  1. Vector search (dense) → top-K from embedding index              │   │
-│  │  2. BM25 search (sparse) → top-K from keyword index                 │   │
-│  │  3. KG traversal → related nodes within N hops                      │   │
-│  │  4. Temporal filter → narrow by inferred time range                  │   │
-│  │  5. Reciprocal Rank Fusion → merge all result sets                  │   │
-│  │                                                                      │   │
-│  │  Output: ranked list of (key, value, ts, source) tuples             │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-│                              │                                              │
-│  ┌───────────────────────────▼──────────────────────────────────────────┐   │
-│  │                 CROSS-SOURCE EVIDENCE ASSEMBLY                      │   │
-│  │                                                                      │   │
-│  │  For profiling queries, retrieve across ALL source types:           │   │
-│  │                                                                      │   │
-│  │  Query: "Theo's financial health"                                   │   │
-│  │  → transactions (spending patterns, revenue)                        │   │
-│  │  → conversations (pricing anxiety discussion)                       │   │
-│  │  → emails (invoices, credit card statements)                        │   │
-│  │  → lifelog (reflections on money)                                   │   │
-│  │  → files_index (payoff spreadsheet)                                 │   │
-│  │  → social_posts (raised rate announcement)                          │   │
-│  │                                                                      │   │
-│  │  Assembled into structured evidence bundle with provenance          │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-└──────────────────────────────┼──────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                 STAGE 3: READING (LongMemEval Framework)                    │
-│                                                                             │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                   CHAIN-OF-NOTE READER                               │   │
-│  │                                                                      │   │
-│  │  Retrieved evidence → LLM applies Chain-of-Note:                    │   │
-│  │    1. For each retrieved item, generate a relevance note            │   │
-│  │    2. Synthesize notes into coherent reasoning                       │   │
-│  │    3. Handle contradictions (knowledge updates)                      │   │
-│  │    4. Abstain if evidence insufficient                               │   │
-│  │                                                                      │   │
-│  │  +10% accuracy improvement (per LongMemEval paper)                  │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-│                              │                                              │
-│  ┌───────────────────────────▼──────────────────────────────────────────┐   │
-│  │                  PROFILING ALGORITHM                                 │   │
-│  │                  (Porthon Scoring Engine)                            │   │
-│  │                                                                      │   │
-│  │  Consumes reader output + KG state to compute:                      │   │
-│  │                                                                      │   │
-│  │  ┌────────────────────────────────────────────────────────────┐     │   │
-│  │  │  DIMENSION SCORES (per PROFILING_MATH.md)                  │     │   │
-│  │  │                                                            │     │   │
-│  │  │  Financial Literacy:  f(transactions, debt, savings_rate)  │     │   │
-│  │  │  Creative Output:     f(portfolio, clients, skill_growth)  │     │   │
-│  │  │  Social Bond:         f(events, posts, networking)         │     │   │
-│  │  │  Self Awareness:      f(lifelog_reflections, AI_coaching)  │     │   │
-│  │  │  Career Momentum:     f(income_trend, client_growth)       │     │   │
-│  │  │  Well-being:          f(lifelog_mood, social_activity)     │     │   │
-│  │  └────────────────────────────────────────────────────────────┘     │   │
-│  │                                                                      │   │
-│  │  ┌────────────────────────────────────────────────────────────┐     │   │
-│  │  │  PATTERN DETECTION                                         │     │   │
-│  │  │                                                            │     │   │
-│  │  │  Single-domain:  "Spending up 14% over 6 months"          │     │   │
-│  │  │  Cross-domain:   "After heavy work weeks, spending         │     │   │
-│  │  │                   triples — burnout cascade"               │     │   │
-│  │  │                                                            │     │   │
-│  │  │  Uses KG edge traversal to find cross-source correlations │     │   │
-│  │  │  Uses temporal windowing on vector DB for trend detection  │     │   │
-│  │  └────────────────────────────────────────────────────────────┘     │   │
-│  │                                                                      │   │
-│  │  ┌────────────────────────────────────────────────────────────┐     │   │
-│  │  │  SCENARIO PROJECTION                                       │     │   │
-│  │  │                                                            │     │   │
-│  │  │  "Comfortable Drift" → extrapolate current trends          │     │   │
-│  │  │  "Rebalance"         → apply evidence-based interventions  │     │   │
-│  │  │  "Transformation"    → aggressive positive change path     │     │   │
-│  │  │                                                            │     │   │
-│  │  │  Each scenario generates weekly action items               │     │   │
-│  │  └────────────────────────────────────────────────────────────┘     │   │
-│  └───────────────────────────┬──────────────────────────────────────────┘   │
-└──────────────────────────────┼──────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        OUTPUT LAYER                                         │
-│                                                                             │
-│  ┌───────────────────────┐   ┌────────────────────────────────────────┐    │
-│  │  QUESTLINE UI (TSX)   │   │  PROFILER COMPARISON (HTML)            │    │
-│  │  remixed-f4b73bdc.tsx │   │  theo_vs_elon_profile.html             │    │
-│  │                       │   │                                        │    │
-│  │  • Onboarding flow    │   │  • Radar chart (all dimensions)        │    │
-│  │    (consent → loading │   │  • Score comparison bars               │    │
-│  │     → patterns →      │   │  • Quadrant map (introvert/extro ×    │    │
-│  │     scenarios)        │   │    reactive/strategic)                  │    │
-│  │  • Dashboard          │   │  • Delta analysis cards                │    │
-│  │    (stats, actions,   │   │  • Persona insight cards               │    │
-│  │     chat agent)       │   │                                        │    │
-│  │  • Weekly actions     │   │  Populated from profiling scores       │    │
-│  │  • Pattern cards      │   │  + KG relationship data                │    │
-│  │  • Scenario explorer  │   │                                        │    │
-│  └───────────────────────┘   └────────────────────────────────────────┘    │
+│  │  This means: any AI agent can query Theo's profile natively.        │   │
+│  │  The profile becomes an MCP-accessible knowledge source.            │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                     EVALUATION LAYER (LongMemEval)                          │
+│              EVALUATION (LongMemEval Benchmark)                              │
+│                                                                             │
+│  1. CONVERT porthon/data → LongMemEval timestamped sessions                │
+│  2. GENERATE 500 questions across 5 ability types                          │
+│  3. FEED sessions sequentially through NLWeb's /ask endpoint               │
+│     (memory detection stores facts; subsequent queries retrieve them)       │
+│  4. EVALUATE with evaluate_qa.py (GPT-4o judge)                           │
+│  5. MEASURE:                                                                │
+│     • QA Accuracy per ability (IE, MR, KU, TR, ABS)                       │
+│     • Retrieval Recall@K and NDCG@K                                        │
+│     • Profiling accuracy vs master_profile.json ground truth               │
+│     • Response latency (NLWeb fast-track vs full pipeline)                 │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  HOW TO ADMINISTER                                                   │   │
+│  │  EVALUATION QUESTIONS (examples from Theo's data)                    │   │
 │  │                                                                      │   │
-│  │  1. CONVERT porthon/data → LongMemEval session format:              │   │
-│  │     • Each JSONL entry becomes a timestamped session                 │   │
-│  │     • conversations.jsonl → user-assistant chat sessions             │   │
-│  │     • Other sources → simulated sessions where user mentions         │   │
-│  │       facts from emails/lifelog/etc incidentally                     │   │
-│  │                                                                      │   │
-│  │  2. GENERATE evaluation questions across 5 ability types:           │   │
-│  │     ┌──────────────────────┬──────────────────────────────────────┐ │   │
-│  │     │ Ability              │ Example from Theo's data             │ │   │
-│  │     ├──────────────────────┼──────────────────────────────────────┤ │   │
-│  │     │ Info Extraction      │ "How much did Theo charge for the    │ │   │
-│  │     │                      │  brand identity project?"            │ │   │
-│  │     │ Multi-Session        │ "Compare Theo's pricing confidence   │ │   │
-│  │     │ Reasoning            │  in Jan vs April"                    │ │   │
-│  │     │ Knowledge Updates    │ "What is Theo's current hourly rate?"│ │   │
-│  │     │                      │  (changed over time)                 │ │   │
-│  │     │ Temporal Reasoning   │ "What skill was Theo learning in     │ │   │
-│  │     │                      │  May 2024?"                          │ │   │
-│  │     │ Abstention           │ "What car does Theo drive?"          │ │   │
-│  │     │                      │  (never mentioned → "I don't know")  │ │   │
-│  │     └──────────────────────┴──────────────────────────────────────┘ │   │
-│  │                                                                      │   │
-│  │  3. RUN our system through the sessions sequentially                │   │
-│  │     (online memory processing, not offline batch)                    │   │
-│  │                                                                      │   │
-│  │  4. EVALUATE using LongMemEval's GPT-4o judge:                      │   │
-│  │     python3 evaluate_qa.py gpt-4o hypothesis.jsonl oracle.json      │   │
-│  │                                                                      │   │
-│  │  5. MEASURE:                                                         │   │
-│  │     • QA Accuracy (per ability type)                                │   │
-│  │     • Memory Recall@K and NDCG@K                                    │   │
-│  │     • Profiling accuracy (do scores match ground truth from         │   │
-│  │       master_profile.json + summaries?)                             │   │
+│  │  IE:  "How much did Theo charge for the brand identity project?"    │   │
+│  │  MR:  "Compare Theo's pricing confidence in Jan vs April"           │   │
+│  │  KU:  "What is Theo's current hourly rate?" (changed over time)     │   │
+│  │  TR:  "What skill was Theo learning in May 2024?"                   │   │
+│  │  ABS: "What car does Theo drive?" → "I don't know"                  │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Component Details
+## How NLWeb Fits: Layer by Layer
 
-### 1. Data Ingestion Layer
+### 1. NLWeb as Protocol Layer (NEW)
 
-**Input:** Porthon synthetic dataset for persona "Theo Nakamura" (p05)
+NLWeb provides the **conversational interface protocol** — the `/ask` and `/mcp` endpoints that all clients use. This replaces building a custom API.
 
-| Source | File | Records | Content |
-|--------|------|---------|---------|
-| AI Conversations | `conversations.jsonl` | ~50 | User-AI coaching chats |
-| Calendar | `calendar.jsonl` | ~50 | Events, meetings, shifts |
-| Emails | `emails.jsonl` | ~50 | Client emails, bills, invoices |
-| Lifelog | `lifelog.jsonl` | ~150 | Activities, reflections |
-| Social Posts | `social_posts.jsonl` | ~50 | Instagram, Twitter posts |
-| Transactions | `transactions.jsonl` | ~120 | Spending, revenue, subs |
-| Files Index | `files_index.jsonl` | ~20 | Document references |
-| Persona Profile | `persona_profile.json` | 1 | Ground truth profile |
-| Consent | `consent.json` | 1 | Usage permissions |
+| NLWeb Component | Our Usage |
+|----------------|-----------|
+| `baseHandler.py` | Orchestrates query → tool selection → retrieval → response |
+| `query_analysis/` | Decontextualizes multi-turn queries, detects memory requests |
+| `retriever.py` | Connects to our Qdrant vector DB (NLWeb supports Qdrant natively) |
+| `ranking.py` | LLM-based scoring of retrieved items |
+| `post_ranking.py` | Summarize/generate modes for Chain-of-Note reading |
+| `router.py` + `tools.xml` | Routes queries to our 7 custom profiling tools |
+| `memory.py` | Detects facts to remember across sessions |
+| `fastTrack.py` | Parallel optimistic path for simple profile lookups |
+| `prompts.py` | XML-based prompts, specializable per data type |
+| `/mcp` endpoint | Makes profile queryable by any MCP agent |
 
-**Unified Schema:** All sources already share a common schema:
+### 2. Schema.org as Data Format (NEW)
+
+NLWeb's core insight: **Schema.org is the semantic layer**. All our data must be stored as Schema.org objects in the vector DB.
+
 ```json
+// A memory entry in the vector DB
 {
-  "id": "string",
-  "ts": "ISO-8601",
-  "source": "calendar|ai_chat|email|lifelog|social|bank|files",
-  "type": "event|chat_turn|sent|inbox|activity|reflection|post|transaction|doc",
-  "text": "string",
-  "tags": ["string"],
-  "refs": ["string"],
-  "pii_level": "synthetic"
+  "@type": "DataFeedItem",
+  "@id": "c_0001",
+  "dateCreated": "2024-01-18T23:00:00-05:00",
+  "name": "Pricing anxiety discussion",
+  "description": "USER: I undercharged a client again...",
+  "keywords": ["freelance", "pricing", "confidence"],
+  "sourceOrganization": "ai_chat",
+  "additionalProperty": [
+    {"@type": "PropertyValue", "name": "extracted_facts",
+     "value": "Theo charges $600 for brand identity; has pricing anxiety"},
+    {"@type": "PropertyValue", "name": "pii_level", "value": "synthetic"}
+  ]
 }
 ```
 
-### 2. Indexing Stage (per LongMemEval §4)
-
-The paper's key insight: **memory = key-value datastore** `[(k₁,v₁), (k₂,v₂), ...]`
-
-**Value Granularity:** Round-level (not session-level). Each JSONL entry = one round.
-
-**Key Expansion:** LLM extracts user facts from each entry and appends to the search key:
-- Original text: `"$9.99 - Figma - subscriptions"`
-- Expanded key: `"$9.99 - Figma - subscriptions | Theo uses Figma | Theo pays for design software | monthly subscription expense"`
-
-**Storage Architecture:**
-
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Vector DB | Qdrant / ChromaDB | Dense + sparse hybrid retrieval |
-| Knowledge Graph | Neo4j / NetworkX | Entity relationships, cross-source links |
-| Temporal Index | Sorted by timestamp | Time-range filtering |
-
-**KG Schema:**
-```
-(:Person {name, age, location})
-(:Skill {name, level, learning_since})
-(:Goal {description, progress})
-(:Financial {type, amount, date})
-(:Activity {type, frequency})
-(:Emotion {state, trigger, date})
-
--[:HAS_SKILL]->
--[:PURSUING]->
--[:EARNS_FROM]->
--[:STRUGGLES_WITH]->
--[:LIVES_IN]->
--[:MENTIONED_AT {ts}]->
--[:UPDATED_TO {old_value, new_value, ts}]->  // knowledge updates
--[:CO_OCCURS_WITH {correlation}]->           // cross-domain patterns
+```json
+// A profiling dimension score
+{
+  "@type": "Rating",
+  "name": "Financial Literacy",
+  "ratingValue": 6,
+  "bestRating": 10,
+  "worstRating": 0,
+  "ratingExplanation": "Savings rate 18% — up from 12% six months ago",
+  "additionalProperty": [
+    {"@type": "PropertyValue", "name": "trend", "value": "up"},
+    {"@type": "PropertyValue", "name": "previous_value", "value": 5}
+  ]
+}
 ```
 
-### 3. Retrieval Stage (per LongMemEval §5.3-5.4)
+### 3. Custom NLWeb Tools (NEW)
 
-**Hybrid retrieval pipeline:**
-1. **Dense search** (sentence-transformer embeddings) → semantic similarity
-2. **Sparse search** (BM25) → keyword matching
-3. **KG traversal** → structural relationships (e.g., "all financial facts" via edges)
-4. **Temporal filter** → LLM infers time range from query, prunes results
-5. **Reciprocal Rank Fusion** → merge rankings into final top-K
+We register 7 tools in `tools.xml` that the NLWeb router selects from based on query intent:
 
-### 4. Reading Stage (per LongMemEval §5.5)
+| Tool | Trigger Queries | Backend |
+|------|----------------|---------|
+| Profile Search | "Who is Theo?" / "Theo's skills" | Vector DB search |
+| Memory Query | "What did he say about..." | Time-aware retrieval + CoN |
+| Pattern Analysis | "What patterns..." / "Why does..." | KG traversal + temporal |
+| Dimension Scoring | "Score his..." / "Show stats" | KG aggregate + profiling math |
+| Scenario Projection | "What if..." / "Best case" | Score extrapolation |
+| Comparison | "Compare Theo vs..." | Multi-profile ensemble |
+| Action Recommender | "What should he do..." | Scores + patterns → actions |
 
-**Chain-of-Note reading strategy:**
-1. For each retrieved memory item, LLM generates a relevance note
-2. Notes are synthesized with structured JSON format
-3. Contradictions resolved by preferring most recent (knowledge updates)
-4. Abstention when evidence is insufficient
+### 4. Memory Detection → Long-Term Storage (NEW)
 
-### 5. Profiling Algorithm
+NLWeb's `DetectMemoryRequestPrompt` becomes our **online memory indexing hook**:
 
-Consumes the reader's output + KG state to compute dimension scores, detect patterns, and project scenarios. This is the **Porthon scoring engine** defined in `PROFILING_MATH.md`.
+```xml
+<Prompt ref="DetectMemoryRequestPrompt">
+  <promptString>
+    Analyze the following interaction with the user.
+    Does this interaction reveal personal information, preferences,
+    life events, financial details, goals, or emotional states
+    about the user that should be remembered for future interactions?
+    Extract ALL implicit facts, not just explicit memory requests.
+    The interaction is: {request.rawQuery}.
+  </promptString>
+  <returnStruc>
+    {
+      "facts_detected": ["fact1", "fact2", ...],
+      "should_update_kg": "True or False",
+      "kg_updates": [{"entity": "...", "relation": "...", "value": "..."}]
+    }
+  </returnStruc>
+</Prompt>
+```
 
-**Output formats:**
-- **Questline UI** (`remixed-f4b73bdc.tsx`): Interactive onboarding → dashboard with weekly actions
-- **Profiler Comparison** (`theo_vs_elon_profile.html`): Radar charts, score bars, persona insights
+This is the **key integration point**: every query through NLWeb automatically triggers memory extraction → indexing into both Vector DB and KG.
 
-### 6. Evaluation via LongMemEval
+### 5. NLWeb's Fast Track = Our Profiling Cache
 
-**Adaptation strategy:**
-1. Convert porthon multi-source data into LongMemEval's session format
-2. Conversations.jsonl maps directly to user-assistant sessions
-3. Other sources are wrapped as sessions where the user incidentally mentions facts
-4. Generate 500 questions across the 5 ability types using Theo's actual data
-5. Compile histories with configurable length (S: ~115k tokens, M: ~500 sessions)
-6. Run system online (sequential session processing)
-7. Evaluate with `evaluate_qa.py` using GPT-4o as judge
-8. Report QA accuracy + Recall@K + NDCG@K per ability type
+For common queries like "Show Theo's stats" or "What are his scores?", the fast-track path serves pre-computed profiling results from cache, bypassing the full retrieval pipeline. Only novel or temporal queries go through the full 3-stage memory pipeline.
 
 ---
 
-## Data Flow Summary
+## Data Flow (Revised)
 
 ```
 porthon/data/*.jsonl
        │
        ▼
-  [Normalize] ── already unified schema
+[Schema.org Transform] ── convert to DataFeedItem objects
        │
        ▼
-  [Index] ── session decompose → fact-augment keys → timestamp-associate
+[LongMemEval Indexing] ── decompose → fact-augment → timestamp
        │                │
        ▼                ▼
-  [Vector DB]    [Knowledge Graph]
+[Qdrant Vector DB]  [Neo4j Knowledge Graph]
        │                │
        ▼                ▼
-  [Retrieve] ── hybrid search + KG traversal + temporal filter
+[NLWeb retriever.py] ← connects to both stores
        │
        ▼
-  [Read] ── Chain-of-Note synthesis
-       │
-       ├──▶ [Profile] ── dimension scores + patterns + scenarios
-       │         │
-       │         ├──▶ Questline UI (TSX)
-       │         └──▶ Profiler Comparison (HTML)
-       │
-       └──▶ [Evaluate] ── LongMemEval benchmark
-                  │
-                  └──▶ QA Accuracy, Recall@K, NDCG@K
+[NLWeb Handler Pipeline]
+  │  decontextualize → tool select → retrieve → rank → respond
+  │
+  ├─ /ask  → JSON (Schema.org) → Questline UI / Profiler HTML
+  ├─ /mcp  → MCP protocol → Claude Desktop / Copilot / agents
+  │
+  └─ Memory Detection → new facts indexed back into stores
 ```
+
+---
+
+## Implementation Plan
+
+### Phase 1: NLWeb + Qdrant Setup
+1. Fork NLWeb, configure Qdrant as vector store
+2. Ingest porthon/data as Schema.org DataFeedItem objects
+3. Run fact-augmented key expansion during ingestion
+4. Verify basic `/ask` queries work against Theo's data
+
+### Phase 2: Custom Tools
+5. Implement 7 profiling tools in `tools.xml` + Python handlers
+6. Connect profiling math (PROFILING_MATH.md) to Dimension Scoring tool
+7. Implement KG (Neo4j) population from extracted facts
+8. Add KG traversal to Pattern Analysis tool
+
+### Phase 3: Memory Pipeline
+9. Customize `DetectMemoryRequestPrompt` for implicit fact extraction
+10. Implement knowledge update resolution (UPDATED_TO edges in KG)
+11. Add temporal query expansion per LongMemEval paper
+12. Test multi-session memory across sequential NLWeb calls
+
+### Phase 4: Output Integration
+13. Wire Questline UI to consume NLWeb `/ask` responses
+14. Wire Profiler Comparison HTML to use Comparison tool
+15. Expose `/mcp` endpoint for agent access
+
+### Phase 5: LongMemEval Evaluation
+16. Convert porthon data → LongMemEval session format
+17. Generate evaluation questions for Theo's data
+18. Run benchmark through NLWeb pipeline
+19. Report accuracy, recall, latency metrics
 
 ---
 
 ## Why This Architecture
 
-| Design Choice | Rationale (from LongMemEval paper) |
-|---------------|-----------------------------------|
-| Round-level granularity | Session-level loses detail; fact-level loses context. Round is optimal. |
-| Fact-augmented keys | +9.4% recall improvement. Critical for indirect mentions. |
-| Time-aware indexing | Temporal reasoning is weakest ability. Explicit timestamps fix this. |
-| Hybrid retrieval | Dense alone misses keywords; sparse alone misses semantics. |
-| KG + Vector DB dual store | KG captures structured relationships (goals, skills, finances). Vector DB captures unstructured semantic similarity. Together they cover profiling needs. |
-| Chain-of-Note reading | +10% accuracy. Essential for multi-source evidence synthesis. |
-| LongMemEval evaluation | ICLR 2025 benchmark. Tests all 5 memory abilities our system needs. |
+| Decision | Rationale |
+|----------|-----------|
+| **NLWeb as interface** | Don't build a custom API — get REST + MCP + streaming + Schema.org for free. Microsoft-backed, MIT licensed. |
+| **Schema.org data format** | NLWeb's LLMs understand Schema.org natively. Our data becomes interoperable with 100M+ websites. |
+| **NLWeb tools = profiling tools** | The tool router pattern is exactly what we need — different query intents map to different profiling capabilities. |
+| **Memory detection hook** | NLWeb already has the pre-retrieval memory prompt. We extend it for implicit fact extraction (LongMemEval's key insight). |
+| **Fast-track caching** | Profile scores don't change every query. NLWeb's fast-track path avoids redundant retrieval for common lookups. |
+| **MCP native** | Any AI agent can query the profile. The profile becomes a tool, not just a dashboard. |
+| **Qdrant** | NLWeb supports it natively. No adapter needed. |
+| **Dual store preserved** | Vector DB for semantic retrieval (NLWeb native), KG for structural profiling (custom tool). Both needed. |
