@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Profiler — Theo vs Elon</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0c0e14;--s1:#141720;--s2:#1b1f2b;--s3:#222840;
+  --acc:#7c6af7;--gold:#f5c842;--green:#38e07b;--red:#ff5c72;--blue:#3ab7ff;
+  --txt:#dde3ef;--muted:#6b7a99;--border:#252d3d;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;}
+
+/* ── Sticky header ── */
+#sticky{
+  position:sticky;top:0;z-index:100;
+  background:rgba(12,14,20,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:.6rem 1.2rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+#sticky .brand{font-weight:700;font-size:.9rem;white-space:nowrap;margin-right:.4rem;}
+#sticky .brand span{color:var(--acc);}
+.score-pill{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:8px;padding:.3rem .7rem;min-width:72px;cursor:default;
+  transition:border-color .2s;
+}
+.score-pill:hover{border-color:var(--acc);}
+.score-pill .sv{font-size:1.05rem;font-weight:800;line-height:1.1;}
+.score-pill .sl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;text-align:center;}
+.score-pill.theo .sv{color:var(--acc);}
+.score-pill.elon .sv{color:var(--gold);}
+#sticky .sep{width:1px;height:28px;background:var(--border);}
+#sticky .meta{margin-left:auto;font-size:.68rem;color:var(--muted);white-space:nowrap;}
+.arch-badge{
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:.25rem .65rem;border-radius:20px;white-space:nowrap;
+}
+.arch-badge.theo{background:rgba(124,106,247,.15);color:var(--acc);border:1px solid rgba(124,106,247,.3);}
+.arch-badge.elon{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.25);}
+
+/* ── Controls bar ── */
+#controls{
+  display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+  padding:.8rem 1.2rem;border-bottom:1px solid var(--border);
+  background:var(--s1);
+}
+.ctrl-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.btn-group{display:flex;gap:.3rem;}
+.btn{
+  font-size:.75rem;padding:.28rem .75rem;border-radius:6px;cursor:pointer;
+  border:1px solid var(--border);background:var(--s2);color:var(--muted);
+  transition:all .15s;
+}
+.btn:hover{border-color:var(--acc);color:var(--txt);}
+.btn.active-theo{background:rgba(124,106,247,.15);border-color:var(--acc);color:var(--acc);}
+.btn.active-elon{background:rgba(245,200,66,.1);border-color:var(--gold);color:var(--gold);}
+.btn.active-both{background:rgba(58,183,255,.1);border-color:var(--blue);color:var(--blue);}
+.btn.active-persona{background:rgba(56,224,123,.12);border-color:var(--green);color:var(--green);}
+
+/* ── Main layout ── */
+.main{display:grid;grid-template-columns:420px 1fr;gap:1.2rem;padding:1.2rem;max-width:1300px;margin:0 auto;}
+@media(max-width:900px){.main{grid-template-columns:1fr;}}
+
+/* ── Left panel ── */
+.left{display:flex;flex-direction:column;gap:1rem;}
+
+.chart-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.1rem;
+}
+.chart-card h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.8rem;}
+.radar-wrap{position:relative;height:290px;}
+
+/* ── Quadrant map ── */
+.quad-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.1rem;
+}
+.quad-card h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.7rem;}
+.quad-map{position:relative;height:200px;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.q-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;}
+.q-cell{display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#2a3348;}
+.q-hline{position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border);}
+.q-vline{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);}
+.q-dot{
+  position:absolute;width:14px;height:14px;border-radius:50%;
+  transform:translate(-50%,-50%);font-size:.6rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .4s ease;cursor:default;
+}
+.q-dot.theo{background:var(--acc);box-shadow:0 0 8px rgba(124,106,247,.6);}
+.q-dot.elon{background:var(--gold);box-shadow:0 0 8px rgba(245,200,66,.6);}
+.quad-legend{display:flex;gap:1.5rem;margin-top:.6rem;font-size:.72rem;color:var(--muted);}
+.quad-legend span{display:flex;align-items:center;gap:.35rem;}
+.ql-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.ql-dot.theo{background:var(--acc);}
+.ql-dot.elon{background:var(--gold);}
+
+/* ── Right panel ── */
+.right{display:flex;flex-direction:column;gap:1rem;}
+
+/* ── Score rows ── */
+.score-section{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.1rem;
+}
+.score-section h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.8rem;}
+.score-row{margin-bottom:.8rem;}
+.score-row:last-child{margin-bottom:0;}
+.sr-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.35rem;}
+.sr-label{font-size:.82rem;font-weight:600;}
+.sr-nums{display:flex;gap:.6rem;font-size:.78rem;font-weight:700;}
+.sr-nums .n-theo{color:var(--acc);}
+.sr-nums .n-elon{color:var(--gold);}
+.sr-insight{font-size:.73rem;color:var(--muted);margin-bottom:.4rem;line-height:1.5;}
+.bars{display:flex;flex-direction:column;gap:.25rem;}
+.bar-line{display:flex;align-items:center;gap:.5rem;}
+.bar-who{font-size:.65rem;color:var(--muted);width:34px;flex-shrink:0;}
+.bar-track{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.bar-fill.theo{background:linear-gradient(90deg,#7c6af7,#9d8fff);}
+.bar-fill.elon{background:linear-gradient(90deg,#c9a800,#f5c842);}
+
+/* ── Delta section ── */
+.delta-section{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.1rem;
+}
+.delta-section h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.8rem;}
+.delta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;}
+@media(max-width:600px){.delta-grid{grid-template-columns:1fr 1fr;}}
+.delta-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:.8rem;}
+.delta-card .dc-who{font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.2rem;}
+.delta-card .dc-val{font-size:1.6rem;font-weight:800;line-height:1;margin-bottom:.25rem;}
+.delta-card .dc-val.low{color:var(--green);}
+.delta-card .dc-val.mid{color:var(--gold);}
+.delta-card .dc-val.high{color:var(--red);}
+.delta-card .dc-label{font-size:.72rem;font-weight:600;margin-bottom:.2rem;}
+.delta-card .dc-desc{font-size:.69rem;color:var(--muted);line-height:1.45;}
+
+/* ── Persona insight cards ── */
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+@media(max-width:600px){.insight-grid{grid-template-columns:1fr;}}
+.insight-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;}
+.insight-card .ic-icon{font-size:1.1rem;margin-bottom:.3rem;}
+.insight-card .ic-title{font-size:.8rem;font-weight:700;margin-bottom:.3rem;}
+.insight-card .ic-body{font-size:.72rem;color:var(--muted);line-height:1.55;}
+.insight-card .ic-stat{
+  display:inline-block;font-size:.7rem;font-weight:700;
+  padding:.1rem .45rem;border-radius:4px;margin-top:.35rem;
+}
+.ic-stat.theo{background:rgba(124,106,247,.15);color:var(--acc);}
+.ic-stat.elon{background:rgba(245,200,66,.1);color:var(--gold);}
+.ic-stat.neutral{background:rgba(58,183,255,.1);color:var(--blue);}
+</style>
+</head>
+<body>
+
+<!-- ── STICKY HEADER ── -->
+<div id="sticky">
+  <div class="brand">Porthon <span>Profiler</span></div>
+  <div id="sticky-scores-theo" style="display:flex;gap:.4rem;flex-wrap:wrap;"></div>
+  <div class="sep"></div>
+  <div id="sticky-scores-elon" style="display:flex;gap:.4rem;flex-wrap:wrap;"></div>
+  <div class="meta" id="meta-ts"></div>
+</div>
+
+<!-- ── CONTROLS ── -->
+<div id="controls">
+  <span class="ctrl-label">View</span>
+  <div class="btn-group">
+    <button class="btn active-both" onclick="setView('both')" id="btn-both">Both</button>
+    <button class="btn" onclick="setView('theo')" id="btn-theo">Theo only</button>
+    <button class="btn" onclick="setView('elon')" id="btn-elon">Elon only</button>
+  </div>
+  <div class="sep" style="width:1px;height:22px;background:var(--border);"></div>
+  <span class="ctrl-label">Persona</span>
+  <div class="btn-group" id="persona-btns"></div>
+</div>
+
+<!-- ── MAIN GRID ── -->
+<div class="main">
+
+  <!-- LEFT -->
+  <div class="left">
+
+    <div class="chart-card">
+      <h3>Radar — All Dimensions</h3>
+      <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+
+    <div class="quad-card">
+      <h3>Execution × Growth Quadrant</h3>
+      <div class="quad-map" id="quadMap">
+        <div class="q-bg">
+          <div class="q-cell">Emerging Talent</div>
+          <div class="q-cell">Compounding Builder</div>
+          <div class="q-cell">At Risk</div>
+          <div class="q-cell">Reliable Operator</div>
+        </div>
+        <div class="q-hline"></div>
+        <div class="q-vline"></div>
+        <div class="q-dot theo" id="qdot-theo" title="Theo">T</div>
+        <div class="q-dot elon" id="qdot-elon" title="Elon">E</div>
+      </div>
+      <div class="quad-legend">
+        <span><span class="ql-dot theo"></span>Theo: <strong id="arch-theo-label" style="color:var(--acc)">—</strong></span>
+        <span><span class="ql-dot elon"></span>Elon: <strong id="arch-elon-label" style="color:var(--gold)">—</strong></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+
+    <!-- Score bars -->
+    <div class="score-section">
+      <h3>Dimension Scores</h3>
+      <div id="score-rows"></div>
+    </div>
+
+    <!-- Deltas -->
+    <div class="delta-section">
+      <h3>Cross-Source Deltas</h3>
+      <div class="delta-grid" id="delta-grid"></div>
+    </div>
+
+    <!-- Key insights -->
+    <div class="score-section">
+      <h3>Key Insights</h3>
+      <div class="insight-grid" id="insight-grid"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// DATA — mirrors profiler.py output
+// Update these numbers as real data changes
+// ════════════════════════════════════════════════════════
+
+const PROFILES = {
+  theo: {
+    name: "Theo Nakamura",
+    age: 23, location: "Austin TX",
+    role: "Freelance Designer + Barista",
+    archetype: "reliable_operator",
+    arch_label: "Reliable Operator",
+    scores: {
+      freelancer:   { execution:.928, growth:.588, self_awareness:.744, financial_stress:.382, adhd_indicator:.566 },
+      vc_investor:  { execution:.928, growth:.588, self_awareness:.744, business_stress:.197, network_value:.643 },
+      founder:      { execution:.928, growth:.588, self_awareness:.744, innovation_velocity:.725, resilience:.648 },
+      executive:    { execution:.928, growth:.588, self_awareness:.744, leadership_bandwidth:.740, strategic_clarity:.612 },
+      creator:      { execution:.928, growth:.588, self_awareness:.744, audience_growth:.710, creative_output:.580 },
+    },
+    deltas: {
+      social_vs_ai: { val:.20, label:"Social vs AI Dissonance", desc:"Posts ahead of private reality. Healthy aspirational gap." },
+      income_gap:   { val:.425, label:"Income Expectation Gap", desc:"$38k stated vs $21.8k actual freelance. Barista income masking stagnation." },
+      email_ratio:  { val:1.22, label:"Email Send/Receive Ratio", desc:"Sends more than receives — proactive, not reactive." },
+    }
+  },
+  elon: {
+    name: "Elon Musk",
+    age: 53, location: "Austin TX / SpaceX Boca Chica",
+    role: "CEO: Tesla, SpaceX, xAI, X",
+    archetype: "compounding_builder",
+    arch_label: "Compounding Builder",
+    scores: {
+      freelancer:   { execution:.970, growth:.960, self_awareness:.520, financial_stress:.050, adhd_indicator:.820 },
+      vc_investor:  { execution:.970, growth:.960, self_awareness:.520, business_stress:.650, network_value:.980 },
+      founder:      { execution:.970, growth:.960, self_awareness:.520, innovation_velocity:.950, resilience:.920 },
+      executive:    { execution:.970, growth:.960, self_awareness:.520, leadership_bandwidth:.850, strategic_clarity:.600 },
+      creator:      { execution:.970, growth:.960, self_awareness:.520, audience_growth:.990, creative_output:.870 },
+    },
+    deltas: {
+      social_vs_ai: { val:.65, label:"Public vs Private Persona Gap", desc:"X persona is a performance. Private behavior is documented as more erratic." },
+      income_gap:   { val:.70, label:"Timeline Promise Gap", desc:"~70% of major product timelines missed. FSD, Cybertruck, Mars 2024." },
+      email_ratio:  { val:.08, label:"Exec Communication Ratio", desc:"Receives far more than sends — surrounded by executors filtering up." },
+    }
+  }
+};
+
+const DIMENSIONS = {
+  freelancer:  ["execution","growth","self_awareness","financial_stress","adhd_indicator"],
+  vc_investor: ["execution","growth","self_awareness","business_stress","network_value"],
+  founder:     ["execution","growth","self_awareness","innovation_velocity","resilience"],
+  executive:   ["execution","growth","self_awareness","leadership_bandwidth","strategic_clarity"],
+  creator:     ["execution","growth","self_awareness","audience_growth","creative_output"],
+};
+
+const DIM_LABELS = {
+  execution:"Execution", growth:"Growth", self_awareness:"Self-Awareness",
+  financial_stress:"Financial Stress", adhd_indicator:"ADHD Indicator",
+  business_stress:"Business Stress", network_value:"Network Value",
+  innovation_velocity:"Innovation Velocity", resilience:"Resilience",
+  leadership_bandwidth:"Leadership Bandwidth", strategic_clarity:"Strategic Clarity",
+  audience_growth:"Audience Growth", creative_output:"Creative Output",
+};
+
+const DIM_INSIGHTS = {
+  execution: {
+    icon:"⚡", title:"Execution",
+    theo:"0.928 — shows up to every shift, 13% invoice win rate held steady 20mo. Execution ability is not the constraint.",
+    elon:"~0.970 — factory-floor discipline replicated across 5 companies. Execution is weaponized into institutional pressure.",
+    stat_theo:"Theo 13% win rate", stat_elon:"Elon ~100hr/wk",
+  },
+  growth: {
+    icon:"📈", title:"Growth",
+    theo:"0.588 — $2.2k invested in learning (School of Motion, Figma). Revenue flat at $1,820/mo for 20 months. Skills aren't converting.",
+    elon:"~0.960 — each company feeds the next. SpaceX → Tesla energy. Tesla manufacturing → SpaceX. Growth is the OS, not a metric.",
+    stat_theo:"$1,820/mo flat", stat_elon:"5 companies compounding",
+  },
+  self_awareness: {
+    icon:"🪞", title:"Self-Awareness",
+    theo:"0.744 — outscores Elon. Candidly tells AI about undercharging, ADHD, anxiety. Knows his blockers with precision.",
+    elon:"~0.520 — 70% timeline miss rate is a measurable gap between claimed and actual. Public certainty masks private brittleness.",
+    stat_theo:"Theo scores higher", stat_elon:"70% timelines missed",
+  },
+  financial_stress: {
+    icon:"💸", title:"Financial Stress",
+    theo:"0.382 — $6k debt, 28.2% spend/revenue ratio. Stress is real but manageable. 28 lifelog entries tagged 'finances'.",
+    elon:"~0.050 — ~$400B insulation. Twitter acquisition at $44B + $13B debt briefly spiked stress; otherwise near zero.",
+    stat_theo:"$6k debt", stat_elon:"~$400B net worth",
+  },
+  adhd_indicator: {
+    icon:"🧠", title:"ADHD Indicator",
+    theo:"0.566 — self-reported, 15 distinct lifelog themes, schedule variance. Solo operation means ADHD blocks rather than accelerates.",
+    elon:"~0.820 — extreme context-switching, impulsive $44B acquisition, erratic sleep. ADHD absorbed by organizational infrastructure.",
+    stat_theo:"Solo → ADHD blocks", stat_elon:"Org absorbs ADHD",
+  },
+  business_stress: {
+    icon:"📊", title:"Business Stress",
+    theo:"0.197 — calendar/email density too low to register portfolio pressure. Not relevant as a freelancer.",
+    elon:"~0.650 — LP pressure absent, but SpaceX regulatory battles, Tesla margin compression, and X monetization pressure all register.",
+    stat_theo:"N/A (freelancer)", stat_elon:"Regulatory + margin pressure",
+  },
+  network_value: {
+    icon:"🕸️", title:"Network Value",
+    theo:"0.643 — sends 44/80 emails proactively, attends Austin Creatives meetups. Network is being built but lacks senior nodes.",
+    elon:"~0.980 — arguably the highest-leverage network on Earth. Access to heads of state, NASA, DoD, top VCs.",
+    stat_theo:"Local Austin network", stat_elon:"Planetary-scale connections",
+  },
+  innovation_velocity: {
+    icon:"🚀", title:"Innovation Velocity",
+    theo:"0.725 — daily AI tool usage (ChatGPT, Midjourney, Runway ML, Firefly). Creative output is high but not yet systematized.",
+    elon:"~0.950 — Starship iterations from explosion to orbit in <2 years. Neuralink implant timeline compressed similarly.",
+    stat_theo:"4 AI tools daily", stat_elon:"Starship: explosion→orbit <2yr",
+  },
+  resilience: {
+    icon:"🔄", title:"Resilience",
+    theo:"0.648 — 29 lifelog 'milestone' tags vs 12 'anxiety' tags. Bounces back, but recovery time costs income.",
+    elon:"~0.920 — SpaceX and Tesla were both weeks from bankruptcy in 2008. Both survived. Documented extreme personal resilience.",
+    stat_theo:"29 milestones vs 12 anxiety tags", stat_elon:"2008: both companies nearly died",
+  },
+  leadership_bandwidth: {
+    icon:"👥", title:"Leadership Bandwidth",
+    theo:"0.740 — calendar and email volume suggest moderate leadership load. Appropriate for solo operator stage.",
+    elon:"~0.850 — runs ~100k+ employees across companies. Leadership bandwidth stretched by simultaneity.",
+    stat_theo:"Solo operator load", stat_elon:"~100k+ employees across 5 cos",
+  },
+  strategic_clarity: {
+    icon:"🎯", title:"Strategic Clarity",
+    theo:"0.612 — 60 work/freelance lifelog entries show focus, but goal fragmentation (5 competing goals) dilutes clarity.",
+    elon:"~0.600 — core vision (multi-planetary) is clear but tactical pivots (buying Twitter) show strategic noise at the margins.",
+    stat_theo:"5 competing goals", stat_elon:"Twitter pivot = strategic noise",
+  },
+  audience_growth: {
+    icon:"📣", title:"Audience Growth",
+    theo:"0.710 — 50 posts, Instagram portfolio + TikTok + Twitter. Presence building but no breakout yet.",
+    elon:"~0.990 — 200M+ X followers. Personal brand is one of the most valuable in the world.",
+    stat_theo:"50 posts, early stage", stat_elon:"200M+ followers",
+  },
+  creative_output: {
+    icon:"🎨", title:"Creative Output",
+    theo:"0.580 — 18 portfolio tags in lifelog, 8 creativity theme entries. Output exists but inconsistency from ADHD caps volume.",
+    elon:"~0.870 — Starship design, Tesla UI/UX, Neuralink — each product is a creative artifact at massive scale.",
+    stat_theo:"18 portfolio entries", stat_elon:"Products as creative artifacts",
+  },
+};
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let currentView    = "both";
+let currentPersona = "freelancer";
+let radarChart     = null;
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+function init(){
+  buildPersonaBtns();
+  setView("both");
+  updateTimestamp();
+}
+
+function updateTimestamp(){
+  const now = new Date();
+  document.getElementById("meta-ts").textContent =
+    "Last recalculated " + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+// ════════════════════════════════════════════════════════
+// PERSONA BUTTONS
+// ════════════════════════════════════════════════════════
+function buildPersonaBtns(){
+  const wrap = document.getElementById("persona-btns");
+  const labels = {freelancer:"Freelancer",vc_investor:"VC Investor",founder:"Founder",executive:"Executive",creator:"Creator"};
+  Object.entries(labels).forEach(([k,v])=>{
+    const b = document.createElement("button");
+    b.className = "btn" + (k === currentPersona ? " active-persona" : "");
+    b.id = "pbtn-"+k; b.textContent = v;
+    b.onclick = () => setPersona(k);
+    wrap.appendChild(b);
+  });
+}
+
+function setPersona(p){
+  currentPersona = p;
+  document.querySelectorAll("#persona-btns .btn").forEach(b=>b.classList.remove("active-persona"));
+  document.getElementById("pbtn-"+p)?.classList.add("active-persona");
+  render();
+}
+
+function setView(v){
+  currentView = v;
+  ["both","theo","elon"].forEach(x=>{
+    const b = document.getElementById("btn-"+x);
+    b.className = "btn" + (x===v ? " active-"+v : "");
+  });
+  render();
+}
+
+// ════════════════════════════════════════════════════════
+// MAIN RENDER
+// ════════════════════════════════════════════════════════
+function render(){
+  const dims   = DIMENSIONS[currentPersona];
+  const tScores = PROFILES.theo.scores[currentPersona];
+  const eScores = PROFILES.elon.scores[currentPersona];
+  const showTheo = currentView !== "elon";
+  const showElon = currentView !== "theo";
+
+  renderStickyScores(dims, tScores, eScores, showTheo, showElon);
+  renderRadar(dims, tScores, eScores, showTheo, showElon);
+  renderQuadrant(tScores, eScores, showTheo, showElon);
+  renderScoreRows(dims, tScores, eScores, showTheo, showElon);
+  renderDeltas(showTheo, showElon);
+  renderInsights(dims, showTheo, showElon);
+}
+
+// ════════════════════════════════════════════════════════
+// STICKY SCORES
+// ════════════════════════════════════════════════════════
+function renderStickyScores(dims, tS, eS, showT, showE){
+  function buildPills(scores, who, label){
+    const wrap = document.getElementById("sticky-scores-"+who);
+    wrap.innerHTML = `<div class="arch-badge ${who}">${PROFILES[who].arch_label}</div>`;
+    dims.forEach(d=>{
+      const pill = document.createElement("div");
+      pill.className = `score-pill ${who}`;
+      pill.innerHTML = `<span class="sv">${scores[d].toFixed(2)}</span><span class="sl">${DIM_LABELS[d]}</span>`;
+      wrap.appendChild(pill);
+    });
+    wrap.style.display = (who==="theo"?showT:showE) ? "flex" : "none";
+    wrap.style.gap = ".3rem";
+    wrap.style.flexWrap = "wrap";
+    wrap.style.alignItems = "center";
+  }
+  buildPills(tS, "theo", "Theo");
+  buildPills(eS, "elon", "Elon");
+  // Show/hide separator
+  document.querySelector("#sticky .sep").style.display = (showT && showE) ? "block" : "none";
+}
+
+// ════════════════════════════════════════════════════════
+// RADAR CHART
+// ════════════════════════════════════════════════════════
+function renderRadar(dims, tS, eS, showT, showE){
+  const labels  = dims.map(d => DIM_LABELS[d]);
+  const tData   = dims.map(d => tS[d]);
+  const eData   = dims.map(d => eS[d]);
+
+  const datasets = [];
+  if(showT) datasets.push({
+    label:"Theo", data:tData,
+    backgroundColor:"rgba(124,106,247,.15)",
+    borderColor:"rgba(124,106,247,.8)",
+    pointBackgroundColor:"rgba(124,106,247,1)",
+    borderWidth:2, pointRadius:4,
+  });
+  if(showE) datasets.push({
+    label:"Elon", data:eData,
+    backgroundColor:"rgba(245,200,66,.10)",
+    borderColor:"rgba(245,200,66,.8)",
+    pointBackgroundColor:"rgba(245,200,66,1)",
+    borderWidth:2, pointRadius:4,
+  });
+
+  const cfg = {
+    type:"radar",
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{ duration:400 },
+      scales:{ r:{
+        min:0, max:1, ticks:{ stepSize:.25, color:"#3a4558", font:{size:9}, backdropColor:"transparent" },
+        grid:{ color:"#1e2433" },
+        angleLines:{ color:"#252d3d" },
+        pointLabels:{ color:"#8090a8", font:{size:10} },
+      }},
+      plugins:{
+        legend:{ labels:{ color:"#8090a8", font:{size:11}, boxWidth:10 } },
+        tooltip:{
+          callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toFixed(3)}` }
+        }
+      }
+    }
+  };
+
+  const canvas = document.getElementById("radarChart");
+  if(radarChart){ radarChart.destroy(); }
+  radarChart = new Chart(canvas, cfg);
+}
+
+// ════════════════════════════════════════════════════════
+// QUADRANT MAP
+// ════════════════════════════════════════════════════════
+function renderQuadrant(tS, eS, showT, showE){
+  const map = document.getElementById("quadMap");
+  const W   = map.offsetWidth  || 340;
+  const H   = map.offsetHeight || 200;
+
+  function pos(exec, growth){
+    return { left: (exec * W) + "px", top: ((1 - growth) * H) + "px" };
+  }
+
+  const tdot = document.getElementById("qdot-theo");
+  const edot = document.getElementById("qdot-elon");
+  const tp = pos(tS.execution, tS.growth);
+  const ep = pos(eS.execution, eS.growth);
+  tdot.style.left = tp.left; tdot.style.top = tp.top; tdot.style.display = showT ? "flex" : "none";
+  edot.style.left = ep.left; edot.style.top = ep.top; edot.style.display = showE ? "flex" : "none";
+
+  document.getElementById("arch-theo-label").textContent = PROFILES.theo.arch_label;
+  document.getElementById("arch-elon-label").textContent = PROFILES.elon.arch_label;
+}
+
+// ════════════════════════════════════════════════════════
+// SCORE ROWS
+// ════════════════════════════════════════════════════════
+function renderScoreRows(dims, tS, eS, showT, showE){
+  const wrap = document.getElementById("score-rows");
+  wrap.innerHTML = "";
+
+  dims.forEach(d=>{
+    const ins = DIM_INSIGHTS[d];
+    const tv  = tS[d], ev = eS[d];
+    const row = document.createElement("div");
+    row.className = "score-row";
+
+    let nums = "";
+    if(showT) nums += `<span class="n-theo">${tv.toFixed(3)}</span>`;
+    if(showT && showE) nums += `<span style="color:var(--muted)">vs</span>`;
+    if(showE) nums += `<span class="n-elon">${ev.toFixed(3)}</span>`;
+
+    let insight = "";
+    if(showT && showE) insight = `<em style="color:var(--acc)">Δ ${Math.abs(tv-ev).toFixed(3)}</em> gap — `;
+    if(showT && !showE) insight += ins.theo;
+    else if(showE && !showT) insight += ins.elon;
+    else insight += (Math.abs(tv-ev) > .2 ? "Large gap. " : "Close. ") + ins.theo.split("—")[0].trim();
+
+    let bars = "";
+    if(showT) bars += `<div class="bar-line"><span class="bar-who">Theo</span><div class="bar-track"><div class="bar-fill theo" style="width:${tv*100}%"></div></div></div>`;
+    if(showE) bars += `<div class="bar-line"><span class="bar-who">Elon</span><div class="bar-track"><div class="bar-fill elon" style="width:${ev*100}%"></div></div></div>`;
+
+    row.innerHTML = `
+      <div class="sr-header">
+        <span class="sr-label">${ins.icon} ${DIM_LABELS[d]}</span>
+        <span class="sr-nums">${nums}</span>
+      </div>
+      <div class="sr-insight">${insight}</div>
+      <div class="bars">${bars}</div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// DELTAS
+// ════════════════════════════════════════════════════════
+function renderDeltas(showT, showE){
+  const wrap = document.getElementById("delta-grid");
+  wrap.innerHTML = "";
+
+  const deltaKeys = Object.keys(PROFILES.theo.deltas);
+  deltaKeys.forEach(k=>{
+    const td = PROFILES.theo.deltas[k];
+    const ed = PROFILES.elon.deltas[k];
+
+    if(showT && showE){
+      // Show both side by side
+      [["theo",td],["elon",ed]].forEach(([who,d])=>{
+        if((who==="theo"&&!showT)||(who==="elon"&&!showE)) return;
+        const pct = d.val <= 1 ? (d.val*100).toFixed(0)+"%" : d.val.toFixed(2)+"x";
+        const cls = d.val<.25?"low":d.val<.5?"mid":"high";
+        const card = document.createElement("div");
+        card.className = "delta-card";
+        card.innerHTML = `
+          <div class="dc-who">${who==="theo"?"Theo":"Elon"}</div>
+          <div class="dc-val ${cls}">${pct}</div>
+          <div class="dc-label">${d.label}</div>
+          <div class="dc-desc">${d.desc}</div>
+        `;
+        wrap.appendChild(card);
+      });
+    } else {
+      const d   = showT ? td : ed;
+      const who = showT ? "theo" : "elon";
+      const pct = d.val <= 1 ? (d.val*100).toFixed(0)+"%" : d.val.toFixed(2)+"x";
+      const cls = d.val<.25?"low":d.val<.5?"mid":"high";
+      const card = document.createElement("div");
+      card.className = "delta-card";
+      card.innerHTML = `
+        <div class="dc-who">${who==="theo"?"Theo":"Elon"}</div>
+        <div class="dc-val ${cls}">${pct}</div>
+        <div class="dc-label">${d.label}</div>
+        <div class="dc-desc">${d.desc}</div>
+      `;
+      wrap.appendChild(card);
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// INSIGHT CARDS
+// ════════════════════════════════════════════════════════
+function renderInsights(dims, showT, showE){
+  const wrap = document.getElementById("insight-grid");
+  wrap.innerHTML = "";
+
+  dims.forEach(d=>{
+    const ins = DIM_INSIGHTS[d];
+    const card = document.createElement("div");
+    card.className = "insight-card";
+
+    let body = "", stats = "";
+    if(showT && showE){
+      body  = ins.theo;
+      stats = `<span class="ic-stat theo">${ins.stat_theo}</span> <span class="ic-stat elon">${ins.stat_elon}</span>`;
+    } else if(showT){
+      body  = ins.theo;
+      stats = `<span class="ic-stat theo">${ins.stat_theo}</span>`;
+    } else {
+      body  = ins.elon;
+      stats = `<span class="ic-stat elon">${ins.stat_elon}</span>`;
+    }
+
+    card.innerHTML = `
+      <div class="ic-icon">${ins.icon}</div>
+      <div class="ic-title">${ins.title}</div>
+      <div class="ic-body">${body}</div>
+      <div style="margin-top:.35rem;">${stats}</div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════════════════
+window.addEventListener("load", init);
+window.addEventListener("resize", ()=>{ if(radarChart) render(); });
+</script>
+</body>
+</html>
