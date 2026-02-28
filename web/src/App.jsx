@@ -1,23 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import './App.css'
 
-// In dev mode, Vite proxies /ws and /chat to localhost:8888
-// In production, set VITE_API_URL to the backend host
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
 function App() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
-  const [connected, setConnected] = useState(false)
-  const [streaming, setStreaming] = useState(false)
-  const wsRef = useRef(null)
+  const [loading, setLoading] = useState(false)
   const chatRef = useRef(null)
-  const sessionId = useRef('s-' + Math.random().toString(36).slice(2, 9))
-
-  useEffect(() => {
-    connect()
-    return () => wsRef.current?.close()
-  }, [])
 
   useEffect(() => {
     if (chatRef.current) {
@@ -25,48 +15,47 @@ function App() {
     }
   }, [messages])
 
-  function connect() {
-    const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const host = API_BASE ? API_BASE.replace(/^https?:\/\//, '') : window.location.host
-    const ws = new WebSocket(`${proto}//${host}/ws/${sessionId.current}`)
-
-    ws.onopen = () => setConnected(true)
-    ws.onclose = () => {
-      setConnected(false)
-      setTimeout(connect, 3000)
-    }
-
-    ws.onmessage = (e) => {
-      const data = JSON.parse(e.data)
-
-      if (data.type === 'meta') {
-        setStreaming(true)
-        setMessages(prev => [...prev, { role: 'agent', content: '', intent: data.intent }])
-      } else if (data.type === 'token') {
-        setMessages(prev => {
-          const updated = [...prev]
-          const last = updated[updated.length - 1]
-          if (last?.role === 'agent') {
-            updated[updated.length - 1] = { ...last, content: last.content + data.content }
-          }
-          return updated
-        })
-      } else if (data.type === 'done') {
-        setStreaming(false)
-      }
-    }
-
-    wsRef.current = ws
-  }
-
-  function send() {
+  async function send() {
     const text = input.trim()
-    if (!text || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return
+    if (!text || loading) return
 
     setMessages(prev => [...prev, { role: 'user', content: text }])
-    wsRef.current.send(JSON.stringify({ message: text }))
     setInput('')
-    setStreaming(true)
+    setLoading(true)
+
+    try {
+      const response = await fetch('/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: text,
+          mode: 'hybrid',
+        }),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+      
+      setMessages(prev => [...prev, { 
+        role: 'agent', 
+        content: data.response || 'No response',
+        intent: data.intent || 'casual'
+      }])
+    } catch (err) {
+      setMessages(prev => [...prev, { 
+        role: 'agent', 
+        content: `Error: ${err.message}`,
+        intent: 'error'
+      }])
+    } finally {
+      setLoading(false)
+    }
   }
 
   function onKeyDown(e) {
@@ -79,9 +68,9 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <div className={`dot ${connected ? 'online' : 'offline'}`} />
+        <div className={`dot ${!loading ? 'online' : 'offline'}`} />
         <h1>Porthon Agent</h1>
-        <span className="status">{connected ? 'online' : 'reconnecting...'}</span>
+        <span className="status">{loading ? 'thinking...' : 'ready'}</span>
       </header>
 
       <div className="chat" ref={chatRef}>
@@ -94,14 +83,14 @@ function App() {
 
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.role}`}>
-            {msg.role === 'agent' && msg.intent && msg.intent !== 'casual' && (
+            {msg.role === 'agent' && msg.intent && msg.intent !== 'casual' && msg.intent !== 'error' && (
               <span className="badge">{msg.intent}</span>
             )}
             <div className="content">{msg.content}</div>
           </div>
         ))}
 
-        {streaming && messages[messages.length - 1]?.content === '' && (
+        {loading && (
           <div className="typing">thinking...</div>
         )}
       </div>
@@ -113,9 +102,9 @@ function App() {
           onKeyDown={onKeyDown}
           placeholder="Type a message..."
           rows={1}
-          disabled={streaming}
+          disabled={loading}
         />
-        <button onClick={send} disabled={streaming || !input.trim()}>
+        <button onClick={send} disabled={loading || !input.trim()}>
           Send
         </button>
       </div>
