@@ -21,8 +21,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "LightRAG"))
 sys.path.insert(0, os.path.dirname(__file__))
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from retriever import create_rag_instance, retrieve_context
@@ -54,6 +54,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Hyperpersonalized Agent", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ── LLM call ────────────────────────────────────────────────────
 
@@ -227,17 +235,6 @@ async def websocket_chat(websocket: WebSocket, session_id: str):
 @app.get("/health")
 async def health():
     return {"status": "ok", "rag_initialized": rag_instance is not None}
-
-
-# ── Serve static files (Web UI) ────────────────────────────────
-
-web_dir = os.path.join(os.path.dirname(__file__), "..", "web")
-if os.path.isdir(web_dir):
-    app.mount("/static", StaticFiles(directory=web_dir), name="static")
-
-    @app.get("/")
-    async def serve_ui():
-        return FileResponse(os.path.join(web_dir, "index.html"))
 
 
 # ── Entry point ─────────────────────────────────────────────────

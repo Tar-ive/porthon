@@ -3,132 +3,190 @@
 ## Prerequisites
 
 - Python 3.10+
+- Node.js 18+ and npm
 - Neo4j + Qdrant already populated (via previous LightRAG ingestion)
 - Environment variables configured in `LightRAG/.env`
 
-## Quick Start
+---
+
+## Build, Setup, and Run Commands
+
+### 1. Clone and checkout
 
 ```bash
-# 1. Clone and switch to branch
 git clone https://github.com/Tar-ive/porthon.git
 cd porthon
 git checkout vector_db
-
-# 2. Create virtual environment and install dependencies
-python3 -m venv .venv
-source .venv/bin/activate
-
-pip install -r requirements.txt
-pip install -e LightRAG
-
-# 3. Verify your .env is set up
-# All config lives in LightRAG/.env — check these are set:
-grep -E "^(NEO4J_URI|QDRANT_URL|LLM_MODEL|LLM_BINDING|EMBEDDING_MODEL)" LightRAG/.env
-
-# You should see:
-#   NEO4J_URI=neo4j+s://...
-#   QDRANT_URL=https://...
-#   LLM_MODEL=x-ai/grok-4.1-fast
-#   LLM_BINDING=openai
-#   EMBEDDING_MODEL=text-embedding-3-large
-
-# 4. Start the agent server
-cd agent
-python server.py
-
-# You should see:
-#   Qdrant collection: lightrag_vdb_entities_text_embedding_3_large_3072d
-#   [base] Connected to neo4j at neo4j+s://...
-#   LightRAG initialized successfully
-#   Uvicorn running on http://0.0.0.0:8888
-
-# 5. Open the web UI
-# Go to http://localhost:8888 in your browser
 ```
 
-## What to Try
+### 2. Python environment
 
-| Prompt | What happens |
-|--------|-------------|
-| "how much have I been spending on subscriptions?" | **Factual** — queries KG in `mix` mode (entities + chunks) |
-| "do you notice any patterns in my behavior?" | **Pattern** — queries KG in `global` mode (relationships) |
-| "should I take a client at $800 for a brand identity?" | **Advice** — queries KG in `hybrid` mode + profiler context |
-| "I'm overwhelmed" | **Emotional** — no KG fetch, responds from SOUL.md personality |
-| "hey what's up" | **Casual** — no KG fetch, just vibes |
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e LightRAG
+```
 
-## File Structure
+### 3. Verify environment
+
+```bash
+grep -E "^(NEO4J_URI|QDRANT_URL|LLM_MODEL|LLM_BINDING|EMBEDDING_MODEL)" LightRAG/.env
+```
+
+Expected output:
+```
+NEO4J_URI=neo4j+s://...
+QDRANT_URL=https://...
+LLM_MODEL=x-ai/grok-4.1-fast
+LLM_BINDING=openai
+EMBEDDING_MODEL=text-embedding-3-large
+```
+
+### 4. Start the backend (Terminal 1)
+
+```bash
+source .venv/bin/activate
+cd agent
+python server.py
+```
+
+Expected startup log:
+```
+Qdrant collection: lightrag_vdb_entities_text_embedding_3_large_3072d
+[base] Connected to neo4j at neo4j+s://...
+LightRAG initialized successfully
+Uvicorn running on http://0.0.0.0:8888
+```
+
+### 5. Start the frontend (Terminal 2)
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Expected output:
+```
+VITE v6.x.x  ready in XXXms
+➜  Local:   http://localhost:3000/
+```
+
+### 6. Open the app
+
+Go to **http://localhost:3000** in your browser.
+
+---
+
+## How It Works
+
+### LLM Configuration
+
+The agent uses the **same OpenRouter config** from `LightRAG/.env`:
+- `LLM_BINDING_HOST=https://openrouter.ai/api/v1` — OpenRouter API
+- `LLM_BINDING_API_KEY` — your OpenRouter key
+- `LLM_MODEL=x-ai/grok-4.1-fast` — the chat model
+
+No separate API keys needed. Everything comes from `LightRAG/.env`.
+
+### Intent-Based KG Retrieval
+
+Not every message queries the knowledge graph. The agent classifies intent first:
+
+| Your Message | Intent | What Happens |
+|-------------|--------|-------------|
+| "how much did I spend on subscriptions?" | `factual` | KG query: `mix` mode (entities + relationships + chunks) |
+| "do you notice any patterns?" | `pattern` | KG query: `global` mode (relationship-centric) |
+| "should I take this client at $800?" | `advice` | KG query: `hybrid` mode + profiler context |
+| "I'm overwhelmed" | `emotional` | No KG. Responds from SOUL.md personality only |
+| "hey what's up" | `casual` | No KG. Just vibes |
+
+### Agent Personality
+
+Defined in `agent/SOUL.md`:
+- Mirrors your vocabulary (if you say "freaking out", so does it)
+- Matches message length to yours
+- Names patterns once, doesn't lecture
+- Never says "the data shows" — just knows things
+- ADHD-aware: short, chunked, bold the one action
+- Financial-aware: concrete tools, not motivational platitudes
+
+---
+
+## Project Structure
 
 ```
 porthon/
-├── agent/
-│   ├── server.py           # FastAPI + WebSocket server (main entry point)
-│   ├── retriever.py         # LightRAG wrapper, intent → KG query routing
-│   ├── prompt_builder.py    # Assembles SOUL + USER + KG context into prompt
-│   ├── intent.py            # Intent classifier (keyword-based)
-│   ├── SOUL.md              # Agent personality (archetype-driven)
-│   └── USER.md              # User profile (KG-enriched)
-├── web/
-│   └── index.html           # Chat UI (single page, WebSocket)
-├── data/                    # Raw JSONL data sources
-├── profiler.py              # CrossPlatformProfiler
-├── LightRAG/                # RAG framework (Neo4j + Qdrant backends)
-│   └── .env                 # All database + API credentials
+├── agent/                    # Backend
+│   ├── server.py             # FastAPI + WebSocket (port 8888)
+│   ├── retriever.py          # LightRAG query orchestration
+│   ├── prompt_builder.py     # SOUL + USER + KG context → system prompt
+│   ├── intent.py             # Intent classifier
+│   ├── SOUL.md               # Agent personality
+│   └── USER.md               # User profile (from KG + profiler)
+├── web/                      # Frontend (React + Vite)
+│   ├── src/App.jsx           # Chat component
+│   ├── src/App.css           # Styles
+│   ├── vite.config.js        # Dev proxy → backend:8888
+│   └── package.json
+├── data/                     # Raw JSONL data sources
+├── profiler.py               # CrossPlatformProfiler
+├── LightRAG/                 # RAG framework
+│   └── .env                  # All credentials (Neo4j, Qdrant, OpenRouter, OpenAI)
 ├── docs/
-│   ├── AGENT_ARCHITECTURE.md
+│   ├── AGENT_ARCHITECTURE.md # Deep research doc
 │   └── IMPLEMENTATION_PLAN.md
-├── requirements.txt
-└── STARTER.md               # This file
+├── requirements.txt          # Python deps
+└── STARTER.md                # This file
 ```
 
-## Configuration
+## Configuration Reference
 
-All config is read from `LightRAG/.env`. Key variables:
+All config lives in `LightRAG/.env`:
 
 | Variable | Purpose |
 |----------|---------|
-| `NEO4J_URI` | Neo4j connection string |
+| `NEO4J_URI` | Neo4j connection (cloud) |
 | `NEO4J_USERNAME` / `NEO4J_PASSWORD` | Neo4j auth |
-| `QDRANT_URL` / `QDRANT_API_KEY` | Qdrant connection |
-| `LLM_BINDING_HOST` | LLM API base URL (OpenRouter) |
-| `LLM_BINDING_API_KEY` | LLM API key |
-| `LLM_MODEL` | Chat model (e.g. `x-ai/grok-4.1-fast`) |
-| `EMBEDDING_BINDING_HOST` | Embedding API base URL |
-| `EMBEDDING_BINDING_API_KEY` | Embedding API key |
-| `EMBEDDING_MODEL` | Embedding model (e.g. `text-embedding-3-large`) |
-| `EMBEDDING_DIM` | Embedding dimension (e.g. `3072`) |
+| `QDRANT_URL` / `QDRANT_API_KEY` | Qdrant connection (cloud) |
+| `LLM_BINDING_HOST` | OpenRouter API base URL |
+| `LLM_BINDING_API_KEY` | OpenRouter API key |
+| `LLM_MODEL` | Chat model (`x-ai/grok-4.1-fast`) |
+| `EMBEDDING_BINDING_HOST` | OpenAI embeddings base URL |
+| `EMBEDDING_BINDING_API_KEY` | OpenAI API key (for embeddings only) |
+| `EMBEDDING_MODEL` | `text-embedding-3-large` |
+| `EMBEDDING_DIM` | `3072` |
 
-The agent server port defaults to `8888`. Override with `AGENT_PORT` env var.
+Agent port: `8888` (override with `AGENT_PORT` env var).
+Frontend dev port: `3000` (Vite proxies `/ws` and `/chat` to backend).
+
+---
 
 ## Troubleshooting
 
-**Server crashes on startup (OOM)**
-- This machine has ~4GB RAM. Close other processes or add swap:
-  ```bash
-  sudo fallocate -l 2G /swapfile
-  sudo chmod 600 /swapfile
-  sudo mkswap /swapfile
-  sudo swapon /swapfile
-  ```
+**Server killed / OOM:**
+This machine has ~4GB RAM. Add swap if needed:
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+```
 
-**"Qdrant collection ... missing suffix" warning**
-- Means `model_name` wasn't set on the embedding function. The current code sets it correctly.
+**First query is slow:**
+Normal. LightRAG initializes LLM + embedding worker pools on first call.
 
-**Empty KG results**
-- Verify data exists: check Neo4j browser or run:
-  ```bash
-  python -c "
-  from dotenv import load_dotenv; load_dotenv('LightRAG/.env')
-  import asyncio, os
-  from neo4j import AsyncGraphDatabase
-  async def check():
-      d = AsyncGraphDatabase.driver(os.getenv('NEO4J_URI'), auth=(os.getenv('NEO4J_USERNAME'), os.getenv('NEO4J_PASSWORD')))
-      async with d.session(database='neo4j') as s:
-          r = await s.run('MATCH (n:base) RETURN count(n) as c')
-          print('Nodes:', (await r.single())['c'])
-      await d.close()
-  asyncio.run(check())
-  "
-  ```
-
-**First query is slow**
-- Normal. LightRAG initializes LLM + embedding worker pools on first call. Subsequent queries are faster.
+**Empty KG results:**
+```bash
+source .venv/bin/activate
+python -c "
+from dotenv import load_dotenv; load_dotenv('LightRAG/.env')
+import asyncio, os
+from neo4j import AsyncGraphDatabase
+async def check():
+    d = AsyncGraphDatabase.driver(os.getenv('NEO4J_URI'), auth=(os.getenv('NEO4J_USERNAME'), os.getenv('NEO4J_PASSWORD')))
+    async with d.session(database='neo4j') as s:
+        r = await s.run('MATCH (n:base) RETURN count(n) as c')
+        print('Nodes:', (await r.single())['c'])
+    await d.close()
+asyncio.run(check())
+"
+```
