@@ -96,23 +96,14 @@ The SOUL.md encodes these linguistic behaviors:
 
 ## Implementation Phases
 
-### Phase 1: Infrastructure Setup (Day 1)
-**Goal:** Neo4j + Qdrant running, LightRAG configured, data ingested.
-
-- [ ] Docker compose with Neo4j + Qdrant
+### Phase 1: Infrastructure Setup
+**Goal:** Neo4j + Qdrant running on the cloud, LightRAG configured, data ingested and stored in cloud.
 - [ ] Configure LightRAG with Neo4j (`Neo4JStorage`) + Qdrant (`QdrantVectorDBStorage`)
-- [ ] Write `scripts/ingest.py` — reads all `data/*.jsonl` + `persona_profile.json`, feeds to `LightRAG.ainsert()`
-- [ ] Run ingestion, verify entities/relationships in Neo4j browser
-- [ ] Verify vector collections in Qdrant dashboard
-
-**Key files:**
-```
-docker-compose.yml          # Neo4j + Qdrant services
-scripts/ingest.py           # Data ingestion script
-.env                        # NEO4J_URI, QDRANT_URL, API keys
+- [ ] Write `scripts/ingest.py` — reads all `data/*.jsonl` + `persona_profile.json`, feeds to `LightRAG.ainsert()` -> understand what is in cloud, try and test with python -m pytest tests/test_qdrant_migration.py tests/test_dimension_mismatch.py -v and python -m pytest tests/test_neo4j_fulltext_index.py -v --run-integration, try to retrieve queries data and relationships from cloud neo4j and qdrant. 
+.env                        # NEO4J_URI, QDRANT_URL, API keys and other required .env files  -> /home/sadhikari/porthon/LightRAG/.env
 ```
 
-### Phase 2: Profile Generation (Day 1-2)
+### Phase 2: Profile Generation
 **Goal:** SOUL.md and USER.md auto-generated from profiler + KG data.
 
 - [ ] Write `scripts/generate_profile.py`:
@@ -130,7 +121,7 @@ agent/SOUL.md               # Generated
 agent/USER.md               # Generated
 ```
 
-### Phase 3: Agent Backend (Day 2-3)
+### Phase 3: Agent Backend
 **Goal:** FastAPI server that handles chat with KG-aware retrieval.
 
 - [ ] `agent/server.py` — FastAPI app with:
@@ -157,7 +148,7 @@ agent/USER.md               # Generated
           prompt += f"\n\n## What I Found\n{context}"
       return prompt
   ```
-- [ ] Intent classifier — start with keyword rules, upgrade to LLM later:
+- [ ] Intent classifier — write prompt for LLM classifier based on prompts from -> - Entity extraction prompts: `LightRAG/lightrag/prompt.py` + what the agent knows about the person (profiling maths at play(deterministic test cases))
   ```python
   FACTUAL_TRIGGERS = ["how much", "when did", "what did I spend", "last month"]
   PATTERN_TRIGGERS = ["pattern", "notice", "trend", "always", "keep doing"]
@@ -180,7 +171,7 @@ agent/intent.py             # Intent classification
 requirements.txt            # fastapi, uvicorn, lightrag, neo4j, qdrant-client
 ```
 
-### Phase 4: Web UI (Day 3-4)
+### Phase 4: Web UI
 **Goal:** Clean chat interface in the browser.
 
 - [ ] Single-page React app (or plain HTML + JS for simplicity)
@@ -189,7 +180,8 @@ requirements.txt            # fastapi, uvicorn, lightrag, neo4j, qdrant-client
   - Chat bubbles with markdown rendering
   - Typing indicator during LLM generation
   - Message history (session-based, in-memory)
-  - Optional: sidebar showing which KG entities were retrieved (debug mode)
+  - Sidebar showing which KG entities were retrieved (debug mode)
+  - Tool calls showing bubbles with json rendering 
 
 **Key files:**
 ```
@@ -205,8 +197,8 @@ Minimal approach — a single `index.html` served by FastAPI's static files:
 app.mount("/", StaticFiles(directory="web", html=True))
 ```
 
-### Phase 5: Polish & Feedback Loop (Day 4-5)
-- [ ] Conversation logging → `memory/YYYY-MM-DD.md`
+### Phase 5: Polish & Feedback Loop
+- [ ] Conversation logging → `memory/YYYY-MM-DD.md` 
 - [ ] Periodic re-ingestion of new conversations into LightRAG
 - [ ] SOUL.md/USER.md refresh when profile shifts detectably
 - [ ] Test edge cases: empty KG results, ambiguous queries, long conversations
