@@ -24,10 +24,18 @@ git checkout vector_db
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-pip install -e LightRAG
+pip install -e "LightRAG[api]"
 ```
 
-### 3. Verify environment
+### 3. Web dependencies
+
+```bash
+cd web
+npm install
+npm install @vitejs/plugin-react react react-dom
+```
+
+### 4. Verify environment
 
 ```bash
 grep -E "^(NEO4J_URI|QDRANT_URL|LLM_MODEL|LLM_BINDING|EMBEDDING_MODEL)" LightRAG/.env
@@ -46,8 +54,8 @@ EMBEDDING_MODEL=text-embedding-3-large
 
 ```bash
 source .venv/bin/activate
-cd agent
-python server.py
+cd LightRAG
+python -m lightrag.api.lightrag_server
 ```
 
 Expected startup log:
@@ -55,7 +63,7 @@ Expected startup log:
 Qdrant collection: lightrag_vdb_entities_text_embedding_3_large_3072d
 [base] Connected to neo4j at neo4j+s://...
 LightRAG initialized successfully
-Uvicorn running on http://0.0.0.0:8888
+Uvicorn running on http://0.0.0.0:9621
 ```
 
 ### 5. Start the frontend (Terminal 2)
@@ -68,13 +76,13 @@ npm run dev
 
 Expected output:
 ```
-VITE v6.x.x  ready in XXXms
-➜  Local:   http://localhost:3000/
+VITE v7.x.x  ready in XXXms
+➜  Local:   http://localhost:8888/
 ```
 
 ### 6. Open the app
 
-Go to **http://localhost:3000** in your browser.
+Go to **http://localhost:8888** in your browser.
 
 ---
 
@@ -117,21 +125,14 @@ Defined in `agent/SOUL.md`:
 
 ```
 porthon/
-├── agent/                    # Backend
-│   ├── server.py             # FastAPI + WebSocket (port 8888)
-│   ├── retriever.py          # LightRAG query orchestration
-│   ├── prompt_builder.py     # SOUL + USER + KG context → system prompt
-│   ├── intent.py             # Intent classifier
-│   ├── SOUL.md               # Agent personality
-│   └── USER.md               # User profile (from KG + profiler)
 ├── web/                      # Frontend (React + Vite)
 │   ├── src/App.jsx           # Chat component
 │   ├── src/App.css           # Styles
-│   ├── vite.config.js        # Dev proxy → backend:8888
+│   ├── vite.config.js        # Dev proxy → backend:9621
 │   └── package.json
-├── data/                     # Raw JSONL data sources
-├── profiler.py               # CrossPlatformProfiler
-├── LightRAG/                 # RAG framework
+├── LightRAG/                 # RAG framework + Backend API
+│   ├── lightrag/api/         # FastAPI server (port 9621)
+│   │   └── lightrag_server.py
 │   └── .env                  # All credentials (Neo4j, Qdrant, OpenRouter, OpenAI)
 ├── docs/
 │   ├── AGENT_ARCHITECTURE.md # Deep research doc
@@ -156,9 +157,10 @@ All config lives in `LightRAG/.env`:
 | `EMBEDDING_BINDING_API_KEY` | OpenAI API key (for embeddings only) |
 | `EMBEDDING_MODEL` | `text-embedding-3-large` |
 | `EMBEDDING_DIM` | `3072` |
+| `WHITELIST_PATHS` | `/health,/api/*,/query` (required for frontend) |
 
-Agent port: `8888` (override with `AGENT_PORT` env var).
-Frontend dev port: `3000` (Vite proxies `/ws` and `/chat` to backend).
+Agent port: `9621` (LightRAG server, override with `LIGHTRAG_PORT` env var).
+Frontend dev port: `8888` (Vite proxies `/query` and `/chat` to backend).
 
 ---
 
