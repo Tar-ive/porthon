@@ -1,8 +1,18 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
+import { MemoizedMarkdown } from './MemoizedMarkdown';
 
-export default function Chat() {
+interface Scenario {
+  id: string;
+  title: string;
+  horizon: string;
+  likelihood: string;
+  summary: string;
+  tags: string[];
+}
+
+export default function Chat({ scenario }: { scenario: Scenario }) {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -49,7 +59,9 @@ export default function Chat() {
       <header className="chat-header">
         <div>
           <div className="chat-header-title">Questline</div>
-          <div className="chat-header-sub">Life Trajectory Oracle · Jordan Lee</div>
+          <div className="chat-header-sub">
+            {scenario.title} · {scenario.horizon} · Jordan Lee
+          </div>
         </div>
         <div className="chat-header-dot" />
       </header>
@@ -75,7 +87,9 @@ export default function Chat() {
               </div>
               <div className="msg-body">
                 {message.parts.map((part, i) =>
-                  part.type === 'text' ? <span key={i}>{part.text}</span> : null
+                  part.type === 'text' ? (
+                    <MemoizedMarkdown key={i} id={`${message.id}-${i}`} content={part.text} />
+                  ) : null
                 )}
               </div>
             </div>

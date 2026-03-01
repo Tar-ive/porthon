@@ -13,8 +13,11 @@
     "@ai-sdk/react": "^3.0.107",
     "@tailwindcss/vite": "^4.2.1",
     "ai": "^6.0.105",
+    "marked": "^17.0.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
