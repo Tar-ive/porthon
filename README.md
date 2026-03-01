@@ -1,7 +1,6 @@
-# Persona p05 — Theo Nakamura
+# Questline
 
 ## Summary
-Theo Nakamura is a 23-year-old freelance graphic designer and part-time barista in East Austin. He has ADHD, $6k in credit card debt, inconsistent freelance income, and a deep creative drive. He uses AI constantly for creative work and self-coaching and is building toward full-time freelance.
 
 ## Files
 - `persona_profile.json` — Profile, goals, ADHD context, creative tech stack
