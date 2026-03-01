@@ -18,6 +18,10 @@ People generate behavioral data across 5+ platforms daily but never connect the 
 
 Questline is a **behavioral futures engine** — it ingests your digital footprint, computes a quantitative behavioral profile (execution, growth, self-awareness, financial stress, ADHD indicators), projects 3 divergent life scenarios, and generates grounded daily micro-actions for the path you choose.
 
+### Always-On Companion Agent
+
+Questline is not a tool you open, use, and close. It is an **always-on, proactive companion agent** that continuously monitors your behavioral signals, detects shifts in trajectory, and surfaces timely nudges before you ask. The Oracle doesn't wait for queries — it notices when your spending pattern diverges from your savings goal, when your calendar density is approaching burnout thresholds, or when a new skill cluster is emerging from your hyperfocus episodes. It reaches out with grounded, scenario-aware micro-actions at the moment they're most actionable.
+
 </Proposal>
 
 ---
@@ -333,6 +337,54 @@ Replace raw OpenAI/Claude API calls with `pydantic-deep` agents, modeled after `
 - **Skills system** — SOUL.md and USER.md become skill files injected into agent context, replacing manual prompt concatenation
 - **Chat Oracle as deep agent** — the conversational agent gets memory, context compression, and checkpoint support via the framework's built-in session management
 - **WebSocket streaming** — replaces SSE for richer real-time UI (binary frames, connection multiplexing, bidirectional communication for mid-stream user interrupts)
+
+</Proposal>
+
+---
+
+<Proposal name="Always-On Proactive Companion Agent">
+
+### Proposed: Questline as Always-On Behavioral Companion
+
+Questline is not a tool you open, use, and close. It is an **always-on, proactive companion agent** — a behavioral futures engine that continuously monitors your data signals, detects trajectory shifts, and surfaces timely nudges before you ask.
+
+The Oracle doesn't wait for queries. It notices when your spending pattern diverges from your savings goal, when your calendar density approaches burnout thresholds, or when a new skill cluster is emerging from your engagement patterns. It reaches out with grounded, scenario-aware micro-actions at the moment they're most actionable.
+
+</Proposal>
+
+<Proposal name="Neurodiverse-Aware Behavioral Intelligence">
+
+### Proposed: ADHD-Optimized Pattern Engine
+
+Traditional productivity tools penalize context-switching and label interest pivots as "quitting." Questline reframes neurodivergent behavioral patterns as signal, not noise — and feeds them into scenario generation for ultra-realistic life projections.
+
+#### Hyperfocus Detection & Skill Convergence
+
+The behavioral profiler detects hyperfocus episodes from chat data, calendar density, and activity logs — capturing depth + duration rather than mere frequency:
+
+| ADHD Brain | What Questline Does |
+|---|---|
+| Hyperfocus on Python for 3 weeks, then pivots to Blender 3D, then back to Python + ML | Captures each as a **skill cluster** with depth score, not "abandoned interest" |
+| Apparent "quitting" pattern | Maps as **convergence trajectory**: "3D + ML = spatial computing" |
+| No idea what job fits | Matches convergence to market demand: "Unity ML, AR/VR roles paying $140k" |
+| Overwhelmed by long-term goals | Generates **micro-milestone learning paths** calibrated to hyperfocus cycle length |
+
+#### Pipeline Stages
+
+1. **Decontextualization** — resolves references from conversation history into standalone skill/interest signals so the profiler doesn't lose context across hyperfocus pivots
+2. **Hyperfocus Detection** — classifies whether the user is in a depth episode (sustained single-domain engagement, reduced context-switching, extended sessions). During hyperfocus the agent avoids interrupting; after, it consolidates what was learned
+3. **Memory Extraction** — extracts skills, interests, and engagement patterns as typed skill nodes in the knowledge graph, enabling convergence detection across time
+4. **Skill Cluster Mapping** — groups apparently unrelated interests into convergence clusters using semantic similarity + temporal co-occurrence. Surfaces non-obvious career/project paths
+5. **Accelerated Depth Domains** — identifies domains where the user achieves mastery faster than baseline (high depth score / low time). These become priority inputs for scenario generation
+
+#### Simulation Grounding
+
+The ADHD behavioral data (hyperfocus cycles, skill clusters, convergence trajectories, accelerated depth domains) feeds directly into the Scenario Generator as high-signal priors. Scenarios account for non-linear skill acquisition, predict which convergence paths have highest market value, and calibrate action plans to the user's actual attention patterns rather than neurotypical assumptions. This makes 1/5/10yr projections ultra-realistic for neurodiverse users.
+
+#### Monetization Path (Stretch)
+
+- Micro-rewards via x402 stablecoin payments for completing micro-milestones
+- Platform-assisted job matching from convergence clusters → percentage of signing bonus on successful placement
 
 </Proposal>
 
