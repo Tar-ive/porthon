@@ -1,42 +1,43 @@
-# USER.md — Theo Nakamura
+# USER.md — Jordan Lee
 
 ## Identity
-- **Name:** Theo Nakamura
-- **Age:** 23
-- **Location:** East Austin, TX (shares a house with 3 roommates)
-- **Occupation:** Freelance Graphic Designer + Part-time Barista at Café Rowan
-- **Income:** ~$1,820/month average (highly variable), stated as $38k/year
-- **Archetype:** Emerging Talent — high growth orientation, low execution conversion
+- **Name:** Jordan Lee
+- **Age:** 32
+- **Location:** Austin, TX (lives with long-term partner Alex)
+- **Occupation:** Senior Product Manager at a mid-size B2B analytics SaaS company
+- **Income:** ~$115,000/year
+- **Archetype:** High-achiever in promotion push — calendar-dense, goal-oriented, anxiety-prone
 
 ## Strengths (confirmed across multiple sources)
-- Creative and adaptable — design work is genuinely good
-- Authentic voice — social posts resonate, AI conversations show real self-awareness
-- Learning investment is strong — School of Motion, 3D tools, constantly upskilling
-- Uses AI tools heavily and effectively (ChatGPT, Midjourney, Runway ML, Adobe Firefly)
+- Organized and systems-oriented — built personal OKR dashboard in Notion
+- Empathetic and direct communicator — team trusts their leadership
+- Fast learner — uses AI tools (ChatGPT, Notion AI) 4-6x per week
+- Self-aware — therapy is a regular habit, not a crisis response
 
 ## Growth Areas (behaviorally confirmed)
-- **Undercharging** — pattern across conversations and transactions ($600 for 40hr brand identity)
-- **Follow-through** — ADHD + project variety = lots started, fewer finished
-- **Financial planning** — $6k credit card debt, minimum payments only ($812 total across 7 payments)
-- **Conversion** — sends ~200 invoices, wins 26 (13% rate). Bottleneck is NOT skills, it's sales
+- **Overcommitment** — back-to-back meetings most days, no lunch breaks (ll_0001: "not sustainable")
+- **Delegation and saying no** — takes on too much, imposter syndrome since recent reorg
+- **Relationship presence** — guilt about not spending quality time with Alex; connection thins during promotion-push weeks
+- **Sleep and anxiety** — doomscrolling before bed, anxiety tags cluster with career entries
+- **Patience with ambiguity** — promotion timeline unclear, manager's feedback hard to read
 
 ## Active Goals (stated)
-- Make freelancing full-time within 2 years
-- Build a recognizable design brand/portfolio
-- Pay off $6k in credit card debt
-- Learn motion design and 3D tools
-- Figure out what city feels like home long-term
+- Get promoted to Director of Product within 18 months
+- Improve sleep and reduce anxiety
+- Save $30k for house down payment
+- Run a half marathon
+- Be more present with partner Alex
 
-## Key Patterns from KG
-- **Learning vs Earning mismatch** — $4,200+ spent on learning, but revenue conversion is the real bottleneck
-- **Public confidence / private doubt** — social posts project wins, AI conversations reveal pricing anxiety and comparison
-- **ADHD confirmed across 4 sources** — self-report, lifelog tags (14 mentions), calendar irregularity, conversation themes
-- **Financial stress is real** — finances appear in 25% of all lifelog entries, debt mentioned 12 times
-- **Austin identity** — 30 lifelog entries about Austin life, it matters to him emotionally
+## Key Patterns from Data
+- **Calendar density → social spending spike** — high-meeting weeks correlate with dining/social transactions ($85 Easy Tiger repeats after dense weeks)
+- **Career anxiety → health neglect** — lifelog career/anxiety entries cluster with fewer exercise/health tags
+- **Relationship thinning during promotion push** — relationship entries drop during high-work periods (ll_0004: "I haven't asked about their job in two weeks")
+- **Therapy as anchor** — consistent therapy appointments (cal_0004, cal_0005) signal active mental health investment
+- **Financial discipline** — $2,100/mo rent, therapy, structured spending — but house savings goal requires intentionality
 
 ## Interaction Preferences
-- ADHD-aware: keep messages short, chunked, actionable
-- Financial sensitivity: high — be concrete, not preachy
-- Communication style: casual, authentic, slightly self-deprecating humor
-- Responds well to: direct honesty, small wins, practical templates
-- Responds poorly to: long advice lists, motivational platitudes, "just charge more"
+- Communication style: casual, like a smart friend — direct but warm
+- Keep responses grounded in data, not platitudes
+- Responds well to: specific time-bound actions, pattern connections across life domains, honest acknowledgment of trade-offs
+- Responds poorly to: vague advice, corporate-speak, being told to "just relax"
+- Financial sensitivity: medium — concrete numbers are welcome, preachiness is not

@@ -13,7 +13,10 @@ from pydantic import BaseModel
 
 from agent.intent import classify_intent
 from agent.prompt_builder import build_system_prompt
-from simulation.scenarios import generate_scenarios
+from pipeline.action_planner import generate_actions
+from pipeline.extractor import extract_persona_data
+from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
+from simulation.scenarios import generate_scenarios as generate_scenarios_fallback
 from utils import (
     ClientMessage,
     ClientMessagePart,  # noqa: F401 — re-exported for Pydantic schema discovery
@@ -94,8 +97,43 @@ def health():
 
 @app.get("/api/scenarios")
 async def get_scenarios():
-    await asyncio.sleep(3)  # simulate generation latency
-    return generate_scenarios()
+    try:
+        extracted = extract_persona_data("p01")
+        scenarios = await asyncio.wait_for(generate_scenarios_llm(extracted), timeout=30.0)
+        return scenarios
+    except asyncio.TimeoutError:
+        return generate_scenarios_fallback()
+    except Exception as e:
+        logger.error(f"Scenario generation failed: {e}")
+        return generate_scenarios_fallback()
+
+
+class ActionRequest(BaseModel):
+    scenario_id: str
+    scenario_title: str
+    scenario_summary: str
+    scenario_horizon: str
+    scenario_likelihood: str
+
+
+@app.post("/api/actions")
+async def get_actions(request: ActionRequest):
+    try:
+        extracted = extract_persona_data("p01")
+        scenario = {
+            "id": request.scenario_id,
+            "title": request.scenario_title,
+            "summary": request.scenario_summary,
+            "horizon": request.scenario_horizon,
+            "likelihood": request.scenario_likelihood,
+        }
+        actions = await asyncio.wait_for(generate_actions(scenario, extracted), timeout=30.0)
+        return actions
+    except asyncio.TimeoutError:
+        return {"scenario_id": request.scenario_id, "actions": [], "error": "timeout"}
+    except Exception as e:
+        logger.error(f"Action planning failed: {e}")
+        return {"scenario_id": request.scenario_id, "actions": [], "error": str(e)}
 
 
 @app.post("/api/chat")

@@ -12,6 +12,13 @@ interface Scenario {
   tags: string[];
 }
 
+interface Quest {
+  action: string;
+  rationale: string;
+  data_ref: string;
+  compound_summary: string;
+}
+
 const INTENT_COLORS: Record<string, string> = {
   factual: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
   pattern: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
@@ -27,6 +34,32 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intentRef = useRef(setIntent);
   intentRef.current = setIntent;
+
+  // Quest state
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [questsPhase, setQuestsPhase] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [questsCollapsed, setQuestsCollapsed] = useState(false);
+  const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/actions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        scenario_id: scenario.id,
+        scenario_title: scenario.title,
+        scenario_summary: scenario.summary,
+        scenario_horizon: scenario.horizon,
+        scenario_likelihood: scenario.likelihood,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setQuests(data.actions || []);
+        setQuestsPhase('ready');
+      })
+      .catch(() => setQuestsPhase('error'));
+  }, []);
 
   const [transport] = useState(
     () =>
@@ -90,6 +123,83 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         </div>
         <div className="chat-header-dot" />
       </header>
+
+      {/* Quests Panel */}
+      <div className={`quests-panel${questsCollapsed ? '' : ' quests-panel--expanded'}`}>
+        <div
+          className="quests-panel-header"
+          onClick={() => setQuestsCollapsed(!questsCollapsed)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && setQuestsCollapsed(!questsCollapsed)}
+        >
+          <span className="quests-panel-icon">◈</span>
+          <span className="quests-panel-title">Recommended Quests</span>
+          {questsPhase === 'loading' && (
+            <span className="quests-loading-rune" style={{ fontSize: '0.75rem' }}>✦</span>
+          )}
+          {questsPhase === 'ready' && quests.length > 0 && (
+            <span className="quests-panel-count">{quests.length} actions</span>
+          )}
+          <span className="quests-panel-toggle">{questsCollapsed ? '▼' : '▲'}</span>
+        </div>
+
+        {!questsCollapsed && (
+          <div className="quests-body">
+            {questsPhase === 'loading' && (
+              <div className="quests-loading">
+                <span className="quests-loading-rune">✦</span>
+                <span className="quests-loading-text">Generating quest recommendations…</span>
+              </div>
+            )}
+            {questsPhase === 'error' && (
+              <div className="quests-loading">
+                <span className="quests-loading-text quests-loading-text--error">
+                  Could not load quests — try chatting directly
+                </span>
+              </div>
+            )}
+            {questsPhase === 'ready' &&
+              quests.map((q, i) => {
+                const key = `q${i}`;
+                const isExpanded = expandedQuest === key;
+                return (
+                  <div
+                    key={key}
+                    className={`quest-card${isExpanded ? ' quest-card--expanded' : ''}`}
+                    style={{ animationDelay: `${i * 0.08}s` }}
+                  >
+                    <div
+                      className="quest-card-main"
+                      onClick={() => setExpandedQuest(isExpanded ? null : key)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && setExpandedQuest(isExpanded ? null : key)}
+                    >
+                      <span className="quest-card-num">Q{String(i + 1).padStart(2, '0')}</span>
+                      <span className="quest-card-action">{q.action}</span>
+                      {q.data_ref && <span className="quest-card-ref">{q.data_ref}</span>}
+                    </div>
+                    {isExpanded && (
+                      <div className="quest-card-detail">
+                        <div>
+                          <div className="quest-detail-label">Rationale</div>
+                          <div className="quest-detail-text">{q.rationale}</div>
+                        </div>
+                        {q.compound_summary && (
+                          <div>
+                            <div className="quest-detail-label">Compounds to</div>
+                            <div className="quest-detail-text">{q.compound_summary}</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        )}
+      </div>
 
       {/* Messages */}
       <div className="chat-messages">

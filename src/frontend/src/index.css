@@ -449,6 +449,195 @@ body::after {
   50%       { opacity: 1; }
 }
 
+/* ── Quest Panel ─────────────────────────────────────────────────── */
+.quests-panel {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  animation: fadeDown 0.5s ease both 0.15s;
+}
+
+.quests-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+  outline: none;
+}
+
+.quests-panel--expanded .quests-panel-header {
+  border-bottom: 1px solid rgba(200, 146, 42, 0.08);
+}
+
+.quests-panel-header:hover {
+  background: rgba(200, 146, 42, 0.04);
+}
+
+.quests-panel-icon {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--amber-dim);
+}
+
+.quests-panel-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--amber);
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.quests-panel-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.1rem 0.45rem;
+}
+
+.quests-panel-toggle {
+  font-size: 0.55rem;
+  color: var(--muted);
+  opacity: 0.45;
+}
+
+.quests-body {
+  padding: 0.7rem 2rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.quests-body::-webkit-scrollbar { width: 4px; }
+.quests-body::-webkit-scrollbar-track { background: transparent; }
+.quests-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Loading / error */
+.quests-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0;
+}
+
+.quests-loading-rune {
+  color: var(--amber);
+  animation: runeRotate 3s linear infinite;
+  display: inline-block;
+  line-height: 1;
+}
+
+.quests-loading-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+  animation: textBreathe 2s ease-in-out infinite;
+}
+
+.quests-loading-text--error {
+  color: var(--error);
+  animation: none;
+}
+
+/* Quest card */
+.quest-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+  animation: fadeUp 0.35s ease both;
+}
+
+.quest-card--expanded {
+  border-color: var(--amber-dim);
+}
+
+.quest-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease;
+}
+
+.quest-card-main:hover {
+  background: rgba(200, 146, 42, 0.04);
+}
+
+.quest-card-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  color: var(--amber-dim);
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.quest-card-action {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--cream);
+  flex: 1;
+}
+
+.quest-card-ref {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--amber-dim);
+  background: rgba(200, 146, 42, 0.08);
+  border: 1px solid rgba(200, 146, 42, 0.2);
+  border-radius: 2px;
+  padding: 0.15rem 0.4rem;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  white-space: nowrap;
+}
+
+.quest-card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.6rem 0.9rem 0.75rem 2.2rem;
+  border-top: 1px solid rgba(200, 146, 42, 0.08);
+  animation: fadeUp 0.2s ease both;
+}
+
+.quest-detail-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  color: var(--amber-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.quest-detail-text {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.81rem;
+  line-height: 1.6;
+  color: rgba(232, 223, 200, 0.6);
+}
+
 /* ── Scenario Select Screen ──────────────────────────────────────── */
 .scenario-root {
   position: relative;
