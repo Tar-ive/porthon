@@ -12,14 +12,41 @@ interface Scenario {
   tags: string[];
 }
 
+const INTENT_COLORS: Record<string, string> = {
+  factual: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  pattern: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+  advice: 'bg-green-500/20 text-green-300 border-green-500/30',
+  reflection: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+  emotional: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
+};
+
 export default function Chat({ scenario }: { scenario: Scenario }) {
   const [input, setInput] = useState('');
+  const [intent, setIntent] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const intentRef = useRef(setIntent);
+  intentRef.current = setIntent;
 
-  const { messages, sendMessage, status, stop } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat' }),
-  });
+  const [transport] = useState(
+    () =>
+      new DefaultChatTransport({
+        api: '/api/chat',
+        body: { scenario },
+        fetch: async (input, init) => {
+          const res = await fetch(input, init);
+          const intentHeader = res.headers.get('x-porthon-intent');
+          if (intentHeader && intentHeader !== 'casual') {
+            intentRef.current(intentHeader);
+          } else {
+            intentRef.current(null);
+          }
+          return res;
+        },
+      }),
+  );
+
+  const { messages, sendMessage, status, stop } = useChat({ transport });
 
   const isStreaming = status === 'streaming' || status === 'submitted';
 
@@ -42,13 +69,11 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
-    // Auto-resize
     const el = e.target;
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 160) + 'px';
   };
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isStreaming]);
@@ -74,7 +99,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
             <div className="chat-empty-text">Begin your inquiry</div>
           </div>
         ) : (
-          messages.map((message) => (
+          messages.map((message, msgIndex) => (
             <div
               key={message.id}
               className={`msg msg--${message.role}`}
@@ -83,6 +108,11 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
                 <span className={`msg-role msg-role--${message.role}`}>
                   {message.role === 'user' ? 'You' : 'Oracle'}
                 </span>
+                {message.role === 'assistant' && intent && msgIndex === messages.length - 1 && INTENT_COLORS[intent] && (
+                  <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border ${INTENT_COLORS[intent]}`}>
+                    {intent}
+                  </span>
+                )}
                 <span className="msg-line" />
               </div>
               <div className="msg-body">

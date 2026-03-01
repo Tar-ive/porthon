@@ -82,8 +82,11 @@ def iter_openai_events(
     model: str = "gpt-4o-mini",
     tool_definitions: Sequence[Dict[str, Any]] = (),
     available_tools: Mapping[str, Callable[..., Any]] = {},
+    system_prompt: str = "",
 ) -> Iterator[StreamEvent]:
     formatted = [{"role": m.role, "content": extract_text(m)} for m in messages]
+    if system_prompt:
+        formatted.insert(0, {"role": "system", "content": system_prompt})
     client = openai.OpenAI()
 
     stream = client.chat.completions.create(
@@ -156,8 +159,11 @@ def iter_ollama_events(
     messages: List[ClientMessage],
     host: str,
     model: str,
+    system_prompt: str = "",
 ) -> Iterator[StreamEvent]:
     formatted = [{"role": m.role, "content": extract_text(m)} for m in messages]
+    if system_prompt:
+        formatted.insert(0, {"role": "system", "content": system_prompt})
     client = ollama.Client(host=host)
     for chunk in client.chat(model=model, messages=formatted, stream=True):
         if chunk.message.content:
@@ -213,4 +219,5 @@ def patch_response_with_headers(response: StreamingResponse) -> StreamingRespons
     response.headers["Cache-Control"] = "no-cache"
     response.headers["Connection"] = "keep-alive"
     response.headers["X-Accel-Buffering"] = "no"
+    response.headers["Access-Control-Expose-Headers"] = "x-porthon-intent"
     return response

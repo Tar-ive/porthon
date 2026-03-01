@@ -8,6 +8,20 @@
 
 ---
 
+<Proposal name="Problem Statement & Use Case">
+
+### Problem Statement
+
+People generate behavioral data across 5+ platforms daily but never connect the dots. Financial apps show spending. Calendar apps show busyness. Health apps show steps. No tool synthesizes these signals into "here's where your life is heading" and "here's what to do today."
+
+### Use Case
+
+Questline is a **behavioral futures engine** — it ingests your digital footprint, computes a quantitative behavioral profile (execution, growth, self-awareness, financial stress, ADHD indicators), projects 3 divergent life scenarios, and generates grounded daily micro-actions for the path you choose.
+
+</Proposal>
+
+---
+
 ## Data Story
 
 - **Who owns the data?** The user. All data is synthetic (provided by hackathon organizers) representing a real person's behavioral footprint.
@@ -33,6 +47,13 @@
 ┌──────────────────────────┐
 │     Consent Layer         │  User toggles data sources on/off
 │  (consent.json schema)    │  No processing until confirmed
+└────────────┬─────────────┘
+             │
+             ▼
+┌──────────────────────────┐
+│   Behavioral Profiler     │  PROFILING_MATH scoring framework
+│   (Step 0 — deterministic) │  5 dimensional scores + archetype
+│                           │  Feeds into Pattern Analyzer + Scenarios
 └────────────┬─────────────┘
              │
              ▼
@@ -74,6 +95,20 @@
 │      Frontend UI          │  Consent → Stats → Scenarios → Actions
 └──────────────────────────┘
 ```
+
+<Proposal name="Step 0: Behavioral Profiler (PROFILING_MATH.md)">
+
+#### Step 0: Behavioral Profiler
+
+Before the Pattern Analyzer runs, a deterministic **Behavioral Profiler** computes a quantitative baseline using the PROFILING_MATH.md scoring framework:
+
+- **5 Dimensional Scores:** Execution (task completion velocity × consistency), Growth (new skill acquisition + challenge-seeking), Self-Awareness (reflection depth × behavioral adjustment rate), Financial Stress (burn rate vs. savings trajectory), ADHD Indicator (context-switching frequency × incomplete task ratio)
+- **Scoring method:** Exponential decay weighting (recent data matters more) + sigmoid normalization to 1–10 scale
+- **Archetype classification:** Compounding Builder / Reliable Operator / Emerging Talent / At Risk — derived from score vector clustering
+- **Cross-source deltas:** Compares self-reported data (lifelog) vs. behavioral data (transactions, calendar) to compute authenticity gaps
+- **Output feeds into:** Pattern Analyzer (as quantitative priors), Scenario Generator (as baseline for projection), and Stats Dashboard (US-2.3 renders these scores directly — they're computed, not LLM-generated)
+
+</Proposal>
 
 **Key architectural principle:** Each agent step receives structured typed data (not raw text). The LLM interprets patterns and generates narrative — it does not parse raw files. This is what separates a real pipeline from an API wrapper and is the primary Completeness signal for judges.
 
@@ -195,6 +230,20 @@ As a user, I want to select a scenario as my target future so that the system ca
 
 ---
 
+<Proposal name="Conversational Agent in Scenario Flow">
+
+#### Proposed: Scenario-Aware Conversational Agent
+
+After scenario selection, the chat agent (Oracle) should receive the full pipeline context and act as a grounded companion:
+
+- **Full context injection** — the Oracle receives the behavioral profile scores (Step 0), detected patterns (Step 1), and the selected scenario (Step 2) as structured context, not just the scenario title
+- **SOUL.md personality** — responds as a companion who "knows" the user, using the personality framework already built (warmth, directness, pattern-referencing)
+- **Intent-routed responses** — the existing intent classifier (factual / pattern / advice / reflection / emotional) routes queries to different response strategies, each grounded in the pipeline data
+- **Optional KG retrieval** — when LightRAG is configured, queries are enriched with cross-domain context from the knowledge graph, enabling the Oracle to surface connections the user hasn't explicitly asked about
+- **Scenario grounding** — every response naturally references the selected scenario's trajectory, helping the user internalize the path they've chosen
+
+</Proposal>
+
 ### Epic 4: Action Planning
 
 **US-4.1 — Get today's micro-actions**
@@ -270,6 +319,22 @@ The demo uses **live LLM calls** — this is a feature, not a risk. Judges watch
 - **Agent Backend:** Python — multi-step Claude API chain with tool use; structured JSON in/out at each step
 - **Data Layer:** Hackathon-provided jsonl/json per persona, parsed by deterministic Structured Extractor before any LLM call
 - **Deployment:** TBD (Vercel/Railway/local demo)
+
+<Proposal name="Pydantic Deep Agents as Agentic Framework">
+
+#### Proposed: pydantic-deep as Agent Execution Framework
+
+Replace raw OpenAI/Claude API calls with `pydantic-deep` agents, modeled after `apps/deepresearch`:
+
+- **`create_deep_agent()` factory** — each pipeline step becomes a typed agent with Pydantic `output_type` enforcing data contracts (PatternReport, ScenarioSet, ActionPlan). No JSON parsing failures.
+- **Subagent delegation** — parallel pattern analysis across data domains (e.g., a financial sub-agent and a calendar sub-agent running concurrently, results merged by a coordinator agent)
+- **Structured output guarantees** — Pydantic validation at every agent boundary. If an agent returns malformed data, it retries with the validation error as feedback.
+- **Middleware stack** — audit logging, token budget enforcement (hard cap per step), timeout handling (30s per step as specified)
+- **Skills system** — SOUL.md and USER.md become skill files injected into agent context, replacing manual prompt concatenation
+- **Chat Oracle as deep agent** — the conversational agent gets memory, context compression, and checkpoint support via the framework's built-in session management
+- **WebSocket streaming** — replaces SSE for richer real-time UI (binary frames, connection multiplexing, bidirectional communication for mid-stream user interrupts)
+
+</Proposal>
 
 ---
 
