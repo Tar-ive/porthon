@@ -98,7 +98,7 @@ def health():
 @app.get("/api/scenarios")
 async def get_scenarios():
     try:
-        extracted = extract_persona_data("p01")
+        extracted = extract_persona_data("p05")
         scenarios = await asyncio.wait_for(generate_scenarios_llm(extracted), timeout=30.0)
         return scenarios
     except asyncio.TimeoutError:
@@ -119,7 +119,7 @@ class ActionRequest(BaseModel):
 @app.post("/api/actions")
 async def get_actions(request: ActionRequest):
     try:
-        extracted = extract_persona_data("p01")
+        extracted = extract_persona_data("p05")
         scenario = {
             "id": request.scenario_id,
             "title": request.scenario_title,

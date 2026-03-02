@@ -118,7 +118,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         <div>
           <div className="chat-header-title">Questline</div>
           <div className="chat-header-sub">
-            {scenario.title} · {scenario.horizon} · Jordan Lee
+            {scenario.title} · {scenario.horizon} · Theo Nakamura
           </div>
         </div>
         <div className="chat-header-dot" />

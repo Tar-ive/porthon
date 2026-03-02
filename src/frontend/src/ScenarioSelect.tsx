@@ -55,7 +55,7 @@ export default function ScenarioSelect({ onSelect }: Props) {
     <div className="scenario-root">
       <div className="scenario-header">
         <div className="scenario-wordmark">Questline</div>
-        <div className="scenario-persona">Jordan Lee · p01</div>
+        <div className="scenario-persona">Theo Nakamura · p05</div>
         <p className="scenario-lead">
           The Oracle will analyze your behavioral data across finance, calendar, and social
           signals to project your life 1, 5, and 10 years out.

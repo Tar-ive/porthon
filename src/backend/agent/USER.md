@@ -1,43 +1,44 @@
-# USER.md — Jordan Lee
+# USER.md — Theo Nakamura
 
 ## Identity
-- **Name:** Jordan Lee
-- **Age:** 32
-- **Location:** Austin, TX (lives with long-term partner Alex)
-- **Occupation:** Senior Product Manager at a mid-size B2B analytics SaaS company
-- **Income:** ~$115,000/year
-- **Archetype:** High-achiever in promotion push — calendar-dense, goal-oriented, anxiety-prone
+- **Name:** Theo Nakamura
+- **Age:** 23
+- **Location:** East Austin, TX (shares a house with 3 roommates)
+- **Occupation:** Freelance Graphic Designer + Part-time Barista at a local coffee shop
+- **Income:** ~$38,000/year average (highly variable, feast-or-famine)
+- **Archetype:** Emerging Talent — high growth orientation, low execution conversion
 
 ## Strengths (confirmed across multiple sources)
-- Organized and systems-oriented — built personal OKR dashboard in Notion
-- Empathetic and direct communicator — team trusts their leadership
-- Fast learner — uses AI tools (ChatGPT, Notion AI) 4-6x per week
-- Self-aware — therapy is a regular habit, not a crisis response
+- Creative and adaptable — design work is genuinely good
+- Authentic voice — social posts resonate, AI conversations show real self-awareness
+- Learning investment is strong — School of Motion, 3D tools, constantly upskilling
+- Uses AI tools heavily and effectively (ChatGPT, Midjourney, Runway ML, Adobe Firefly) — almost daily
 
 ## Growth Areas (behaviorally confirmed)
-- **Overcommitment** — back-to-back meetings most days, no lunch breaks (ll_0001: "not sustainable")
-- **Delegation and saying no** — takes on too much, imposter syndrome since recent reorg
-- **Relationship presence** — guilt about not spending quality time with Alex; connection thins during promotion-push weeks
-- **Sleep and anxiety** — doomscrolling before bed, anxiety tags cluster with career entries
-- **Patience with ambiguity** — promotion timeline unclear, manager's feedback hard to read
+- **Undercharging** — pattern across conversations and transactions (low project rates for high-hour work)
+- **Follow-through** — ADHD + project variety = lots started, fewer finished
+- **Financial planning** — credit card debt, minimum payments only
+- **Conversion** — bottleneck is NOT skills, it's sales confidence and pricing
+- **Networking** — social anxiety makes client outreach hard despite authentic online presence
 
 ## Active Goals (stated)
-- Get promoted to Director of Product within 18 months
-- Improve sleep and reduce anxiety
-- Save $30k for house down payment
-- Run a half marathon
-- Be more present with partner Alex
+- Make freelancing full-time within 2 years
+- Build a recognizable design brand/portfolio
+- Pay off $6k in credit card debt
+- Learn motion design and 3D tools
+- Figure out what city feels like home long-term
 
 ## Key Patterns from Data
-- **Calendar density → social spending spike** — high-meeting weeks correlate with dining/social transactions ($85 Easy Tiger repeats after dense weeks)
-- **Career anxiety → health neglect** — lifelog career/anxiety entries cluster with fewer exercise/health tags
-- **Relationship thinning during promotion push** — relationship entries drop during high-work periods (ll_0004: "I haven't asked about their job in two weeks")
-- **Therapy as anchor** — consistent therapy appointments (cal_0004, cal_0005) signal active mental health investment
-- **Financial discipline** — $2,100/mo rent, therapy, structured spending — but house savings goal requires intentionality
+- **Learning vs Earning mismatch** — strong tool investment but revenue conversion is the real bottleneck
+- **Public confidence / private doubt** — social posts project wins, lifelog reveals pricing anxiety and comparison (ll_0004, ll_0005)
+- **ADHD confirmed across sources** — self-report, lifelog tags, calendar irregularity, conversation themes
+- **Financial stress is real** — debt and income variability appear frequently across lifelog entries
+- **Austin identity** — community and location matter emotionally (ll_0001, ll_0004)
+- **AI as productivity lever** — uses AI to overcome avoidance (ll_0003: "would've taken me half a day of avoidance otherwise")
 
 ## Interaction Preferences
-- Communication style: casual, like a smart friend — direct but warm
-- Keep responses grounded in data, not platitudes
-- Responds well to: specific time-bound actions, pattern connections across life domains, honest acknowledgment of trade-offs
-- Responds poorly to: vague advice, corporate-speak, being told to "just relax"
-- Financial sensitivity: medium — concrete numbers are welcome, preachiness is not
+- ADHD-aware: keep messages short, chunked, actionable
+- Financial sensitivity: high — be concrete, not preachy
+- Communication style: informal, energetic, uses humor, sometimes self-deprecating — be a collaborator not an assistant
+- Responds well to: direct honesty, small wins, practical templates, specific numbers
+- Responds poorly to: long advice lists, motivational platitudes, "just charge more"

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project: Questline
 
-AI agent that analyzes behavioral data (financial, calendar, social, lifelog) to project life scenarios 1/5/10 years out and generate concrete daily micro-actions. Built for a hackathon demo using a synthetic persona dataset (`data/all_personas/`). Primary demo persona is **Jordan Lee (p01)**.
+AI agent that analyzes behavioral data (financial, calendar, social, lifelog) to project life scenarios 1/5/10 years out and generate concrete daily micro-actions. Built for a hackathon demo using a synthetic persona dataset (`data/all_personas/`). Primary demo persona is **Theo Nakamura (p05)**.
 
 ## Commands
 
