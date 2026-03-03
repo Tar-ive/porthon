@@ -13,6 +13,10 @@ from pydantic import BaseModel
 
 from agent.intent import classify_intent
 from agent.prompt_builder import build_system_prompt
+from agents.models import ProfileScores, QuestContext, QuestMemory
+from agents.quest_orchestrator import QuestOrchestrator
+from agents.outcome_collector import OutcomeCollector
+from agents.models import PersonaConfig
 from pipeline.action_planner import generate_actions
 from pipeline.extractor import extract_persona_data
 from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
@@ -179,6 +183,85 @@ async def handle_chat(request: ChatRequest):
     response = StreamingResponse(wrap_stream(events), media_type="text/event-stream")
     response.headers["x-porthon-intent"] = intent
     return patch_response_with_headers(response)
+
+
+class QuestRequest(BaseModel):
+    scenario_id: str
+    persona_id: str = "p05"
+
+
+# Default profile scores for Theo (demo) — in production, computed by profiler
+_DEMO_PROFILE_SCORES = ProfileScores(
+    execution=0.45,
+    growth=0.65,
+    self_awareness=0.70,
+    financial_stress=0.75,
+    adhd_indicator=0.80,
+    archetype="emerging_talent",
+    deltas={"public_private": 0.40},
+)
+
+
+@app.post("/api/quest")
+async def activate_quest(request: QuestRequest):
+    """Activate deep agents for a chosen questline scenario."""
+    try:
+        extracted = extract_persona_data(request.persona_id)
+
+        # Generate scenarios to find the chosen one
+        scenarios = await asyncio.wait_for(generate_scenarios_llm(extracted), timeout=30.0)
+        chosen = next(
+            (s for s in scenarios if s.get("id") == request.scenario_id),
+            scenarios[0] if scenarios else {"id": request.scenario_id, "title": "Quest", "summary": ""},
+        )
+
+        # Generate actions for the chosen scenario
+        actions = await asyncio.wait_for(generate_actions(chosen, extracted), timeout=30.0)
+
+        # Build quest context
+        context = QuestContext(
+            scenario=chosen,
+            action_plan=actions,
+            profile_scores=_DEMO_PROFILE_SCORES,
+            extracted_data=extracted,
+            persona_id=request.persona_id,
+        )
+
+        # Run orchestrator
+        orchestrator = QuestOrchestrator(context)
+        quest_plan = await asyncio.wait_for(orchestrator.run(), timeout=90.0)
+        return quest_plan.model_dump()
+
+    except asyncio.TimeoutError:
+        return {"error": "Quest activation timed out", "quest_title": "", "execution_summary": "timeout"}
+    except Exception as e:
+        logger.error(f"Quest activation failed: {e}")
+        return {"error": str(e), "quest_title": "", "execution_summary": "failed"}
+
+
+class QuestOutcomeRequest(BaseModel):
+    quest_plan: dict
+    persona_id: str = "p05"
+
+
+@app.post("/api/quest/outcomes")
+async def collect_quest_outcomes(request: QuestOutcomeRequest):
+    """Collect outcome signals for a completed quest."""
+    try:
+        from agents.models import QuestPlan as QuestPlanModel
+        quest_plan = QuestPlanModel(**request.quest_plan)
+        config = PersonaConfig(
+            persona_id=request.persona_id,
+            data_dir=f"data/all_personas/persona_{request.persona_id}",
+            enabled_agents=["calendar", "figma", "notion", "content"],
+            quest_memory_path=f"data/quest_memory/{request.persona_id}.json",
+        )
+        collector = OutcomeCollector()
+        outcome = await collector.collect(quest_plan, config)
+        return outcome.model_dump()
+    except Exception as e:
+        logger.error(f"Outcome collection failed: {e}")
+        return {"error": str(e)}
 
 
 # Serve the Vite SPA — html=True handles client-side routing (returns index.html for unknown paths)
