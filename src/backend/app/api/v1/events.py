@@ -11,6 +11,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from app.api.v1.schemas import ListObject, generate_id, epoch_now, paginate
+from app.auth import get_livemode
 from app.deps import get_master
 from deepagent.loop import AlwaysOnMaster
 
@@ -55,25 +56,29 @@ async def list_events(
 ):
     state = await master.get_state()
     events = state.get("event_history", [])
-    livemode = not request.headers.get("authorization", "").startswith("Bearer sk_test_")
+    livemode = get_livemode(request.headers.get("Authorization"))
 
     resources = []
     for e in events:
         evt_id = e.get("event_id", "")
         if not evt_id.startswith("evt_"):
             evt_id = f"evt_{evt_id}" if evt_id else generate_id("evt_")
-        resources.append({
-            "id": evt_id,
-            "object": "event",
-            "created": epoch_now(),
-            "livemode": livemode,
-            "metadata": {},
-            "type": e.get("type", ""),
-            "payload": e.get("payload", {}),
-        })
+        resources.append(
+            {
+                "id": evt_id,
+                "object": "event",
+                "created": epoch_now(),
+                "livemode": livemode,
+                "metadata": {},
+                "type": e.get("type", ""),
+                "payload": e.get("payload", {}),
+            }
+        )
 
     page, has_more = paginate(resources, limit=limit, starting_after=starting_after)
-    return ListObject(data=page, has_more=has_more, url="/v1/events").model_dump(mode="json")
+    return ListObject(data=page, has_more=has_more, url="/v1/events").model_dump(
+        mode="json"
+    )
 
 
 @router.get("/events/stream")

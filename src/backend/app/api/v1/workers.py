@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query, Request
 
 from app.api.v1.schemas import ListObject, generate_id, epoch_now, paginate
+from app.auth import get_livemode
 from app.deps import get_master
 from app.middleware.errors import ApiException
 from deepagent.loop import AlwaysOnMaster
@@ -39,7 +40,7 @@ async def list_workers(
     master: AlwaysOnMaster = Depends(get_master),
 ):
     state = await master.get_state()
-    livemode = not request.headers.get("authorization", "").startswith("Bearer sk_test_")
+    livemode = get_livemode(request.headers.get("Authorization"))
 
     resources = [_worker_resource(w, livemode) for w in state.get("workers", [])]
 
@@ -56,7 +57,9 @@ async def list_workers(
             r["skills"] = skills_by_worker.get(raw_id, [])
 
     page, has_more = paginate(resources, limit=limit, starting_after=starting_after)
-    return ListObject(data=page, has_more=has_more, url="/v1/workers").model_dump(mode="json")
+    return ListObject(data=page, has_more=has_more, url="/v1/workers").model_dump(
+        mode="json"
+    )
 
 
 @router.get("/workers/map")
@@ -66,7 +69,10 @@ async def get_worker_map(master: AlwaysOnMaster = Depends(get_master)):
 
 @router.get("/workers/skills")
 async def get_worker_skills():
-    return {"object": "list", "data": [s.model_dump(mode="json") for s in SKILL_REGISTRY]}
+    return {
+        "object": "list",
+        "data": [s.model_dump(mode="json") for s in SKILL_REGISTRY],
+    }
 
 
 @router.get("/workers/{worker_id}")
@@ -77,15 +83,23 @@ async def get_worker(
 ):
     state = await master.get_state()
     raw_id = worker_id.removeprefix("wrkr_")
-    w = next((w for w in state.get("workers", []) if w.get("worker_id") == raw_id), None)
+    w = next(
+        (w for w in state.get("workers", []) if w.get("worker_id") == raw_id), None
+    )
     if w is None:
-        raise ApiException(status_code=404, code="resource_missing", message="Worker not found.", param="worker_id")
+        raise ApiException(
+            status_code=404,
+            code="resource_missing",
+            message="Worker not found.",
+            param="worker_id",
+        )
 
     resource = _worker_resource(w)
     expansions = set(expand) if expand else set()
     if "skills" in expansions:
         resource["skills"] = [
-            s.model_dump(mode="json") for s in SKILL_REGISTRY
+            s.model_dump(mode="json")
+            for s in SKILL_REGISTRY
             if getattr(s, "worker_id", "") == raw_id
         ]
 

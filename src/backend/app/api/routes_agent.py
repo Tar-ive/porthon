@@ -6,7 +6,7 @@ import asyncio
 import json
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -24,10 +24,10 @@ class AgentEventRequest(BaseModel):
 
 class ActivateAgentRequest(BaseModel):
     scenario_id: str
-    scenario_title: str
-    scenario_summary: str
-    scenario_horizon: str
-    scenario_likelihood: str
+    scenario_title: str = ""
+    scenario_summary: str = ""
+    scenario_horizon: str = ""
+    scenario_likelihood: str = ""
     scenario_tags: list[str] = []
 
 
@@ -36,58 +36,135 @@ class ApprovalDecisionRequest(BaseModel):
     decision: str
 
 
-@router.get("/state")
-async def get_agent_state(master: AlwaysOnMaster = Depends(get_master)):
-    return await master.get_state()
+@router.get("/state", include_in_schema=False)
+async def get_agent_state(request: Request):
+    from app.api.v1.runtime import get_runtime
+    from app.deps import get_master
+
+    master = get_master(request)
+    return await get_runtime(master)
 
 
-@router.get("/map")
-async def get_agent_map(master: AlwaysOnMaster = Depends(get_master)):
-    return await master.get_map()
+@router.get("/map", include_in_schema=False)
+async def get_agent_map(request: Request):
+    from app.api.v1.workers import get_worker_map
+    from app.deps import get_master
+
+    master = get_master(request)
+    return await get_worker_map(master)
 
 
-@router.get("/skills")
+@router.get("/skills", include_in_schema=False)
 async def get_skills():
-    return {"skills": [skill.model_dump(mode="json") for skill in SKILL_REGISTRY]}
+    from app.api.v1.workers import get_worker_skills
+
+    return await get_worker_skills()
 
 
-@router.post("/activate")
-async def activate_agent(request: ActivateAgentRequest, master: AlwaysOnMaster = Depends(get_master)):
-    return await master.activate_scenario(
-        {
-            "id": request.scenario_id,
-            "title": request.scenario_title,
-            "summary": request.scenario_summary,
-            "horizon": request.scenario_horizon,
-            "likelihood": request.scenario_likelihood,
-            "tags": request.scenario_tags,
-        }
-    )
+@router.post("/activate", include_in_schema=False)
+async def activate_agent(body: ActivateAgentRequest, request: Request):
+    from pipeline.extractor import extract_persona_data
+    from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
+    from pipeline.action_planner import generate_actions
+    from app.deps import get_master
+
+    master = get_master(request)
+
+    try:
+        extracted = extract_persona_data(
+            body.scenario_id.split("_")[0] if "_" in body.scenario_id else "p05"
+        )
+        scenarios = await generate_scenarios_llm(extracted)
+        chosen = next(
+            (s for s in scenarios if s.get("id") == body.scenario_id),
+            scenarios[0]
+            if scenarios
+            else {
+                "id": body.scenario_id,
+                "title": body.scenario_title,
+                "summary": body.scenario_summary,
+            },
+        )
+        await generate_actions(chosen, extracted)
+        result = await master.activate_scenario(scenario=chosen)
+        return result
+    except Exception as e:
+        from app.middleware.errors import ApiException
+
+        raise ApiException(status_code=500, code="internal_error", message=str(e))
 
 
-@router.post("/events")
-async def post_agent_event(request: AgentEventRequest, master: AlwaysOnMaster = Depends(get_master)):
-    return await master.ingest_event(request.type, request.payload)
+@router.post("/events", include_in_schema=False)
+async def post_agent_event(body: AgentEventRequest, request: Request):
+    from app.api.v1.events import CreateEventRequest
+    from app.deps import get_master
+
+    event_req = CreateEventRequest(type=body.type, payload=body.payload)
+    master = get_master(request)
+    result = await master.ingest_event(event_req.type, event_req.payload)
+    event = result.get("event", {})
+    evt_id = event.get("event_id", "")
+    if not evt_id.startswith("evt_"):
+        from app.api.v1.schemas import generate_id
+
+        evt_id = generate_id("evt_")
+    return {
+        "id": evt_id,
+        "object": "event",
+        "created": event.get("created"),
+        "livemode": True,
+        "metadata": {},
+        "type": event.get("type", event_req.type),
+        "payload": event.get("payload", event_req.payload),
+        "cycle": result.get("cycle"),
+    }
 
 
-@router.post("/approve")
-async def resolve_approval(request: ApprovalDecisionRequest, master: AlwaysOnMaster = Depends(get_master)):
-    return await master.resolve_approval(request.approval_id, request.decision)
+@router.post("/approve", include_in_schema=False)
+async def resolve_approval(body: ApprovalDecisionRequest, request: Request):
+    from app.api.v1.approvals import ResolveApprovalRequest, _find_approval
+    from app.deps import get_master
+
+    master = get_master(request)
+
+    # Get the approval from state to find the correct ID
+    state = await master.get_state()
+    approval = _find_approval(state.get("approvals", []), body.approval_id)
+    if approval is None:
+        from app.middleware.errors import ApiException
+
+        raise ApiException(
+            status_code=404,
+            code="resource_missing",
+            message="Approval not found.",
+            param="approval_id",
+        )
+
+    # Use the ID as stored in state
+    state_approval_id = approval.get("approval_id", body.approval_id)
+    result = await master.resolve_approval(state_approval_id, body.decision)
+    if not result.get("ok"):
+        err = result.get("error", "Unknown error")
+        from app.middleware.errors import ApiException
+
+        raise ApiException(
+            status_code=404 if "not found" in err else 400,
+            code="resource_missing" if "not found" in err else "invalid_request",
+            message=err,
+            param="approval_id",
+        )
+    return {
+        "id": body.approval_id,
+        "object": "approval",
+        "decision": result.get("decision"),
+        "cycle": result.get("cycle"),
+    }
 
 
-@router.get("/stream")
-async def stream_agent_events(master: AlwaysOnMaster = Depends(get_master)):
-    sid, queue = master.stream.subscribe()
+@router.get("/stream", include_in_schema=False)
+async def stream_agent_events(request: Request):
+    from app.api.v1.events import stream_events
+    from app.deps import get_master
 
-    async def event_generator():
-        try:
-            while True:
-                try:
-                    event = await asyncio.wait_for(queue.get(), timeout=20.0)
-                    yield f"data: {json.dumps(event)}\\n\\n"
-                except asyncio.TimeoutError:
-                    yield ": keepalive\\n\\n"
-        finally:
-            master.stream.unsubscribe(sid)
-
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    master = get_master(request)
+    return await stream_events(master)

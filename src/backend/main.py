@@ -6,14 +6,18 @@ from pathlib import Path
 from typing import List
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.api.routes_agent import router as agent_router
 from app.api.v1 import router as v1_router
-from app.middleware.errors import ApiException, api_exception_handler, generic_exception_handler
+from app.middleware.errors import (
+    ApiException,
+    api_exception_handler,
+    generic_exception_handler,
+)
 from app.middleware.idempotency import IdempotencyMiddleware
 from deepagent.workers.kg_worker import classify_intent, _create_rag_instance
 from deepagent.persona.prompt_builder import build_system_prompt
@@ -81,6 +85,13 @@ async def lifespan(app: FastAPI):
         logger.info("NEO4J_URI not set — running without knowledge graph")
     yield
     await master.stop()
+    if _rag is not None:
+        try:
+            if hasattr(_rag, "close"):
+                await _rag.close()
+            logger.info("LightRAG instance closed")
+        except Exception as e:
+            logger.warning(f"Error closing LightRAG: {e}")
     _rag = None
 
 
@@ -107,102 +118,36 @@ class ChatRequest(BaseModel):
     model_config = {"extra": "allow"}
 
 
-@app.get("/api/health")
-def health():
-    return {
-        "status": "ok",
-        "backend": "openai" if USE_OPENAI else "ollama",
-        "rag": _rag is not None,
-    }
+@app.get("/api/health", include_in_schema=False)
+async def api_health(request: Request):
+    from app.api.v1.health import health as v1_health
+
+    return await v1_health(request)
 
 
-@app.get("/api/scenarios")
-async def get_scenarios():
-    try:
-        extracted = extract_persona_data("p05")
-        scenarios = await asyncio.wait_for(generate_scenarios_llm(extracted), timeout=30.0)
-        return scenarios
-    except asyncio.TimeoutError:
-        return generate_scenarios_fallback()
-    except Exception as e:
-        logger.error(f"Scenario generation failed: {e}")
-        return generate_scenarios_fallback()
+@app.get("/api/scenarios", include_in_schema=False)
+async def api_scenarios(request: Request):
+    from app.api.v1.scenarios import list_scenarios
+
+    return await list_scenarios(request)
 
 
-class ActionRequest(BaseModel):
-    scenario_id: str
-    scenario_title: str
-    scenario_summary: str
-    scenario_horizon: str
-    scenario_likelihood: str
+@app.post("/api/actions", include_in_schema=False)
+async def api_actions(request: Request):
+    from app.api.v1.actions import create_actions, CreateActionRequest
+
+    body = await request.json()
+    action_req = CreateActionRequest(**body)
+    return await create_actions(action_req, request)
 
 
-@app.post("/api/actions")
-async def get_actions(request: ActionRequest):
-    try:
-        extracted = extract_persona_data("p05")
-        scenario = {
-            "id": request.scenario_id,
-            "title": request.scenario_title,
-            "summary": request.scenario_summary,
-            "horizon": request.scenario_horizon,
-            "likelihood": request.scenario_likelihood,
-        }
-        actions = await asyncio.wait_for(generate_actions(scenario, extracted), timeout=30.0)
-        return actions
-    except asyncio.TimeoutError:
-        return {"scenario_id": request.scenario_id, "actions": [], "error": "timeout"}
-    except Exception as e:
-        logger.error(f"Action planning failed: {e}")
-        return {"scenario_id": request.scenario_id, "actions": [], "error": str(e)}
+@app.post("/api/chat", include_in_schema=False)
+async def api_chat(request: Request):
+    from app.api.v1.messages import create_message, CreateMessageRequest
 
-
-@app.post("/api/chat")
-async def handle_chat(request: ChatRequest):
-    # Extract last user message for intent classification
-    last_user_text = ""
-    for msg in reversed(request.messages):
-        if msg.role == "user":
-            last_user_text = extract_text(msg)
-            break
-
-    # Classify intent and optionally retrieve KG context
-    intent = classify_intent(last_user_text) if last_user_text else "casual"
-    context = None
-
-    if _rag is not None:
-        try:
-            from deepagent.workers.kg_worker import KgWorker
-            kg = KgWorker()
-            result = await kg._search({"query": last_user_text})
-            if result.ok and result.data.get("raw_context"):
-                context = result.data["raw_context"]
-                intent = result.data.get("intent", intent)
-        except Exception as e:
-            logger.error(f"KG retrieval error: {e}")
-
-    # Build scenario context string if a scenario was selected
-    scenario_context = None
-    if request.scenario:
-        scenario_context = (
-            f"The user is exploring the '{request.scenario.title}' scenario "
-            f"({request.scenario.horizon}, {request.scenario.likelihood}): "
-            f"{request.scenario.summary}"
-        )
-
-    # Build system prompt from SOUL + USER + context
-    system_prompt = build_system_prompt(context=context, intent=intent, scenario=scenario_context)
-
-    events = (
-        iter_openai_events(request.messages, model=OPENAI_MODEL, system_prompt=system_prompt)
-        if USE_OPENAI
-        else iter_ollama_events(
-            request.messages, host=OLLAMA_HOST, model=OLLAMA_MODEL, system_prompt=system_prompt
-        )
-    )
-    response = StreamingResponse(wrap_stream(events), media_type="text/event-stream")
-    response.headers["x-porthon-intent"] = intent
-    return patch_response_with_headers(response)
+    body = await request.json()
+    msg = CreateMessageRequest(**body)
+    return await create_message(msg, request)
 
 
 class QuestRequest(BaseModel):
@@ -222,32 +167,13 @@ _DEMO_PROFILE_SCORES = ProfileScores(
 )
 
 
-@app.post("/api/quest")
-async def activate_quest(request: QuestRequest):
-    # Route quest through the always-on master + deep agent workers
-    try:
-        extracted = extract_persona_data(request.persona_id)
+@app.post("/api/quest", include_in_schema=False)
+async def api_quest(request: Request):
+    from app.api.v1.quests import create_quest, CreateQuestRequest
 
-        # Generate scenarios to find the chosen one
-        scenarios = await asyncio.wait_for(generate_scenarios_llm(extracted), timeout=30.0)
-        chosen = next(
-            (s for s in scenarios if s.get("id") == request.scenario_id),
-            scenarios[0] if scenarios else {"id": request.scenario_id, "title": "Quest", "summary": ""},
-        )
-
-        # Generate actions for the chosen scenario
-        actions = await asyncio.wait_for(generate_actions(chosen, extracted), timeout=30.0)
-
-        # Activate via the master loop's worker system
-        master = app.state.always_on_master
-        result = await master.activate_scenario(scenario=chosen)
-        return result
-
-    except asyncio.TimeoutError:
-        return {"error": "Quest activation timed out", "quest_title": "", "execution_summary": "timeout"}
-    except Exception as e:
-        logger.error(f"Quest activation failed: {e}")
-        return {"error": str(e), "quest_title": "", "execution_summary": "failed"}
+    body = await request.json()
+    quest_req = CreateQuestRequest(**body)
+    return await create_quest(quest_req, request)
 
 
 # /api/quest/outcomes is now handled by per-worker verify actions
