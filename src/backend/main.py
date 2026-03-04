@@ -11,12 +11,11 @@ from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from agent.intent import classify_intent
-from agent.prompt_builder import build_system_prompt
-from agents.models import ProfileScores, QuestContext, QuestMemory
-from agents.quest_orchestrator import QuestOrchestrator
-from agents.outcome_collector import OutcomeCollector
-from agents.models import PersonaConfig
+from app.api.routes_agent import router as agent_router
+from deepagent.workers.kg_worker import classify_intent, _create_rag_instance
+from deepagent.persona.prompt_builder import build_system_prompt
+from deepagent.contracts import ProfileScores, QuestContext, QuestMemory, PersonaConfig  # noqa: F401
+from deepagent.factory import create_master
 from pipeline.action_planner import generate_actions
 from pipeline.extractor import extract_persona_data
 from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
@@ -57,22 +56,33 @@ _rag = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _rag
+    master = create_master(
+        state_path=Path(__file__).parent / "state" / "runtime_state.json",
+        tick_seconds=int(os.environ.get("AGENT_TICK_SECONDS", "900")),
+    )
+    await master.start()
+    app.state.always_on_master = master
+
     if os.environ.get("NEO4J_URI"):
         try:
-            from agent.retriever import create_rag_instance
-
-            _rag = create_rag_instance()
-            logger.info("LightRAG initialized with Neo4j + Qdrant")
+            _rag = _create_rag_instance()
+            if _rag is not None:
+                await _rag.initialize_storages()
+                logger.info("LightRAG initialized with Neo4j + Qdrant")
+            else:
+                logger.warning("LightRAG creation returned None — running without KG")
         except Exception as e:
             logger.warning(f"LightRAG init failed (running without KG): {e}")
             _rag = None
     else:
         logger.info("NEO4J_URI not set — running without knowledge graph")
     yield
+    await master.stop()
     _rag = None
 
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(agent_router)
 
 
 class ScenarioContext(BaseModel):
@@ -155,11 +165,14 @@ async def handle_chat(request: ChatRequest):
 
     if _rag is not None:
         try:
-            from agent.retriever import retrieve_context
-
-            context, intent = await retrieve_context(last_user_text, _rag)
+            from deepagent.workers.kg_worker import KgWorker
+            kg = KgWorker()
+            result = await kg._search({"query": last_user_text})
+            if result.ok and result.data.get("raw_context"):
+                context = result.data["raw_context"]
+                intent = result.data.get("intent", intent)
         except Exception as e:
-            logger.error(f"RAG retrieval error: {e}")
+            logger.error(f"KG retrieval error: {e}")
 
     # Build scenario context string if a scenario was selected
     scenario_context = None
@@ -204,7 +217,7 @@ _DEMO_PROFILE_SCORES = ProfileScores(
 
 @app.post("/api/quest")
 async def activate_quest(request: QuestRequest):
-    """Activate deep agents for a chosen questline scenario."""
+    # Route quest through the always-on master + deep agent workers
     try:
         extracted = extract_persona_data(request.persona_id)
 
@@ -218,19 +231,10 @@ async def activate_quest(request: QuestRequest):
         # Generate actions for the chosen scenario
         actions = await asyncio.wait_for(generate_actions(chosen, extracted), timeout=30.0)
 
-        # Build quest context
-        context = QuestContext(
-            scenario=chosen,
-            action_plan=actions,
-            profile_scores=_DEMO_PROFILE_SCORES,
-            extracted_data=extracted,
-            persona_id=request.persona_id,
-        )
-
-        # Run orchestrator
-        orchestrator = QuestOrchestrator(context)
-        quest_plan = await asyncio.wait_for(orchestrator.run(), timeout=90.0)
-        return quest_plan.model_dump()
+        # Activate via the master loop's worker system
+        master = app.state.always_on_master
+        result = await master.activate_scenario(scenario=chosen)
+        return result
 
     except asyncio.TimeoutError:
         return {"error": "Quest activation timed out", "quest_title": "", "execution_summary": "timeout"}
@@ -239,29 +243,8 @@ async def activate_quest(request: QuestRequest):
         return {"error": str(e), "quest_title": "", "execution_summary": "failed"}
 
 
-class QuestOutcomeRequest(BaseModel):
-    quest_plan: dict
-    persona_id: str = "p05"
-
-
-@app.post("/api/quest/outcomes")
-async def collect_quest_outcomes(request: QuestOutcomeRequest):
-    """Collect outcome signals for a completed quest."""
-    try:
-        from agents.models import QuestPlan as QuestPlanModel
-        quest_plan = QuestPlanModel(**request.quest_plan)
-        config = PersonaConfig(
-            persona_id=request.persona_id,
-            data_dir=f"data/all_personas/persona_{request.persona_id}",
-            enabled_agents=["calendar", "figma", "notion", "content"],
-            quest_memory_path=f"data/quest_memory/{request.persona_id}.json",
-        )
-        collector = OutcomeCollector()
-        outcome = await collector.collect(quest_plan, config)
-        return outcome.model_dump()
-    except Exception as e:
-        logger.error(f"Outcome collection failed: {e}")
-        return {"error": str(e)}
+# /api/quest/outcomes is now handled by per-worker verify actions
+# The old OutcomeCollector endpoint has been removed.
 
 
 # Serve the Vite SPA — html=True handles client-side routing (returns index.html for unknown paths)

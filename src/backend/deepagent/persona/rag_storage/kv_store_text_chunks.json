@@ -1,0 +1,16 @@
+{
+  "chunk-d36bd96d0d5309d26853e5e864b9e4b7": {
+    "tokens": 46,
+    "content": "kg-live-seed-97be8be4-87e3-4a8b-a75d-f5e80bc6297e: Theo booked two focused design blocks this week and logged one lead follow-up.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-d36bd96d0d5309d26853e5e864b9e4b7",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:40561990346b9ca086aba6864d4d7c24",
+      "default:extract:21f8f8ef825f3ad605f1a8c3cf139849"
+    ],
+    "create_time": 1772635984,
+    "update_time": 1772636069,
+    "_id": "chunk-d36bd96d0d5309d26853e5e864b9e4b7"
+  }
+}

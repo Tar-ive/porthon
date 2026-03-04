@@ -1,0 +1,2383 @@
+{
+  "persona_id": "p05",
+  "active_scenario": {
+    "scenario_id": "s_approve",
+    "title": "Approval Scenario",
+    "horizon": "1yr",
+    "likelihood": "possible",
+    "summary": "summary",
+    "tags": [],
+    "activated_at": "2026-03-04T14:35:27.221205+00:00"
+  },
+  "archived_scenarios": [
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T03:13:15.473604+00:00",
+      "archived_at": "2026-03-04T03:15:28.002526+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T03:15:28.002853+00:00",
+      "archived_at": "2026-03-04T03:15:28.016465+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T03:15:28.016478+00:00",
+      "archived_at": "2026-03-04T03:39:58.402819+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T03:39:58.403147+00:00",
+      "archived_at": "2026-03-04T03:39:58.416235+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T03:39:58.416247+00:00",
+      "archived_at": "2026-03-04T03:51:35.095282+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T03:51:35.095820+00:00",
+      "archived_at": "2026-03-04T03:51:35.105832+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T03:51:35.105884+00:00",
+      "archived_at": "2026-03-04T04:03:06.008694+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T04:03:06.009037+00:00",
+      "archived_at": "2026-03-04T04:03:06.022459+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T04:03:06.022472+00:00",
+      "archived_at": "2026-03-04T04:45:50.684857+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T04:45:50.685226+00:00",
+      "archived_at": "2026-03-04T04:45:50.699062+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T04:45:50.699072+00:00",
+      "archived_at": "2026-03-04T04:47:03.160604+00:00"
+    },
+    {
+      "scenario_id": "s_002",
+      "title": "Full-Time Shift with Skill Pivot",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "Theo transitions to full-time freelancing by year 2 after overcoming undercharging through targeted social calendar events, building a modest portfolio with motion design and basic 3D skills from consistent learning investments. Debt is cleared by year 3 via higher rates and steady gigs, including Austin mural outreach leads, though ADHD requires productivity hacks. He relocates to Portland after testing cities, blending design identity with emerging relationships from networking.",
+      "tags": [
+        "design",
+        "learning",
+        "social",
+        "identity"
+      ],
+      "activated_at": "2026-03-04T04:47:03.160725+00:00",
+      "archived_at": "2026-03-04T05:10:34.521107+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T05:10:34.522201+00:00",
+      "archived_at": "2026-03-04T05:10:34.564890+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T05:10:34.564916+00:00",
+      "archived_at": "2026-03-04T05:11:38.580412+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T05:11:38.580591+00:00",
+      "archived_at": "2026-03-04T05:11:42.725907+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T05:11:42.725940+00:00",
+      "archived_at": "2026-03-04T05:25:27.677951+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T05:25:27.678362+00:00",
+      "archived_at": "2026-03-04T05:25:31.888850+00:00"
+    },
+    {
+      "scenario_id": "s_approve",
+      "title": "Approval Scenario",
+      "horizon": "1yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [],
+      "activated_at": "2026-03-04T05:25:31.888880+00:00",
+      "archived_at": "2026-03-04T14:34:17.700543+00:00"
+    },
+    {
+      "scenario_id": "s_activate",
+      "title": "Activation Scenario",
+      "horizon": "5yr",
+      "likelihood": "possible",
+      "summary": "summary",
+      "tags": [
+        "career"
+      ],
+      "activated_at": "2026-03-04T14:34:17.700718+00:00",
+      "archived_at": "2026-03-04T14:35:27.221186+00:00"
+    }
+  ],
+  "queue": [
+    {
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "action": "publish_post",
+      "priority": 1,
+      "payload": {},
+      "status": "waiting_approval",
+      "retries": 0,
+      "created_at": "2026-03-04T03:39:58.420793+00:00",
+      "updated_at": "2026-03-04T05:25:31.909515+00:00"
+    },
+    {
+      "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3",
+      "worker_id": "facebook_worker",
+      "action": "publish_post",
+      "priority": 1,
+      "payload": {},
+      "status": "waiting_approval",
+      "retries": 0,
+      "created_at": "2026-03-04T05:10:34.575523+00:00",
+      "updated_at": "2026-03-04T05:11:42.750590+00:00"
+    },
+    {
+      "task_id": "704f5ad2-6633-4708-bf9d-7aa505e32664",
+      "worker_id": "facebook_worker",
+      "action": "publish_post",
+      "priority": 1,
+      "payload": {},
+      "status": "pending",
+      "retries": 0,
+      "created_at": "2026-03-04T05:11:42.739032+00:00",
+      "updated_at": "2026-03-04T14:36:42.184906+00:00"
+    },
+    {
+      "task_id": "8be9ced9-eff6-4689-a5c6-c32b46d56419",
+      "worker_id": "facebook_worker",
+      "action": "publish_post",
+      "priority": 1,
+      "payload": {},
+      "status": "waiting_approval",
+      "retries": 0,
+      "created_at": "2026-03-04T05:25:31.897794+00:00",
+      "updated_at": "2026-03-04T05:25:31.901186+00:00"
+    },
+    {
+      "task_id": "91503711-c2df-46f2-9c07-b086e4a073d7",
+      "worker_id": "kg_worker",
+      "action": "refresh_context",
+      "priority": 10,
+      "payload": {
+        "scenario_id": "s_approve",
+        "scenario_title": "Approval Scenario",
+        "horizon": "1yr"
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-04T14:35:27.221214+00:00",
+      "updated_at": "2026-03-04T14:36:42.176459+00:00"
+    },
+    {
+      "task_id": "9bfaff76-49f0-45b8-a211-516a36f78fd8",
+      "worker_id": "calendar_worker",
+      "action": "sync_schedule",
+      "priority": 20,
+      "payload": {
+        "scenario_id": "s_approve",
+        "scenario_title": "Approval Scenario",
+        "horizon": "1yr"
+      },
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-04T14:35:27.221214+00:00",
+      "updated_at": "2026-03-04T14:36:42.163080+00:00"
+    },
+    {
+      "task_id": "eec9f28b-441b-442b-a99a-f3747590c3c9",
+      "worker_id": "notion_leads_worker",
+      "action": "sync_leads",
+      "priority": 30,
+      "payload": {
+        "scenario_id": "s_approve",
+        "scenario_title": "Approval Scenario",
+        "horizon": "1yr"
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-04T14:35:27.221214+00:00",
+      "updated_at": "2026-03-04T14:36:42.176529+00:00"
+    },
+    {
+      "task_id": "391d5eba-7003-46d1-a221-1e99de073299",
+      "worker_id": "notion_opportunity_worker",
+      "action": "sync_opportunities",
+      "priority": 30,
+      "payload": {
+        "scenario_id": "s_approve",
+        "scenario_title": "Approval Scenario",
+        "horizon": "1yr"
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-04T14:35:27.221214+00:00",
+      "updated_at": "2026-03-04T14:36:42.176551+00:00"
+    },
+    {
+      "task_id": "62d31ac6-d980-426b-8f72-ef3ddac37eca",
+      "worker_id": "facebook_worker",
+      "action": "draft_post",
+      "priority": 40,
+      "payload": {
+        "scenario_id": "s_approve",
+        "scenario_title": "Approval Scenario",
+        "horizon": "1yr"
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-04T14:35:27.221214+00:00",
+      "updated_at": "2026-03-04T14:36:42.176571+00:00"
+    },
+    {
+      "task_id": "eb8ff3ee-32bc-48b4-a012-536bd3c78ecf",
+      "worker_id": "figma_worker",
+      "action": "generate_plan",
+      "priority": 40,
+      "payload": {
+        "scenario_id": "s_approve",
+        "scenario_title": "Approval Scenario",
+        "horizon": "1yr"
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-04T14:35:27.221214+00:00",
+      "updated_at": "2026-03-04T14:36:42.176581+00:00"
+    },
+    {
+      "task_id": "549fbe1c-984a-4d66-bc5e-796500049897",
+      "worker_id": "facebook_worker",
+      "action": "publish_post",
+      "priority": 1,
+      "payload": {},
+      "status": "waiting_approval",
+      "retries": 0,
+      "created_at": "2026-03-04T14:36:42.174565+00:00",
+      "updated_at": "2026-03-04T14:36:42.176153+00:00"
+    }
+  ],
+  "approvals": [
+    {
+      "approval_id": "20cc6303-bd7e-4224-a118-250ef03c4ecb",
+      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T03:15:28.022696+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T03:15:28.029603+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "64bdbef4-e479-4751-a1cf-f89bed842239",
+      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T03:15:28.030646+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T03:39:58.428053+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "71210351-278a-43f3-9a50-33f505ec1d34",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T03:39:58.422226+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T03:51:35.119758+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "d1d68cfc-44f5-49bd-9c5b-29dedff28fe4",
+      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T03:39:58.429188+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:03:06.038134+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "aa241880-79d2-402e-8151-c0e2746557a1",
+      "task_id": "6a015ccf-94bc-4358-a7ba-af51cdb0adcc",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T03:51:35.112753+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:45:50.713666+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "d1145edc-75ca-44b3-9de7-0932914ee880",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T03:51:35.120966+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:14.204625+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "6ff2c5ca-058d-4c09-adec-75a0c4061d80",
+      "task_id": "d79c22b8-9e8f-4657-a90b-9272af877512",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:03:06.030735+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:15.644816+00:00",
+      "decision": "rejected"
+    },
+    {
+      "approval_id": "50ab1fc7-0816-4574-a580-bf50dc59d2a8",
+      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:03:06.038824+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:16.018144+00:00",
+      "decision": "rejected"
+    },
+    {
+      "approval_id": "ab36bdeb-22b1-4fd3-ae99-96b4d29376bb",
+      "task_id": "780368c8-d689-4f5b-ae5a-67acb406d223",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:45:50.707856+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:16.565076+00:00",
+      "decision": "rejected"
+    },
+    {
+      "approval_id": "d22bca3f-2c6d-4fc4-9640-dc71d910574c",
+      "task_id": "6a015ccf-94bc-4358-a7ba-af51cdb0adcc",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:45:50.715384+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:19.686304+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "12272181-e367-40b2-947c-6eebe84e992c",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:14.205381+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:23.047599+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "afb12bab-e490-437c-950b-740650e2ab3f",
+      "task_id": "6a015ccf-94bc-4358-a7ba-af51cdb0adcc",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:19.688298+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:21.820520+00:00",
+      "decision": "rejected"
+    },
+    {
+      "approval_id": "e675b2a4-aed5-4dc2-bd16-2133865d6d64",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:23.049446+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:23.247284+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "5cdb3022-df59-4eaf-accb-d6ace25aaf33",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:23.249390+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:23.420915+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "b386c120-6602-410a-bcda-2c8a38f62b1d",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:23.423078+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:23.619944+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "82faf3c6-74a2-4146-812d-8c97c2a93e62",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:23.622271+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:23.806226+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "28688e98-4d8b-4d10-ba4e-cdf49728e9ae",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:23.808090+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:24.007743+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "f2fd4078-79dd-4526-963f-2c4e7cac8b3d",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:24.009878+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:24.221927+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "3bb8a714-0560-4f5c-bdb0-da77b5cd7fc2",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:24.222980+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:24.434322+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "4d0b2ecd-cd32-48e9-9855-11a05f98c5e9",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:24.436578+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:24.634619+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "3410b758-a347-4a48-973a-4b1d46ace3e1",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:24.636641+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:24.846825+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "c3397a83-d91d-4477-b392-0f61f213907a",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:24.848579+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:25.021468+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "f22c7e71-95b5-47b9-a536-2467c5ae0eed",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:25.023711+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:25.221323+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "703f400c-8386-4217-95d7-6a82c56f0c86",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:25.223623+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:25.688390+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "e3b8b204-89c0-41cc-87cf-8273964db2e7",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:25.690760+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:27.636022+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "4d348b5c-b344-4a45-8dc2-97cc6d55a8fe",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:27.638155+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:28.049157+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "688a122f-b2ef-48fa-bb4d-4da95c965db6",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:28.051262+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:28.262677+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "67a0271a-3842-402b-bfda-35d7e688b602",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:28.265333+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:28.463371+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "72e14352-b511-4468-b223-1f9649524d20",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:28.465833+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:28.648671+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "e15e47c1-535c-42b8-b757-7e082dbdb93c",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:28.650824+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:29.490003+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "a543c08d-fbfe-468d-ab38-447f6e2b9fde",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:29.492144+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:29.717063+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "f99cc737-8145-4156-a0c0-3795cf2b1e58",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:29.719318+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:47:29.942204+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "eac7898a-d0cf-43e8-96cc-7d64c5657624",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:47:29.944146+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T04:56:17.378050+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "d18bf5d7-c9a9-41ab-9be1-6a7df396ae06",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T04:56:17.386213+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T05:10:34.587636+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "c849300b-32ba-4c04-897e-766235d66edb",
+      "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T05:10:34.577535+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T05:11:42.747726+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "18c6ffac-2540-439b-8890-28ccfbbfe82f",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T05:10:34.588768+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T05:25:31.908570+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "56cf0942-175d-49ce-9906-976d59d0c0df",
+      "task_id": "704f5ad2-6633-4708-bf9d-7aa505e32664",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T05:11:42.740280+00:00",
+      "payload": {},
+      "resolved_at": "2026-03-04T14:36:42.184831+00:00",
+      "decision": "approved"
+    },
+    {
+      "approval_id": "c6ca75c7-f676-48e1-88ba-9dbec4eac42b",
+      "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T05:11:42.750624+00:00",
+      "payload": {},
+      "resolved_at": null,
+      "decision": null
+    },
+    {
+      "approval_id": "be8a2cd2-8e0f-44cb-a442-2ec62e2d2a6c",
+      "task_id": "8be9ced9-eff6-4689-a5c6-c32b46d56419",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T05:25:31.901195+00:00",
+      "payload": {},
+      "resolved_at": null,
+      "decision": null
+    },
+    {
+      "approval_id": "75bfaac9-7133-4e47-a0ba-661d60003e4b",
+      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T05:25:31.909520+00:00",
+      "payload": {},
+      "resolved_at": null,
+      "decision": null
+    },
+    {
+      "approval_id": "f963eb2c-b018-433b-9fec-1ca9beed6613",
+      "task_id": "549fbe1c-984a-4d66-bc5e-796500049897",
+      "worker_id": "facebook_worker",
+      "reason": "Action 'publish_post' requires approval",
+      "requested_at": "2026-03-04T14:36:42.176158+00:00",
+      "payload": {},
+      "resolved_at": null,
+      "decision": null
+    }
+  ],
+  "workers": [
+    {
+      "worker_id": "kg_worker",
+      "label": "KG Search",
+      "status": "open_circuit",
+      "queue_depth": 1,
+      "last_error": "Unknown KG action: refresh_context"
+    },
+    {
+      "worker_id": "calendar_worker",
+      "label": "Calendar Scheduler",
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
+    },
+    {
+      "worker_id": "notion_leads_worker",
+      "label": "Notion Leads Tracker",
+      "status": "open_circuit",
+      "queue_depth": 1,
+      "last_error": "Unknown action: sync_leads"
+    },
+    {
+      "worker_id": "notion_opportunity_worker",
+      "label": "Notion Opportunity Tracker",
+      "status": "open_circuit",
+      "queue_depth": 1,
+      "last_error": "Unknown action: sync_opportunities"
+    },
+    {
+      "worker_id": "facebook_worker",
+      "label": "Facebook Publisher",
+      "status": "open_circuit",
+      "queue_depth": 6,
+      "last_error": "Unknown action: draft_post"
+    },
+    {
+      "worker_id": "figma_worker",
+      "label": "Figma Plan Generator",
+      "status": "open_circuit",
+      "queue_depth": 1,
+      "last_error": "Unknown action: generate_plan"
+    }
+  ],
+  "budgets": [
+    {
+      "worker_id": "kg_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "calendar_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "notion_leads_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "notion_opportunity_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "facebook_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "figma_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    }
+  ],
+  "circuits": [
+    {
+      "worker_id": "kg_worker",
+      "failure_streak": 3,
+      "open_until": "2026-03-04T14:41:42.176479+00:00",
+      "last_error": "Unknown KG action: refresh_context"
+    },
+    {
+      "worker_id": "calendar_worker",
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
+    },
+    {
+      "worker_id": "notion_leads_worker",
+      "failure_streak": 3,
+      "open_until": "2026-03-04T14:41:42.176537+00:00",
+      "last_error": "Unknown action: sync_leads"
+    },
+    {
+      "worker_id": "notion_opportunity_worker",
+      "failure_streak": 3,
+      "open_until": "2026-03-04T14:41:42.176554+00:00",
+      "last_error": "Unknown action: sync_opportunities"
+    },
+    {
+      "worker_id": "facebook_worker",
+      "failure_streak": 3,
+      "open_until": "2026-03-04T14:41:42.176574+00:00",
+      "last_error": "Unknown action: draft_post"
+    },
+    {
+      "worker_id": "figma_worker",
+      "failure_streak": 3,
+      "open_until": "2026-03-04T14:41:42.176587+00:00",
+      "last_error": "Unknown action: generate_plan"
+    }
+  ],
+  "cycle_history": [
+    {
+      "cycle_id": "cycle_8b74b1f8-9a27-428c-a8bd-be68ca1c31ea",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:03:06.023582+00:00",
+      "finished_at": "2026-03-04T04:03:06.024215+00:00",
+      "executed_tasks": [
+        "2e45255d-e25e-428d-ba48-e4d2de5ae1fd",
+        "a4da6f7c-1cb8-4cc4-9696-3e7e5aaa7485",
+        "7ba7d4fd-2ac3-41a6-99e0-1defdb0d1733",
+        "3f27bfd4-ca55-499e-b051-d718f6bfa71c",
+        "66a06811-1fd1-44ef-8bcc-3281991580be",
+        "c0268e7b-26fe-405e-b826-bc8cca098ef5"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_476f12cb-4576-47e5-b6fb-a78f64a64aa5",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:03:06.030693+00:00",
+      "finished_at": "2026-03-04T04:03:06.030796+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e0e48346-685b-47bb-ad4e-08d7e395a0a1",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:03:06.038804+00:00",
+      "finished_at": "2026-03-04T04:03:06.038841+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_3fcfcac2-388e-43dc-a21e-30e8c69cee1c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:45:50.687590+00:00",
+      "finished_at": "2026-03-04T04:45:50.688691+00:00",
+      "executed_tasks": [
+        "d4c2d4ce-d617-4ead-8b78-f3a025becf87",
+        "91e60098-3e34-4d77-8af9-27962a4732e5",
+        "5a28aa63-ff2e-4c7e-a6bd-b9ef7a24c308",
+        "babc5165-5bc0-4dfe-85cc-5cb26e65dd09",
+        "56377e86-f8b1-440e-a060-8a3906a6400e",
+        "d0ade849-20d4-4042-83fb-276ad0a54b2b"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_81fcfac7-80c0-4ae2-b0c0-2ce8c4f6696b",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:45:50.701177+00:00",
+      "finished_at": "2026-03-04T04:45:50.701601+00:00",
+      "executed_tasks": [
+        "b2b0c0d2-1462-427a-a916-bf00202ee7e0",
+        "1c8795a8-6e24-4506-b8fb-d337a9820ab5",
+        "e3dd43c3-c341-4955-b248-c01888e66acc",
+        "58ccc4ac-96d5-417a-b717-6eb46eb7eb4c",
+        "2a53f550-8efe-4eb0-bd27-0d44692c0f31",
+        "f950b96c-0068-48b3-94eb-8fb6a6b2c33c"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_37f371cc-6d81-4dd0-ae91-1b08c9e697c6",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:45:50.707839+00:00",
+      "finished_at": "2026-03-04T04:45:50.707870+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_a0825e6b-5bc6-4ac2-9c92-6e5b495802da",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:45:50.715348+00:00",
+      "finished_at": "2026-03-04T04:45:50.715412+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_415ca9de-71e8-437a-8e25-eab67631d985",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:03.163101+00:00",
+      "finished_at": "2026-03-04T04:47:03.165670+00:00",
+      "executed_tasks": [
+        "67063472-156a-46c3-b26a-41f3921acad0",
+        "23ce2d7b-e660-4132-ac41-b54961426b5d",
+        "f0e7a1ec-0eaf-46d9-a106-13f1a1242e21",
+        "40a7fd89-e3d2-4ec1-865b-cfc283d00e1a",
+        "fd9cb9dd-80d5-4164-89cb-bffd16039d5e",
+        "bd129e73-b330-406b-88cc-c823c8447847"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_4bf5f588-21c8-4377-b7c7-c4594b87b188",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:14.205363+00:00",
+      "finished_at": "2026-03-04T04:47:14.205396+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_eb44a6cf-df7d-42c2-9e4d-012f72f8cafc",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:19.688257+00:00",
+      "finished_at": "2026-03-04T04:47:19.688331+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_8a2cffd8-9900-4ede-9744-7c4dbd5085b1",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:23.049409+00:00",
+      "finished_at": "2026-03-04T04:47:23.049477+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_63aa24ba-06d1-4391-8241-3a14b624d6f1",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:23.249351+00:00",
+      "finished_at": "2026-03-04T04:47:23.249419+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_69991ac2-59af-48cb-991c-2e98f2a27cd5",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:23.423038+00:00",
+      "finished_at": "2026-03-04T04:47:23.423109+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_621463f5-0be1-4edb-9739-37c3ba5eb563",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:23.622231+00:00",
+      "finished_at": "2026-03-04T04:47:23.622305+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_c7b8ae9d-26cd-4c85-b7e7-1d986b790d10",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:23.808053+00:00",
+      "finished_at": "2026-03-04T04:47:23.808121+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_bb80c36a-703e-48c1-b268-def71cabc56d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:24.009839+00:00",
+      "finished_at": "2026-03-04T04:47:24.009910+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_5428b9e7-85fc-4ebb-8bd0-2d8ee40b21f3",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:24.222806+00:00",
+      "finished_at": "2026-03-04T04:47:24.223077+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_d2d9f23c-f250-4679-809c-934bccc986f6",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:24.436536+00:00",
+      "finished_at": "2026-03-04T04:47:24.436611+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_699e8443-4a09-4048-8130-d1c255e9381e",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:24.636588+00:00",
+      "finished_at": "2026-03-04T04:47:24.636673+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_748cd9e5-85b7-4b93-8e72-76804ee04222",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:24.848543+00:00",
+      "finished_at": "2026-03-04T04:47:24.848609+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_799b1dd6-c603-41ca-b2bd-e3670aced88b",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:25.023672+00:00",
+      "finished_at": "2026-03-04T04:47:25.023743+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_92797c12-3b09-4e02-9b34-0bbb0b7b32fe",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:25.223580+00:00",
+      "finished_at": "2026-03-04T04:47:25.223658+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_9f498374-7596-4e8d-898b-4311eab9dacf",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:25.690722+00:00",
+      "finished_at": "2026-03-04T04:47:25.690794+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_c61c107d-b351-45e6-bcef-2f1306243cd0",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:27.638116+00:00",
+      "finished_at": "2026-03-04T04:47:27.638187+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_9f9f2720-3ebb-4b95-9692-4b1e2aca3093",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:28.051222+00:00",
+      "finished_at": "2026-03-04T04:47:28.051294+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_2635e818-fece-480c-b90c-b1df53a14e03",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:28.265294+00:00",
+      "finished_at": "2026-03-04T04:47:28.265363+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_a899315e-0604-4610-8d36-ba8d6921c25e",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:28.465794+00:00",
+      "finished_at": "2026-03-04T04:47:28.465865+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_19485fad-9bc0-4efe-9486-89594f3ad268",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:28.650786+00:00",
+      "finished_at": "2026-03-04T04:47:28.650855+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_a3bb6287-6cc9-44a3-b969-8582478131c5",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:29.492108+00:00",
+      "finished_at": "2026-03-04T04:47:29.492175+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_8a951e6b-9fc5-40c6-8c1d-761d083ffd13",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:29.719280+00:00",
+      "finished_at": "2026-03-04T04:47:29.719349+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_46583f1d-b470-412d-bad5-f6717fbfd9bf",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:47:29.944109+00:00",
+      "finished_at": "2026-03-04T04:47:29.944177+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_73b1f45b-1328-4be9-9c81-d982d80db118",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T04:56:17.386175+00:00",
+      "finished_at": "2026-03-04T04:56:17.386237+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_bbabec5f-6c5b-4299-b2b7-f1e90ef734b5",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:01:19.793005+00:00",
+      "finished_at": "2026-03-04T05:01:19.793143+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_c73335d8-cfc2-41e0-9b12-46351468d516",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:10:34.525181+00:00",
+      "finished_at": "2026-03-04T05:10:34.526068+00:00",
+      "executed_tasks": [
+        "c087cc49-8b00-45bf-bfd7-fb777062dffb",
+        "8097ea5a-2d4e-4751-a0b8-fe1d103b3798",
+        "21476bc1-0830-41b2-8c2e-f663dad74e52",
+        "437d34d6-afd0-4af0-b364-f85f919ecf41",
+        "ac0ea945-aa53-4b1a-b6fd-f4d003ce48e8",
+        "6f68a5a8-f1bf-4672-b1bf-57b3e997468c"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_0d291cc6-f7f6-4c8a-8453-baa06683b920",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:10:34.567625+00:00",
+      "finished_at": "2026-03-04T05:10:34.568463+00:00",
+      "executed_tasks": [
+        "acd7729e-3f6d-4ac5-948a-8baa46a84266",
+        "a4c43647-4c8f-445f-9942-e76c287c85e7",
+        "3c5d692c-2693-4802-b0b4-cd20bab923e5",
+        "60dd32f6-baa7-40ba-8af2-48c1ae610e24",
+        "60ac59cb-6359-4120-8e0e-ef409161f9b1",
+        "921eb993-b393-4e53-b15c-845ef28951e9"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_f3712ac6-6ab4-494e-b0bc-80bfa52c279a",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:10:34.577519+00:00",
+      "finished_at": "2026-03-04T05:10:34.577548+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_7db179ee-fc6c-425a-934b-6346629fc7f2",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:10:34.588749+00:00",
+      "finished_at": "2026-03-04T05:10:34.588782+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_6c0d1dc3-973d-45bb-bdb4-2b677fd77b7a",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:11:38.583454+00:00",
+      "finished_at": "2026-03-04T05:11:38.584085+00:00",
+      "executed_tasks": [
+        "1067750a-0ac5-4d3c-b83f-45ed7cb5843b",
+        "e329a2f7-ed46-46f5-b068-01ff5f72c02d",
+        "2703a080-dd33-49b6-8062-64f3e2a6c652",
+        "79ab32d4-2c43-4876-a8d4-27902dffb7d7",
+        "f21221fe-8d95-4edd-a7d2-8a75e7e87451",
+        "07ae0116-a702-4e4e-867f-43d3e6ac6cf1"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_0168eac9-51d2-4e03-be6a-b86758690a88",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:11:42.728870+00:00",
+      "finished_at": "2026-03-04T05:11:42.729403+00:00",
+      "executed_tasks": [
+        "eec46ff7-17fe-44db-8aca-b0848c6d9914",
+        "c2e8c1d6-88a8-4ef6-9447-151998449a81",
+        "e95f0b21-d3c8-4128-9cd3-380fe88e64cd",
+        "51246ad2-4b64-44c0-b33f-3b943a826385",
+        "9cd78b96-a749-4124-8d12-9d97bd74e81d",
+        "37091c05-07ce-47b0-9178-eb544c98cf50"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_d214343b-dfe6-4c92-ad04-b988e16bb714",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:11:42.740259+00:00",
+      "finished_at": "2026-03-04T05:11:42.740295+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_5d5cd899-42ea-4362-aa45-0dc8e4e10e4e",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:11:42.750433+00:00",
+      "finished_at": "2026-03-04T05:11:42.750693+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_a2e35594-66de-4ef7-af10-251c9ab659f8",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:16:19.805083+00:00",
+      "finished_at": "2026-03-04T05:16:19.805251+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_94297c6a-1160-4feb-802d-bc97c99e836d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:25:27.684295+00:00",
+      "finished_at": "2026-03-04T05:25:27.685368+00:00",
+      "executed_tasks": [
+        "ad45ced6-45af-44ef-89c7-0a3a413262a9",
+        "9f243fa5-475a-485e-96a9-4e87c28727a3",
+        "51c93fda-f04c-426a-b57c-4ecb5172ea99",
+        "4d5885eb-d7d2-4c06-b62f-cf88f7573486",
+        "da29107b-3a10-4fbb-9a89-992744295965",
+        "cbd19adf-2c9d-4968-b8dc-3b33854e58e7"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_d155325d-d55f-445c-aac7-3da662553e49",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:25:31.891874+00:00",
+      "finished_at": "2026-03-04T05:25:31.892309+00:00",
+      "executed_tasks": [
+        "a3552a3e-a28d-4231-a3a1-7d4b8eac0b14",
+        "e5092a12-eb8e-4116-b5d9-e8c685cfa5a3",
+        "43ce6dad-6aae-4ee5-9012-e8dc7e1bb03b",
+        "656faf6b-600d-4127-8a1e-533d896b9345",
+        "3f530275-efe2-435e-bea2-9cd1debc345a",
+        "8f397270-836b-43f0-8669-4299026a98e4"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_b544dd43-2786-4d08-b262-1bc478716c2c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:25:31.901151+00:00",
+      "finished_at": "2026-03-04T05:25:31.901233+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e7e555df-bbd3-4059-b3e3-f4ab7e42d669",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T05:25:31.909503+00:00",
+      "finished_at": "2026-03-04T05:25:31.909533+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_0f09f5fa-fe64-453b-8c82-ddf829ac3d71",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T14:34:17.702894+00:00",
+      "finished_at": "2026-03-04T14:35:27.202734+00:00",
+      "executed_tasks": [
+        "17f4dbca-28f5-4c8a-ac64-e1fa4873b886"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e781c2e5-bfa7-44ac-88e4-d8a6b279073b",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T14:35:27.223487+00:00",
+      "finished_at": "2026-03-04T14:36:42.164428+00:00",
+      "executed_tasks": [
+        "9bfaff76-49f0-45b8-a211-516a36f78fd8"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_f20fe705-d068-418e-8290-ebfe8d2c718b",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T14:36:42.176129+00:00",
+      "finished_at": "2026-03-04T14:36:42.176906+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_763cc02b-f753-4062-bcf1-c88d80b4a880",
+      "trigger": "dispatch",
+      "started_at": "2026-03-04T14:36:42.185858+00:00",
+      "finished_at": "2026-03-04T14:36:42.185884+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    }
+  ],
+  "event_history": [
+    {
+      "event_id": "5c402c12-2465-4314-8abc-a645ece7c77e",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "f2fd4078-79dd-4526-963f-2c4e7cac8b3d",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:24.221955+00:00"
+    },
+    {
+      "event_id": "3b7947c6-06b8-4ad4-a91c-453abdd2e92b",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:24.222801+00:00"
+    },
+    {
+      "event_id": "1eac8e44-db6b-4c8d-8f47-fb2999b2e05f",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_5428b9e7-85fc-4ebb-8bd0-2d8ee40b21f3",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:24.223128+00:00"
+    },
+    {
+      "event_id": "8b80b0d8-93d0-4cf8-98af-3ee24645071f",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "3bb8a714-0560-4f5c-bdb0-da77b5cd7fc2",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:24.434361+00:00"
+    },
+    {
+      "event_id": "146811bd-28fe-4652-87e1-1a9adb5055fe",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:24.436515+00:00"
+    },
+    {
+      "event_id": "b3a1e93a-20cb-41af-a0ab-4196efd8f3cf",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_d2d9f23c-f250-4679-809c-934bccc986f6",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:24.436633+00:00"
+    },
+    {
+      "event_id": "1af9dfd9-2502-47e5-8bce-ea01f8035b83",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "4d0b2ecd-cd32-48e9-9855-11a05f98c5e9",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:24.634669+00:00"
+    },
+    {
+      "event_id": "5e0ea39c-6470-48b6-93bd-539575c01f3b",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:24.636568+00:00"
+    },
+    {
+      "event_id": "26261249-d3f8-4db8-a67a-8501f843d75e",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_699e8443-4a09-4048-8130-d1c255e9381e",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:24.636692+00:00"
+    },
+    {
+      "event_id": "bd555482-28fe-46e0-9281-1885fa1fc480",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "3410b758-a347-4a48-973a-4b1d46ace3e1",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:24.846864+00:00"
+    },
+    {
+      "event_id": "4525d18a-05d6-474e-9078-992d5793e982",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:24.848528+00:00"
+    },
+    {
+      "event_id": "a763b42c-1c5e-42a6-b58d-78b3ff724f0a",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_748cd9e5-85b7-4b93-8e72-76804ee04222",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:24.848638+00:00"
+    },
+    {
+      "event_id": "818b77e0-1cd1-4681-83cf-8ad68e52d4be",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "c3397a83-d91d-4477-b392-0f61f213907a",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:25.021516+00:00"
+    },
+    {
+      "event_id": "a66d4686-f627-4eea-9e75-80a1159fadc9",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:25.023648+00:00"
+    },
+    {
+      "event_id": "56b07ea2-de6f-44ad-9449-0514284de0bf",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_799b1dd6-c603-41ca-b2bd-e3670aced88b",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:25.023763+00:00"
+    },
+    {
+      "event_id": "8fb539db-2897-4ab3-a771-721d6dfdb35e",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "f22c7e71-95b5-47b9-a536-2467c5ae0eed",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:25.221364+00:00"
+    },
+    {
+      "event_id": "ac00fec6-d855-4526-aef6-2f8893e6f5e0",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:25.223557+00:00"
+    },
+    {
+      "event_id": "40f79be8-9f80-4fda-b6fa-8db7a08253e3",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_92797c12-3b09-4e02-9b34-0bbb0b7b32fe",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:25.223679+00:00"
+    },
+    {
+      "event_id": "265517dd-6b1d-4f83-874c-610a4091e07a",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "703f400c-8386-4217-95d7-6a82c56f0c86",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:25.688433+00:00"
+    },
+    {
+      "event_id": "f795f6ff-2572-4dae-820a-a6a0e9f0b3f7",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:25.690701+00:00"
+    },
+    {
+      "event_id": "57894f60-8f14-495d-bcc1-9d6123bfaa15",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_9f498374-7596-4e8d-898b-4311eab9dacf",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:25.690814+00:00"
+    },
+    {
+      "event_id": "209fd1ca-4ad4-40dc-b773-5b444de230b2",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "e3b8b204-89c0-41cc-87cf-8273964db2e7",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:27.636073+00:00"
+    },
+    {
+      "event_id": "2898d113-6d5a-453c-950b-d65980c88d46",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:27.638094+00:00"
+    },
+    {
+      "event_id": "a3102685-fdd8-4151-b010-e21ada2150c8",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_c61c107d-b351-45e6-bcef-2f1306243cd0",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:27.638224+00:00"
+    },
+    {
+      "event_id": "3bc6c9dc-5f0d-42a6-ab64-b9b6b2118f50",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "4d348b5c-b344-4a45-8dc2-97cc6d55a8fe",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:28.049201+00:00"
+    },
+    {
+      "event_id": "89c4cc2e-2f9c-4970-a547-0f977d4c89d7",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:28.051201+00:00"
+    },
+    {
+      "event_id": "8f0689c4-32da-4566-99df-cd12efc7f4a1",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_9f9f2720-3ebb-4b95-9692-4b1e2aca3093",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:28.051314+00:00"
+    },
+    {
+      "event_id": "bdef0594-cc7b-466d-b34a-173bca519024",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "688a122f-b2ef-48fa-bb4d-4da95c965db6",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:28.262728+00:00"
+    },
+    {
+      "event_id": "a0f3dff7-c8b2-4c79-a8d0-c11becfe62e5",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:28.265272+00:00"
+    },
+    {
+      "event_id": "00fee226-3366-465d-884d-676eb283fae3",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_2635e818-fece-480c-b90c-b1df53a14e03",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:28.265384+00:00"
+    },
+    {
+      "event_id": "b6e0210c-c24e-4e21-97fe-088a872c9718",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "67a0271a-3842-402b-bfda-35d7e688b602",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:28.463422+00:00"
+    },
+    {
+      "event_id": "e10dd714-6265-41ff-a8fb-42757297959e",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:28.465773+00:00"
+    },
+    {
+      "event_id": "aa960e53-cdb8-4176-9a1c-f46e42f93488",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_a899315e-0604-4610-8d36-ba8d6921c25e",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:28.465886+00:00"
+    },
+    {
+      "event_id": "fd1e69b1-49a5-4db0-92d3-3ed7e5795972",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "72e14352-b511-4468-b223-1f9649524d20",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:28.648717+00:00"
+    },
+    {
+      "event_id": "4f79f5ce-917b-4f3b-81c2-007ae834fd2c",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:28.650767+00:00"
+    },
+    {
+      "event_id": "a12ea426-8f2d-4e11-b90e-cdcdc6fc2171",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_19485fad-9bc0-4efe-9486-89594f3ad268",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:28.650876+00:00"
+    },
+    {
+      "event_id": "4268a2a2-4a93-4525-8bbf-eccf0581347b",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "e15e47c1-535c-42b8-b757-7e082dbdb93c",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:29.490050+00:00"
+    },
+    {
+      "event_id": "66980d3b-cfe0-4e53-90b4-e93d8b79d461",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:29.492089+00:00"
+    },
+    {
+      "event_id": "21bba5bb-e11d-480f-8cf7-0084f43c49d2",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_a3bb6287-6cc9-44a3-b969-8582478131c5",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:29.492197+00:00"
+    },
+    {
+      "event_id": "d6c2b984-316c-42d4-9b12-dcd017d11b11",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "a543c08d-fbfe-468d-ab38-447f6e2b9fde",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:29.717111+00:00"
+    },
+    {
+      "event_id": "4aee6f12-266e-457d-b415-a5ef6b2eb1dc",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:29.719259+00:00"
+    },
+    {
+      "event_id": "7fea9cb7-f17f-4da9-a720-fe4376b2fa8d",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_8a951e6b-9fc5-40c6-8c1d-761d083ffd13",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:29.719369+00:00"
+    },
+    {
+      "event_id": "f71aa60b-c5bb-49d8-ac9a-ee0d2a795b62",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "f99cc737-8145-4156-a0c0-3795cf2b1e58",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:47:29.942246+00:00"
+    },
+    {
+      "event_id": "1e9a3138-9f57-42f6-832f-117a103abe7a",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:47:29.944092+00:00"
+    },
+    {
+      "event_id": "567054e1-d406-41d8-9eb1-a40d894466c3",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_46583f1d-b470-412d-bad5-f6717fbfd9bf",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:47:29.944197+00:00"
+    },
+    {
+      "event_id": "46123da5-86af-45b4-b01d-3bf8f6e93949",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "eac7898a-d0cf-43e8-96cc-7d64c5657624",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T04:56:17.379021+00:00"
+    },
+    {
+      "event_id": "3594ad30-414e-4462-bd31-9505c61e1519",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T04:56:17.385966+00:00"
+    },
+    {
+      "event_id": "a6a56f26-a9e8-48be-917c-60ffd2f0dec1",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_73b1f45b-1328-4be9-9c81-d982d80db118",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T04:56:17.386414+00:00"
+    },
+    {
+      "event_id": "14f4f6f8-8e7f-4484-b6ab-6f4e69ba17b8",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-04T05:01:19.792873+00:00"
+    },
+    {
+      "event_id": "4e9c4899-ab2d-46be-80e8-a215d23e156d",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_bbabec5f-6c5b-4299-b2b7-f1e90ef734b5",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:01:19.793182+00:00"
+    },
+    {
+      "event_id": "c7aadf4d-38fd-4e9b-9c73-dc1a988d9045",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_activate",
+        "title": "Activation Scenario"
+      },
+      "created_at": "2026-03-04T05:10:34.522680+00:00"
+    },
+    {
+      "event_id": "a2f50541-6587-4830-91d9-c421ae9c9275",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T05:10:34.525116+00:00"
+    },
+    {
+      "event_id": "bef7fad0-6b9f-4d8e-b5f7-d98b6d1a4f1b",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_c73335d8-cfc2-41e0-9b12-46351468d516",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:10:34.526219+00:00"
+    },
+    {
+      "event_id": "790d620f-5fd3-4506-b9da-4ea651d22750",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_approve",
+        "title": "Approval Scenario"
+      },
+      "created_at": "2026-03-04T05:10:34.564988+00:00"
+    },
+    {
+      "event_id": "fa581a0a-b643-4f68-8588-678be6a35f57",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T05:10:34.567616+00:00"
+    },
+    {
+      "event_id": "267137b9-2846-436b-829f-14ea1f7515da",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_0d291cc6-f7f6-4c8a-8453-baa06683b920",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:10:34.568573+00:00"
+    },
+    {
+      "event_id": "cca77b90-f21c-4477-a4b4-90cc5f948895",
+      "type": "manual_enqueue",
+      "payload": {
+        "enqueue": true,
+        "worker_id": "facebook_worker",
+        "action": "publish_post",
+        "priority": 1
+      },
+      "created_at": "2026-03-04T05:10:34.575334+00:00"
+    },
+    {
+      "event_id": "3f19435b-6bf9-4adc-8958-67d69a2d8cfb",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "manual_enqueue"
+      },
+      "created_at": "2026-03-04T05:10:34.577512+00:00"
+    },
+    {
+      "event_id": "fcad7ada-bed8-4d09-abeb-459fc7bf352f",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "manual_enqueue",
+        "cycle_id": "cycle_f3712ac6-6ab4-494e-b0bc-80bfa52c279a",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T05:10:34.577559+00:00"
+    },
+    {
+      "event_id": "87b0631f-ab7c-438e-b569-464fc2a53627",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "d18bf5d7-c9a9-41ab-9be1-6a7df396ae06",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T05:10:34.587683+00:00"
+    },
+    {
+      "event_id": "c04a21f8-6972-48a9-a62d-a153d13cb2c9",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T05:10:34.588740+00:00"
+    },
+    {
+      "event_id": "ce1a93f8-74dd-495c-8530-68233cc3b1dd",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_7db179ee-fc6c-425a-934b-6346629fc7f2",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T05:10:34.588792+00:00"
+    },
+    {
+      "event_id": "cd1f8ef1-6cec-4b08-a1f2-7bdd29b3bf3e",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_activate",
+        "title": "Activation Scenario"
+      },
+      "created_at": "2026-03-04T05:11:38.580859+00:00"
+    },
+    {
+      "event_id": "72797021-83c1-46c6-9a72-dbf16142ffb9",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T05:11:38.583396+00:00"
+    },
+    {
+      "event_id": "345b6e39-7e96-4740-8052-59846168ed0b",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_6c0d1dc3-973d-45bb-bdb4-2b677fd77b7a",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:11:38.584132+00:00"
+    },
+    {
+      "event_id": "d4beb58d-5d6b-4102-a4c1-08460075ab5e",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_approve",
+        "title": "Approval Scenario"
+      },
+      "created_at": "2026-03-04T05:11:42.726047+00:00"
+    },
+    {
+      "event_id": "72de7622-6409-42ca-95d2-55ea3301f101",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T05:11:42.728843+00:00"
+    },
+    {
+      "event_id": "cc9cb26d-16f1-4fd1-8599-70f059a22f48",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_0168eac9-51d2-4e03-be6a-b86758690a88",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:11:42.729488+00:00"
+    },
+    {
+      "event_id": "c4ecc283-bba7-4755-b019-f2abf19d06d9",
+      "type": "manual_enqueue",
+      "payload": {
+        "enqueue": true,
+        "worker_id": "facebook_worker",
+        "action": "publish_post",
+        "priority": 1
+      },
+      "created_at": "2026-03-04T05:11:42.739000+00:00"
+    },
+    {
+      "event_id": "e440b13c-8139-497e-985e-d26b92ee3dd7",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "manual_enqueue"
+      },
+      "created_at": "2026-03-04T05:11:42.740250+00:00"
+    },
+    {
+      "event_id": "1edea675-535b-4d68-ae75-5d4dd3b41e94",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "manual_enqueue",
+        "cycle_id": "cycle_d214343b-dfe6-4c92-ad04-b988e16bb714",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T05:11:42.740361+00:00"
+    },
+    {
+      "event_id": "1bdf856e-8407-4397-9ce8-4ada286b43c8",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "c849300b-32ba-4c04-897e-766235d66edb",
+        "decision": "approved",
+        "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3"
+      },
+      "created_at": "2026-03-04T05:11:42.747867+00:00"
+    },
+    {
+      "event_id": "cde87d57-28f9-4c95-863a-d452cc4d7b39",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T05:11:42.750347+00:00"
+    },
+    {
+      "event_id": "81154da7-b021-401e-94b5-e04096c58624",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_5d5cd899-42ea-4362-aa45-0dc8e4e10e4e",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T05:11:42.750715+00:00"
+    },
+    {
+      "event_id": "ceb8dec3-8f90-4779-9ddc-48c9cc6ff5f3",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-04T05:16:19.804905+00:00"
+    },
+    {
+      "event_id": "5f3837af-5281-4936-87f4-10b1f39e26f7",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_a2e35594-66de-4ef7-af10-251c9ab659f8",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:16:19.805298+00:00"
+    },
+    {
+      "event_id": "2643fdaa-0ded-4352-b041-ec9254447842",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_activate",
+        "title": "Activation Scenario"
+      },
+      "created_at": "2026-03-04T05:25:27.678549+00:00"
+    },
+    {
+      "event_id": "c196f250-f47a-4eb5-9370-53d698edc8b1",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T05:25:27.684262+00:00"
+    },
+    {
+      "event_id": "a4eda87c-1f30-4d6a-b228-75805ba2f533",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_94297c6a-1160-4feb-802d-bc97c99e836d",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:25:27.685458+00:00"
+    },
+    {
+      "event_id": "63d39225-0f12-4064-bb35-ce0ef2f8e8a0",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_approve",
+        "title": "Approval Scenario"
+      },
+      "created_at": "2026-03-04T05:25:31.888987+00:00"
+    },
+    {
+      "event_id": "17084830-b4a0-47a6-95cf-aa65558c0e06",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T05:25:31.891852+00:00"
+    },
+    {
+      "event_id": "07de0ec2-b2b1-4488-867c-129734b12818",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_d155325d-d55f-445c-aac7-3da662553e49",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T05:25:31.892357+00:00"
+    },
+    {
+      "event_id": "df6b7d78-7df1-4395-8a75-f2623d91c767",
+      "type": "manual_enqueue",
+      "payload": {
+        "enqueue": true,
+        "worker_id": "facebook_worker",
+        "action": "publish_post",
+        "priority": 1
+      },
+      "created_at": "2026-03-04T05:25:31.897761+00:00"
+    },
+    {
+      "event_id": "15a4982b-a05e-4e46-9f7b-ab56a53fc46e",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "manual_enqueue"
+      },
+      "created_at": "2026-03-04T05:25:31.901123+00:00"
+    },
+    {
+      "event_id": "1e8f1096-e5cc-4da8-be97-6e57e1182e9b",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "manual_enqueue",
+        "cycle_id": "cycle_b544dd43-2786-4d08-b262-1bc478716c2c",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T05:25:31.901256+00:00"
+    },
+    {
+      "event_id": "2634c183-7642-4136-9174-9e0e3d6277e9",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "18c6ffac-2540-439b-8890-28ccfbbfe82f",
+        "decision": "approved",
+        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+      },
+      "created_at": "2026-03-04T05:25:31.908602+00:00"
+    },
+    {
+      "event_id": "afb8de5c-1a24-4925-aafd-4ba3123c2f34",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T05:25:31.909497+00:00"
+    },
+    {
+      "event_id": "5b719d20-ad6e-4885-bfde-faebd10ebfa8",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_e7e555df-bbd3-4059-b3e3-f4ab7e42d669",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T05:25:31.909543+00:00"
+    },
+    {
+      "event_id": "18370092-5393-4802-82a8-dc2c7f4dbf8c",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_activate",
+        "title": "Activation Scenario"
+      },
+      "created_at": "2026-03-04T14:34:17.701136+00:00"
+    },
+    {
+      "event_id": "8d4a93dc-cea0-4eb7-8cfe-baac777afa2f",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T14:34:17.702873+00:00"
+    },
+    {
+      "event_id": "f0dcd86a-89c1-4a95-b969-f84ece98726e",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_0f09f5fa-fe64-453b-8c82-ddf829ac3d71",
+        "executed": 1,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T14:35:27.202899+00:00"
+    },
+    {
+      "event_id": "545f7ff7-7c15-437a-b943-538ab14c1651",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "s_approve",
+        "title": "Approval Scenario"
+      },
+      "created_at": "2026-03-04T14:35:27.221265+00:00"
+    },
+    {
+      "event_id": "007d4a0a-4eed-4292-8bda-c4d93fa8bb4e",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-04T14:35:27.223467+00:00"
+    },
+    {
+      "event_id": "b6e650eb-5f64-4d2a-a22c-223c49d3572d",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_e781c2e5-bfa7-44ac-88e4-d8a6b279073b",
+        "executed": 1,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T14:36:42.164666+00:00"
+    },
+    {
+      "event_id": "41047b51-44df-478b-a86d-69e2669b5a1d",
+      "type": "manual_enqueue",
+      "payload": {
+        "enqueue": true,
+        "worker_id": "facebook_worker",
+        "action": "publish_post",
+        "priority": 1
+      },
+      "created_at": "2026-03-04T14:36:42.174550+00:00"
+    },
+    {
+      "event_id": "0c981dcc-f7da-41b8-93f7-d25306618008",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "manual_enqueue"
+      },
+      "created_at": "2026-03-04T14:36:42.176119+00:00"
+    },
+    {
+      "event_id": "5bd566c6-1eef-4b75-968f-2c45df19cec7",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "manual_enqueue",
+        "cycle_id": "cycle_f20fe705-d068-418e-8290-ebfe8d2c718b",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 1
+      },
+      "created_at": "2026-03-04T14:36:42.177010+00:00"
+    },
+    {
+      "event_id": "c79c5950-f1a8-4905-943a-dbce0a6a54a7",
+      "type": "approval_resolved",
+      "payload": {
+        "approval_id": "56cf0942-175d-49ce-9906-976d59d0c0df",
+        "decision": "approved",
+        "task_id": "704f5ad2-6633-4708-bf9d-7aa505e32664"
+      },
+      "created_at": "2026-03-04T14:36:42.184940+00:00"
+    },
+    {
+      "event_id": "05329a80-f740-4036-b7cc-6e9fd8ec8fcc",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "approval"
+      },
+      "created_at": "2026-03-04T14:36:42.185852+00:00"
+    },
+    {
+      "event_id": "2c521b71-6caa-48d3-a1f4-53007e1be9bb",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "approval",
+        "cycle_id": "cycle_763cc02b-f753-4062-bcf1-c88d80b4a880",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-04T14:36:42.185896+00:00"
+    }
+  ],
+  "updated_at": "2026-03-04T14:36:42.185899+00:00"
+}

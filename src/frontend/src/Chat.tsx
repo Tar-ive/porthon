@@ -1,6 +1,7 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
+import AgentMap from './AgentMap';
 import { MemoizedMarkdown } from './MemoizedMarkdown';
 
 interface Scenario {
@@ -42,6 +43,22 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
 
   useEffect(() => {
+    fetch('/api/agent/activate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        scenario_id: scenario.id,
+        scenario_title: scenario.title,
+        scenario_summary: scenario.summary,
+        scenario_horizon: scenario.horizon,
+        scenario_likelihood: scenario.likelihood,
+        scenario_tags: scenario.tags,
+      }),
+    }).catch(() => {
+      // Agent map will show unavailable if activation fails.
+    });
+
+    setQuestsPhase('loading');
     fetch('/api/actions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -59,7 +76,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         setQuestsPhase('ready');
       })
       .catch(() => setQuestsPhase('error'));
-  }, []);
+  }, [scenario.horizon, scenario.id, scenario.likelihood, scenario.summary, scenario.title]);
 
   const [transport] = useState(
     () =>
@@ -200,6 +217,8 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
           </div>
         )}
       </div>
+
+      <AgentMap />
 
       {/* Messages */}
       <div className="chat-messages">
