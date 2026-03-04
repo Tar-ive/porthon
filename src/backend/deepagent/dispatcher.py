@@ -12,6 +12,10 @@ from deepagent.workers import build_workers
 from state.models import ApprovalRequest, AgentRuntimeState, CycleSnapshot, TaskStatus, WorkerStatus
 
 
+def _prefixed_id(prefix: str) -> str:
+    return f"{prefix}{uuid4()}"
+
+
 class Dispatcher:
     def __init__(self) -> None:
         self.workers = build_workers()
@@ -24,7 +28,7 @@ class Dispatcher:
 
     async def dispatch_cycle(self, state: AgentRuntimeState, max_tasks: int = 12) -> dict[str, Any]:
         started_at = self._now_iso()
-        cycle_id = f"cycle_{uuid4()}"
+        cycle_id = _prefixed_id("cycle_")
 
         budget_by_worker = {b.worker_id: b for b in state.budgets}
         worker_by_id = {w.worker_id: w for w in state.workers}
@@ -59,7 +63,7 @@ class Dispatcher:
                 task.status = TaskStatus.WAITING_APPROVAL
                 task.updated_at = self._now_iso()
                 approval = ApprovalRequest(
-                    approval_id=str(uuid4()),
+                    approval_id=_prefixed_id("apprv_"),
                     task_id=task.task_id,
                     worker_id=task.worker_id,
                     reason=f"Action '{task.action}' requires approval",
@@ -97,7 +101,7 @@ class Dispatcher:
                 if result.approval_required:
                     task.status = TaskStatus.WAITING_APPROVAL
                     approval = ApprovalRequest(
-                        approval_id=str(uuid4()),
+                        approval_id=_prefixed_id("apprv_"),
                         task_id=task.task_id,
                         worker_id=task.worker_id,
                         reason=result.approval_reason or f"Action '{task.action}' requires approval",

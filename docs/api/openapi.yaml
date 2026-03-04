@@ -1,0 +1,967 @@
+openapi: 3.1.0
+info:
+  title: Questline Deep Agent API
+  description: |
+    AI agent API that analyzes behavioral data to project life scenarios and
+    generate concrete daily micro-actions. Follows Stripe-like conventions
+    for agent consumption.
+
+    Resource IDs are prefixed by type: `scen_`, `qst_`, `act_`, `apprv_`,
+    `evt_`, `msg_`, `wrkr_`. All mutating endpoints require an
+    `Idempotency-Key` header.
+  version: "2026-03-01"
+  contact:
+    name: Questline Team
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ---------- Health ----------
+  /v1/health:
+    get:
+      operationId: getHealth
+      summary: Service health check
+      tags: [Health]
+      security: []
+      responses:
+        "200":
+          description: Health status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+              example:
+                object: health
+                status: ok
+                backend: true
+                rag: true
+                livemode: false
+
+  # ---------- Scenarios ----------
+  /v1/scenarios:
+    get:
+      operationId: listScenarios
+      summary: List scenarios
+      tags: [Scenarios]
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/StartingAfter"
+        - $ref: "#/components/parameters/Expand"
+      responses:
+        "200":
+          description: A list of scenarios
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScenarioList"
+              example:
+                object: list
+                url: /v1/scenarios
+                has_more: false
+                data:
+                  - id: scen_01
+                    object: scenario
+                    created: 1709510400
+                    livemode: false
+                    metadata: {}
+                    title: Career Acceleration
+                    horizon: 5yr
+                    likelihood: most_likely
+                    summary: Focused upskilling leads to a senior role within 5 years.
+                    tags: [career, education]
+                    patterns: [pat_01, pat_03]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /v1/scenarios/{scenario_id}:
+    get:
+      operationId: getScenario
+      summary: Retrieve a scenario
+      tags: [Scenarios]
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^scen_
+          example: scen_01
+        - $ref: "#/components/parameters/Expand"
+      responses:
+        "200":
+          description: A scenario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scenario"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ---------- Quests ----------
+  /v1/quests:
+    post:
+      operationId: createQuest
+      summary: Create a quest from a scenario
+      tags: [Quests]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scenario_id]
+              properties:
+                scenario_id:
+                  type: string
+                  pattern: ^scen_
+                persona_id:
+                  type: string
+            example:
+              scenario_id: scen_01
+              persona_id: p05
+      responses:
+        "201":
+          description: Quest created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quest"
+              example:
+                id: qst_abc123
+                object: quest
+                created: 1709510500
+                livemode: false
+                metadata: {}
+                scenario: scen_01
+                persona_id: p05
+                status: running
+                seeded_tasks: []
+                tasks: []
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          description: Duplicate idempotency key with different parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    get:
+      operationId: listQuests
+      summary: List quests
+      tags: [Quests]
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/StartingAfter"
+        - $ref: "#/components/parameters/Expand"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, running, completed, failed]
+      responses:
+        "200":
+          description: A list of quests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestList"
+
+  /v1/quests/{quest_id}:
+    get:
+      operationId: getQuest
+      summary: Retrieve a quest
+      tags: [Quests]
+      parameters:
+        - name: quest_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^qst_
+          example: qst_abc123
+        - $ref: "#/components/parameters/Expand"
+      responses:
+        "200":
+          description: A quest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ---------- Actions ----------
+  /v1/actions:
+    post:
+      operationId: createActions
+      summary: Generate actions for a scenario
+      tags: [Actions]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scenario_id]
+              properties:
+                scenario_id:
+                  type: string
+                  pattern: ^scen_
+            example:
+              scenario_id: scen_01
+      responses:
+        "201":
+          description: Actions generated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Action"
+              example:
+                - id: act_x1
+                  object: action
+                  created: 1709510600
+                  livemode: false
+                  metadata: {}
+                  scenario: scen_01
+                  title: Review monthly budget
+                  description: Audit discretionary spending against savings target.
+                  data_ref: transactions.jsonl#L42
+                  pattern_id: pat_01
+                  rationale: Spending trend conflicts with savings goal.
+                  compound_summary: null
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  # ---------- Approvals ----------
+  /v1/approvals:
+    get:
+      operationId: listApprovals
+      summary: List pending approvals
+      tags: [Approvals]
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/StartingAfter"
+      responses:
+        "200":
+          description: A list of approvals
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApprovalList"
+
+  /v1/approvals/{approval_id}:
+    get:
+      operationId: getApproval
+      summary: Retrieve an approval
+      tags: [Approvals]
+      parameters:
+        - name: approval_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^apprv_
+          example: apprv_r1
+      responses:
+        "200":
+          description: An approval
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Approval"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/approvals/{approval_id}/resolve:
+    post:
+      operationId: resolveApproval
+      summary: Approve or reject a pending approval
+      tags: [Approvals]
+      parameters:
+        - name: approval_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^apprv_
+          example: apprv_r1
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision:
+                  type: string
+                  enum: [approved, rejected]
+            example:
+              decision: approved
+      responses:
+        "200":
+          description: Approval resolved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Approval"
+              example:
+                id: apprv_r1
+                object: approval
+                created: 1709510700
+                livemode: false
+                metadata: {}
+                task_id: task_01
+                worker_id: wrkr_kg
+                reason: Write access to knowledge graph
+                payload: {}
+                decision: approved
+                resolved_at: 1709510800
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ---------- Events ----------
+  /v1/events:
+    post:
+      operationId: createEvent
+      summary: Emit a custom event
+      tags: [Events]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, payload]
+              properties:
+                type:
+                  type: string
+                payload:
+                  type: object
+            example:
+              type: quest.step_completed
+              payload:
+                quest_id: qst_abc123
+                step: pattern_analysis
+      responses:
+        "201":
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    get:
+      operationId: listEvents
+      summary: List events
+      tags: [Events]
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/StartingAfter"
+        - name: quest
+          in: query
+          description: Filter events by quest ID
+          schema:
+            type: string
+            pattern: ^qst_
+      responses:
+        "200":
+          description: A list of events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventList"
+
+  /v1/events/stream:
+    get:
+      operationId: streamEvents
+      summary: Server-Sent Events stream
+      tags: [Events]
+      responses:
+        "200":
+          description: SSE event stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: |
+                data: {"id":"evt_s1","object":"event","type":"quest.step_completed","payload":{"step":"pattern_analysis"}}
+
+  # ---------- Workers ----------
+  /v1/workers:
+    get:
+      operationId: listWorkers
+      summary: List workers
+      tags: [Workers]
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/StartingAfter"
+        - $ref: "#/components/parameters/Expand"
+      responses:
+        "200":
+          description: A list of workers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkerList"
+              example:
+                object: list
+                url: /v1/workers
+                has_more: false
+                data:
+                  - id: wrkr_kg
+                    object: worker
+                    created: 1709500000
+                    livemode: false
+                    metadata: {}
+                    label: KgWorker
+                    status: idle
+                    queue_depth: 0
+                    last_error: null
+                    skills:
+                      - pattern_recognition
+                      - graph_query
+
+  /v1/workers/{worker_id}:
+    get:
+      operationId: getWorker
+      summary: Retrieve a worker
+      tags: [Workers]
+      parameters:
+        - name: worker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^wrkr_
+          example: wrkr_kg
+        - $ref: "#/components/parameters/Expand"
+      responses:
+        "200":
+          description: A worker
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Worker"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/workers/map:
+    get:
+      operationId: getWorkerMap
+      summary: Worker topology view
+      tags: [Workers]
+      responses:
+        "200":
+          description: Worker topology
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: worker_map
+                  workers:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Worker"
+                  edges:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                        to:
+                          type: string
+                        relation:
+                          type: string
+
+  /v1/workers/skills:
+    get:
+      operationId: listWorkerSkills
+      summary: List all worker skills
+      tags: [Workers]
+      responses:
+        "200":
+          description: All skills across workers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: skill_list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        skill:
+                          type: string
+                        worker_ids:
+                          type: array
+                          items:
+                            type: string
+
+  # ---------- Messages ----------
+  /v1/messages:
+    post:
+      operationId: createMessage
+      summary: Send a message and receive a streaming response
+      tags: [Messages]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    required: [role, content]
+                    properties:
+                      role:
+                        type: string
+                        enum: [user, assistant]
+                      content:
+                        type: string
+                scenario:
+                  type: string
+                  pattern: ^scen_
+            example:
+              messages:
+                - role: user
+                  content: What should I focus on this week?
+              scenario: scen_01
+      responses:
+        "200":
+          description: SSE streaming response
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: |
+                data: {"id":"msg_z1","object":"message","role":"assistant","content":"Based on your patterns...","intent":"action_suggestion","scenario":"scen_01"}
+
+  # ---------- Runtime ----------
+  /v1/runtime:
+    get:
+      operationId: getRuntime
+      summary: Full agent runtime state
+      tags: [Runtime]
+      responses:
+        "200":
+          description: Runtime state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: runtime
+                  loop_running:
+                    type: boolean
+                  tick_interval_s:
+                    type: integer
+                  workers:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Worker"
+                  pending_approvals:
+                    type: integer
+                  event_queue_depth:
+                    type: integer
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        API key prefixed with `sk_test_` (test mode) or `sk_live_` (live mode).
+        Authentication is optional for local development.
+
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Number of items to return (1-100)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    StartingAfter:
+      name: starting_after
+      in: query
+      description: Cursor for pagination — ID of the last item from previous page
+      schema:
+        type: string
+
+    Expand:
+      name: expand[]
+      in: query
+      description: Related objects to expand inline
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: true
+
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Unique key to ensure idempotent mutations
+      schema:
+        type: string
+
+    ApiVersion:
+      name: X-Api-Version
+      in: header
+      description: Pin API version
+      schema:
+        type: string
+        default: "2026-03-01"
+
+  schemas:
+    # ---------- Core resource fields ----------
+    ResourceBase:
+      type: object
+      required: [id, object, created, livemode, metadata]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+          description: Unix timestamp
+        livemode:
+          type: boolean
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    # ---------- Resources ----------
+    Health:
+      type: object
+      properties:
+        object:
+          type: string
+          const: health
+        status:
+          type: string
+          enum: [ok, degraded, down]
+        backend:
+          type: boolean
+        rag:
+          type: boolean
+        livemode:
+          type: boolean
+
+    Scenario:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          properties:
+            object:
+              const: scenario
+            title:
+              type: string
+            horizon:
+              type: string
+              enum: [1yr, 5yr, 10yr]
+            likelihood:
+              type: string
+              enum: [most_likely, possible, aspirational]
+            summary:
+              type: string
+            tags:
+              type: array
+              items:
+                type: string
+            patterns:
+              type: array
+              items:
+                type: string
+              description: Pattern IDs referenced by this scenario
+
+    Quest:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          properties:
+            object:
+              const: quest
+            scenario:
+              description: Scenario ID or expanded Scenario object
+              oneOf:
+                - type: string
+                - $ref: "#/components/schemas/Scenario"
+            persona_id:
+              type: string
+            status:
+              type: string
+              enum: [pending, running, completed, failed]
+            seeded_tasks:
+              type: array
+              items:
+                type: string
+            tasks:
+              description: Task IDs or expanded objects
+              type: array
+              items:
+                type: string
+
+    Action:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          properties:
+            object:
+              const: action
+            scenario:
+              type: string
+            title:
+              type: string
+            description:
+              type: string
+            data_ref:
+              type: string
+              description: "Reference to source data record, e.g. transactions.jsonl#L42"
+            pattern_id:
+              type: string
+            rationale:
+              type: string
+            compound_summary:
+              type: string
+              nullable: true
+
+    Approval:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          properties:
+            object:
+              const: approval
+            task_id:
+              type: string
+            worker_id:
+              type: string
+            reason:
+              type: string
+            payload:
+              type: object
+            decision:
+              type: string
+              enum: [approved, rejected, pending]
+              nullable: true
+            resolved_at:
+              type: integer
+              nullable: true
+              description: Unix timestamp
+
+    Event:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          properties:
+            object:
+              const: event
+            type:
+              type: string
+            payload:
+              type: object
+
+    Worker:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          properties:
+            object:
+              const: worker
+            label:
+              type: string
+            status:
+              type: string
+              enum: [idle, busy, error, offline]
+            queue_depth:
+              type: integer
+            last_error:
+              type: string
+              nullable: true
+            skills:
+              description: Skill names (expanded when requested)
+              type: array
+              items:
+                type: string
+
+    Message:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          properties:
+            object:
+              const: message
+            role:
+              type: string
+              enum: [user, assistant]
+            content:
+              type: string
+            intent:
+              type: string
+              nullable: true
+            scenario:
+              type: string
+              nullable: true
+
+    # ---------- List wrapper ----------
+    ListObject:
+      type: object
+      required: [object, data, has_more, url]
+      properties:
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items: {}
+        has_more:
+          type: boolean
+        url:
+          type: string
+
+    ScenarioList:
+      allOf:
+        - $ref: "#/components/schemas/ListObject"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Scenario"
+
+    QuestList:
+      allOf:
+        - $ref: "#/components/schemas/ListObject"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Quest"
+
+    ApprovalList:
+      allOf:
+        - $ref: "#/components/schemas/ListObject"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Approval"
+
+    EventList:
+      allOf:
+        - $ref: "#/components/schemas/ListObject"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Event"
+
+    WorkerList:
+      allOf:
+        - $ref: "#/components/schemas/ListObject"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Worker"
+
+    # ---------- Error ----------
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [type, code, message]
+          properties:
+            type:
+              type: string
+              enum:
+                - invalid_request_error
+                - authentication_error
+                - not_found_error
+                - rate_limit_error
+                - api_error
+            code:
+              type: string
+            message:
+              type: string
+            param:
+              type: string
+              nullable: true
+            doc_url:
+              type: string
+              nullable: true
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            error:
+              type: invalid_request_error
+              code: parameter_invalid
+              message: "limit must be between 1 and 100."
+              param: limit
+              doc_url: https://api.porthon.ai/docs/errors
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            error:
+              type: not_found_error
+              code: resource_missing
+              message: The requested resource does not exist.
+              param: null
+              doc_url: https://api.porthon.ai/docs/errors

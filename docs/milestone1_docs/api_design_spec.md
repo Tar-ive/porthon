@@ -18,7 +18,7 @@ Every resource guarantees the presence of these fields:
 |---|---|---|
 | `scen_` | [scenario](file:///Users/tarive/porthon/src/backend/main.py#112-123) | `scen_01JDF2...` (Quest Scenario) |
 | `qst_` | [quest](file:///Users/tarive/porthon/src/backend/main.py#96-101) | `qst_8A9b...` (Active Quest Instance) |
-| `apprv_` | [approval](file:///Users/tarive/porthon/src/backend/deepagent/loop.py#179-211) | `apprv_4Fd3...` (Pending Human Approval) |
+| `apprv_` | [approval](file:///Users/tarive/porthon/src/backend/app/api/routes_agent.py#73-76) | `apprv_4Fd3...` (Pending Human Approval) |
 | `evt_` | [event](file:///Users/tarive/porthon/src/backend/deepagent/loop.py#157-178) | `evt_k92L...` (Worker Execution Event) |
 | `msg_` | `message` | `msg_P2m1...` (Chat Message) |
 | `wrkr_` | [worker](file:///Users/tarive/porthon/src/backend/deepagent/workers/__init__.py#11-21) | `wrkr_c3xZ...` (Deep Agent Worker definition) |
@@ -165,3 +165,19 @@ Core resources (`quests`, [scenarios](file:///Users/tarive/porthon/src/backend/m
 
 * **Test vs Live Environments:** Every API key dictates the environment. The Master Loop checks the key prefix (`sk_test_...` vs `sk_live_...`). If a test key is used, `livemode: false` is forced on all created resources. The agent will run dry-runs on Composio integrations.
 * **API Versioning:** The frontend pins its expected shape via an HTTP header: `X-Api-Version: 2026-03-01`. The backend maintains transformation layers so breaking changes in the Master Loop don't break old UI clients.
+
+---
+
+## 8. Contrast: Stripe-Like Spec vs. Current Backend API
+
+Currently, [app/api/routes_agent.py](file:///Users/tarive/porthon/src/backend/app/api/routes_agent.py) and [main.py](file:///Users/tarive/porthon/src/backend/main.py) represent a functional but "V0" shape. Here is the contrast highlighting why the new design is necessary for a robust frontend/agent ecosystem:
+
+| Feature | Current API ([routes_agent.py](file:///Users/tarive/porthon/src/backend/app/api/routes_agent.py)) | New Stripe-Like Design | Why the Change Matters for Deep Agents |
+|---|---|---|---|
+| **Resource Identity** | Random IDs (`"freelance-full-time"`) without type markers. | Prefixed IDs (`scen_...`, `qst_...`) globally. | An agent can immediately infer what an object is just by looking at the string ID (circuit breaking bad inputs). |
+| **Response Schema** | Flat dictionaries with varied shapes ([ActivateAgentRequest](file:///Users/tarive/porthon/src/backend/app/api/routes_agent.py#25-32)). | Consistent base ([id](file:///Users/tarive/porthon/src/backend/agents/composio_tools.py#96-100), `object`, `created`, `livemode`). | Generic components can render *any* resource. The frontend doesn't need custom parsers for every new endpoint. |
+| **Safety / Retries** | No idempotency. Retrying `POST /api/agent/activate` creates multiple loops. | `Idempotency-Key` headers required on all mutating POSTs. | If the connection drops, agents can safely retry without duplicating events in the real world (e.g., booking two calendar events). |
+| **Pagination** | (Not currently implemented for streams/state) | Cursor-based with `starting_after` and `has_more`. | State tables grow indefinitely. Offset pagination skips items during active writes. Cursors guarantee accurate lists. |
+| **Fetching Depth** | Fixed shapes. `GET /state` returns the entire Master Loop dump. | Granular IDs with `expand[]` query logic. | Prevents sending a 5MB JSON blob to mobile clients by letting them request only the nested data they need. |
+| **Error Handling** | Unhandled 500s or simple string messages. | Structured `{type, code, param, message}` object. | The frontend can programmatically map `param` to a UI field to show a red error state instead of a generic toast notification. |
+| **Custom State** | Not supported. | `metadata` KV store on all resources. | The UI can save custom route states or rendering flags without backend engineers altering the Pydantic schemas. |

@@ -31,6 +31,8 @@ class ActiveScenarioState(BaseModel):
     summary: str
     tags: list[str] = Field(default_factory=list)
     activated_at: str
+    created: int = 0
+    metadata: dict[str, str] = Field(default_factory=dict)
 
 
 class ArchivedScenarioState(ActiveScenarioState):
@@ -61,6 +63,8 @@ class WorkerTask(BaseModel):
     retries: int = 0
     created_at: str
     updated_at: str
+    created: int = 0
+    metadata: dict[str, str] = Field(default_factory=dict)
 
 
 class ApprovalRequest(BaseModel):
@@ -72,6 +76,8 @@ class ApprovalRequest(BaseModel):
     payload: dict[str, Any] = Field(default_factory=dict)
     resolved_at: str | None = None
     decision: str | None = None
+    created: int = 0
+    metadata: dict[str, str] = Field(default_factory=dict)
 
 
 class CycleSnapshot(BaseModel):

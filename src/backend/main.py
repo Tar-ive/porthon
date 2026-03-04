@@ -12,6 +12,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.api.routes_agent import router as agent_router
+from app.api.v1 import router as v1_router
+from app.middleware.errors import ApiException, api_exception_handler, generic_exception_handler
+from app.middleware.idempotency import IdempotencyMiddleware
 from deepagent.workers.kg_worker import classify_intent, _create_rag_instance
 from deepagent.persona.prompt_builder import build_system_prompt
 from deepagent.contracts import ProfileScores, QuestContext, QuestMemory, PersonaConfig  # noqa: F401
@@ -82,6 +85,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(IdempotencyMiddleware)
+app.add_exception_handler(ApiException, api_exception_handler)
+app.add_exception_handler(Exception, generic_exception_handler)
+app.include_router(v1_router)
 app.include_router(agent_router)
 
 

@@ -15,6 +15,10 @@ from state.models import ActiveScenarioState, AgentRuntimeState, ArchivedScenari
 from state.store import JsonStateStore
 
 
+def _prefixed_id(prefix: str) -> str:
+    return f"{prefix}{uuid4()}"
+
+
 class AlwaysOnMaster:
     def __init__(self, state_path: Path, tick_seconds: int = 900) -> None:
         self.store = JsonStateStore(state_path)
@@ -52,7 +56,7 @@ class AlwaysOnMaster:
     async def _append_event(self, state: AgentRuntimeState, event_type: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
         payload = payload or {}
         event = {
-            "event_id": str(uuid4()),
+            "event_id": _prefixed_id("evt_"),
             "type": event_type,
             "payload": payload,
             "created_at": self._now_iso(),
@@ -78,7 +82,7 @@ class AlwaysOnMaster:
 
         for worker_id, action, priority in seeded:
             task = WorkerTask(
-                task_id=str(uuid4()),
+                task_id=_prefixed_id("task_"),
                 worker_id=worker_id,
                 action=action,
                 priority=priority,
@@ -161,7 +165,7 @@ class AlwaysOnMaster:
             event = await self._append_event(state, event_type=event_type, payload=payload)
             if payload.get("enqueue"):
                 t = WorkerTask(
-                    task_id=str(uuid4()),
+                    task_id=_prefixed_id("task_"),
                     worker_id=payload.get("worker_id", "kg_worker"),
                     action=payload.get("action", "refresh_context"),
                     priority=int(payload.get("priority", 50)),

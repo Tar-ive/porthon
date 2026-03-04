@@ -121,23 +121,51 @@ data/all_personas/
 
 ## API Design Best Practices
 
-All API endpoints follow Stripe-like conventions for agent consumption:
+All API endpoints follow Stripe-like conventions under `/v1/`. The OpenAPI spec is at `docs/openapi.yaml`.
+
+### V1 Endpoint Map
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/health` | GET | Service health + livemode |
+| `/v1/scenarios` | GET | List scenarios (ListObject, pagination, expand[]) |
+| `/v1/scenarios/{id}` | GET | Get single scenario |
+| `/v1/quests` | POST | Create quest (merged quest+activate), Idempotency-Key |
+| `/v1/quests` | GET | List active quests |
+| `/v1/actions` | POST | Generate actions for scenario, Idempotency-Key |
+| `/v1/approvals` | GET | List approval requests |
+| `/v1/approvals/{id}/resolve` | POST | Approve/reject, Idempotency-Key |
+| `/v1/events` | POST | Ingest event, Idempotency-Key |
+| `/v1/events` | GET | List events |
+| `/v1/events/stream` | GET | SSE event stream |
+| `/v1/workers` | GET | List workers (expand[]=skills) |
+| `/v1/workers/map` | GET | System topology |
+| `/v1/workers/skills` | GET | All available skills |
+| `/v1/messages` | POST | Chat with SSE streaming, Idempotency-Key |
+| `/v1/runtime` | GET | Full agent runtime state |
+
+Legacy `/api/*` routes remain as backward-compatible aliases.
 
 ### Resource Identity
-- Resource IDs are prefixed: `scen_` (scenario), `qst_` (quest), `apprv_` (approval), `evt_` (event), `msg_` (message), `wrkr_` (worker)
-- Agents can infer resource type from the prefix without making an API call
+- Prefixed IDs: `scen_` (scenario), `qst_` (quest), `act_` (action), `apprv_` (approval), `evt_` (event), `msg_` (message), `wrkr_` (worker), `task_` (task)
+- All resources have: `id`, `object`, `created`, `livemode`, `metadata`
 
-### Safety & Idempotency
-- All mutating operations (`POST`, `PUT`, `DELETE`) require an `Idempotency-Key` header
-- Prevents duplicate actions on network retries
+### Test Mode
+- `Authorization: Bearer sk_test_*` → `livemode: false`, pinned to persona p05
+- `Authorization: Bearer sk_live_*` → `livemode: true`
+- Test mode uses real LLM calls with `temperature: 0` for deterministic output
 
-### Data Fetching
-- Use `expand[]` query param to reduce N+1 requests: `GET /v1/quests/qst_xxx?expand[]=scenario`
-- Default returns IDs only; expansion includes full nested objects
+### Expansion (3-level max)
+```
+GET /v1/quests/qst_xxx?expand[]=tasks.worker.skills
+GET /v1/quests?status=active&expand[]=tasks.worker
+```
+
+### Idempotency
+All POST/PUT/DELETE accept `Idempotency-Key` header. Same key → same response (24h TTL).
 
 ### Pagination
-- Cursor-based only: `starting_after` + `has_more` (no offset)
-- Pass last item's ID to `starting_after` for next page
+Cursor-based: `limit` (1-100) + `starting_after` (last item ID) → `has_more: bool`
 
 ### Error Format
 ```json
@@ -147,7 +175,7 @@ All API endpoints follow Stripe-like conventions for agent consumption:
     "code": "resource_missing",
     "message": "The requested scenario does not exist.",
     "param": "scenario_id",
-    "doc_url": "https://api.porthon.ai/docs/errors"
+    "doc_url": "https://api.porthon.ai/docs/errors#resource_missing"
   }
 }
 ```
@@ -156,7 +184,7 @@ All API endpoints follow Stripe-like conventions for agent consumption:
 - All resources support a `metadata` key-value store for custom state
 - Pin API version via header: `X-Api-Version: 2026-03-01`
 
-See `docs/api_design_spec.md` for full specification.
+See `docs/openapi.yaml` for full OpenAPI spec and `docs/api_reference.md` for usage guide.
 
 ## Serving
 
