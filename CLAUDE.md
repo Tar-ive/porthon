@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AI agent that analyzes behavioral data (financial, calendar, social, lifelog) to project life scenarios 1/5/10 years out and generate concrete daily micro-actions. Built for a hackathon demo using a synthetic persona dataset (`data/all_personas/`). Primary demo persona is **Theo Nakamura (p05)**.
 
+> **Note:** This project is in active development for a hackathon. Many patterns below (frontend flow, architecture, API contracts) are evolving. Always study the current codebase to understand what's implemented rather than relying solely on this document.
+
 ## Commands
 
 ```bash
@@ -72,6 +74,8 @@ See `docs/product_concept.md` for allowed vs never actions (auto-execute vs appr
 ## Frontend Flow
 
 4 screens: **Consent → Patterns/Stats → Scenarios → Actions**
+
+> **Note:** Screen flow and features are subject to change as we iterate on the product.
 
 - Consent screen uses `consent.json` schema; toggling a source excludes it from the entire pipeline
 - Pattern screen: 3–7 patterns, cross-domain ones visually distinguished, data_refs visible on expand
@@ -158,6 +162,10 @@ See `docs/api_design_spec.md` for full specification.
 
 FastAPI serves the Vite SPA via `StaticFiles(html=True)` mounted at `/`. API routes must be defined **before** the static mount. Vite builds assets to `static/` subdirectory (not `assets/`) — configured in `vite.config.ts`.
 
+> **Note:** This may change as we refine the frontend/backend integration for the hackathon demo.
+
 ## Build Priority
 
 Ship in order: P0 (Extractor + 3-step pipeline + streaming UI) → P1 (consent wiring + cross-domain insights + data refs on expand) → P2 (stats dashboard + compound summaries) → P3 (RPG map visualization, stretch).
+
+> **Note:** Priorities may shift based on hackathon demo needs.
