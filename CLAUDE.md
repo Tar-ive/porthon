@@ -30,6 +30,11 @@ cd src/backend && uv add <package>
 
 # Add frontend dependency
 cd src/frontend && pnpm add <package>
+
+# Run tests
+make test              # Fast tests (default, no external services)
+make test-live         # Live integration tests (requires API keys)
+make test-live-kg      # Live KG tests (requires Neo4j/Qdrant + binding keys)
 ```
 
 ## Architecture
@@ -45,6 +50,25 @@ Typed contracts are defined in code — see `PRD.md` for the full struct definit
 
 **Key constraint:** Each agent step has a 30-second timeout with graceful error state. Streaming output during each step is required (no blank loading screens).
 
+## Deep Agents
+
+The system uses "workers" that run in an always-on master loop:
+
+| Worker | Purpose |
+|--------|---------|
+| **KgWorker** | Knowledge Graph memory, pattern recognition |
+| **CalendarWorker** | Calendar focus blocks, body-doubling windows |
+| **NotionLeadsWorker** | Lead tracking in Notion |
+| **NotionOpportunityWorker** | Opportunity pipeline in Notion |
+| **FigmaWorker** | Design challenges, portfolio scaffolding |
+| **FacebookWorker** | Social media drafting |
+
+Core orchestration:
+- **Master Loop** (`deepagent/loop.py`) — Always-on, 15-minute tick + event-triggered cycles
+- **Dispatcher/Factory** (`deepagent/dispatcher.py`, `factory.py`) — Worker lifecycle management
+
+See `docs/product_concept.md` for allowed vs never actions (auto-execute vs approval-required).
+
 ## Frontend Flow
 
 4 screens: **Consent → Patterns/Stats → Scenarios → Actions**
@@ -55,11 +79,31 @@ Typed contracts are defined in code — see `PRD.md` for the full struct definit
 - Scenario screen: select one scenario to trigger Action Planner
 - Actions screen: each action links rationale to a specific pattern and data record
 
+## Test Types
+
+| Type | Location | When to Run |
+|------|----------|-------------|
+| **fast** | `src/backend/tests/fast/` | Default — no external services needed |
+| **live** | `src/backend/tests/live/` + `test_e2e_composio.py` | Requires API keys (Composio, Figma, etc.) |
+| **KG live** | `tests/live/test_live_kg.py` | Requires Neo4j/Qdrant + API keys |
+
+**Rule:** Run `make test` before every commit. Run `make test-live` before merging to main.
+
+## Slice Pattern
+
+3-slice delivery with test gates — see `docs/SLICED_EXECUTION_PLAN.md`:
+
+- **Slice 1**: Foundation Shell + Read-Only Agent Map
+- **Slice 2**: Always-On Loop + Scenario Activation + Queue Dispatch
+- **Slice 3**: Skills + Tiered Approval + Realtime Stream
+
+**Policy:** Do not progress to next slice until current slice test gate passes.
+
 ## Data Layout
 
 ```
 data/all_personas/
-  p01/                        # Jordan Lee — primary demo persona
+  p05/                        # Theo Nakamura — primary demo persona
     persona_profile.json
     consent.json
     lifelog.jsonl
@@ -70,6 +114,45 @@ data/all_personas/
     transactions.jsonl
     files_index.jsonl
 ```
+
+## API Design Best Practices
+
+All API endpoints follow Stripe-like conventions for agent consumption:
+
+### Resource Identity
+- Resource IDs are prefixed: `scen_` (scenario), `qst_` (quest), `apprv_` (approval), `evt_` (event), `msg_` (message), `wrkr_` (worker)
+- Agents can infer resource type from the prefix without making an API call
+
+### Safety & Idempotency
+- All mutating operations (`POST`, `PUT`, `DELETE`) require an `Idempotency-Key` header
+- Prevents duplicate actions on network retries
+
+### Data Fetching
+- Use `expand[]` query param to reduce N+1 requests: `GET /v1/quests/qst_xxx?expand[]=scenario`
+- Default returns IDs only; expansion includes full nested objects
+
+### Pagination
+- Cursor-based only: `starting_after` + `has_more` (no offset)
+- Pass last item's ID to `starting_after` for next page
+
+### Error Format
+```json
+{
+  "error": {
+    "type": "invalid_request_error",
+    "code": "resource_missing",
+    "message": "The requested scenario does not exist.",
+    "param": "scenario_id",
+    "doc_url": "https://api.porthon.ai/docs/errors"
+  }
+}
+```
+
+### Extensibility
+- All resources support a `metadata` key-value store for custom state
+- Pin API version via header: `X-Api-Version: 2026-03-01`
+
+See `docs/api_design_spec.md` for full specification.
 
 ## Serving
 
