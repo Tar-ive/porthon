@@ -26,6 +26,15 @@ class Dispatcher:
     def _now_iso(self) -> str:
         return self._now().isoformat()
 
+    def _append_runtime_event(self, state: AgentRuntimeState, event_type: str, payload: dict[str, Any]) -> None:
+        event = {
+            "event_id": _prefixed_id("evt_"),
+            "type": event_type,
+            "payload": payload,
+            "created_at": self._now_iso(),
+        }
+        state.event_history = (state.event_history + [event])[-100:]
+
     async def dispatch_cycle(self, state: AgentRuntimeState, max_tasks: int = 12) -> dict[str, Any]:
         started_at = self._now_iso()
         cycle_id = _prefixed_id("cycle_")
@@ -62,6 +71,8 @@ class Dispatcher:
             if requires_approval(task.worker_id, task.action):
                 task.status = TaskStatus.WAITING_APPROVAL
                 task.updated_at = self._now_iso()
+                task.result_summary = "Blocked pending explicit approval (irreversible action)"
+                task.error_code = "requires_approval"
                 approval = ApprovalRequest(
                     approval_id=_prefixed_id("apprv_"),
                     task_id=task.task_id,
@@ -72,6 +83,16 @@ class Dispatcher:
                 )
                 state.approvals.append(approval)
                 approval_waiting.append(task.task_id)
+                self._append_runtime_event(
+                    state,
+                    event_type="policy_blocked_action",
+                    payload={
+                        "task_id": task.task_id,
+                        "worker_id": task.worker_id,
+                        "action": task.action,
+                        "reason": approval.reason,
+                    },
+                )
                 continue
 
             task.status = TaskStatus.RUNNING
@@ -88,8 +109,11 @@ class Dispatcher:
             if worker_impl is None:
                 task.status = TaskStatus.FAILED
                 task.updated_at = self._now_iso()
+                task.finished_at = self._now_iso()
                 worker.status = WorkerStatus.DEGRADED
                 worker.last_error = "No worker implementation"
+                task.result_summary = "Worker implementation missing"
+                task.error_code = "worker_missing"
                 failed.append(task.task_id)
                 return
 
@@ -100,6 +124,8 @@ class Dispatcher:
                 )
                 if result.approval_required:
                     task.status = TaskStatus.WAITING_APPROVAL
+                    task.result_summary = "Worker requested approval"
+                    task.error_code = "requires_approval"
                     approval = ApprovalRequest(
                         approval_id=_prefixed_id("apprv_"),
                         task_id=task.task_id,
@@ -111,16 +137,31 @@ class Dispatcher:
                     state.approvals.append(approval)
                     approval_waiting.append(task.task_id)
                     worker.status = WorkerStatus.READY
+                    self._append_runtime_event(
+                        state,
+                        event_type="policy_blocked_action",
+                        payload={
+                            "task_id": task.task_id,
+                            "worker_id": task.worker_id,
+                            "action": task.action,
+                            "reason": approval.reason,
+                        },
+                    )
                     return
 
                 if result.ok:
                     task.status = TaskStatus.COMPLETED
                     task.updated_at = self._now_iso()
+                    task.finished_at = self._now_iso()
                     worker.status = WorkerStatus.READY
                     worker.last_error = None
                     circuit.failure_streak = 0
                     circuit.open_until = None
                     circuit.last_error = None
+                    task.result_summary = result.message
+                    links = result.data.get("external_links", {}) if isinstance(result.data, dict) else {}
+                    task.external_links = links if isinstance(links, dict) else {}
+                    task.error_code = None
                     executed.append(task.task_id)
                     return
 
@@ -128,9 +169,12 @@ class Dispatcher:
             except Exception as exc:  # noqa: BLE001
                 task.retries += 1
                 task.updated_at = self._now_iso()
+                task.finished_at = self._now_iso()
                 circuit.failure_streak += 1
                 circuit.last_error = str(exc)
                 worker.last_error = str(exc)
+                task.result_summary = str(exc)
+                task.error_code = "execution_error"
 
                 if task.retries <= budget.max_retries:
                     task.status = TaskStatus.PENDING

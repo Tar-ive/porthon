@@ -83,6 +83,9 @@ class NotionLeadsWorker(BaseWorker):
                         {"name": "Portfolio Lead", "source": "Portfolio", "status": "Proposal"},
                         {"name": "Direct Lead", "source": "Direct", "status": "Lead"},
                     ],
+                    "external_links": {
+                        "notion_database": "https://www.notion.so/demo_notion_pipeline"
+                    },
                 },
             )
 
@@ -138,7 +141,13 @@ class NotionLeadsWorker(BaseWorker):
         return WorkerExecution(
             ok=True,
             message="Client pipeline database created",
-            data={"database_id": db_id, "reused": False},
+            data={
+                "database_id": db_id,
+                "reused": False,
+                "external_links": {
+                    "notion_database": f"https://www.notion.so/{str(db_id).replace('-', '')}"
+                },
+            },
         )
 
     async def _add_lead(self, payload: dict) -> WorkerExecution:
@@ -146,6 +155,22 @@ class NotionLeadsWorker(BaseWorker):
         database_id = payload.get("database_id", "")
         if not database_id:
             return WorkerExecution(ok=False, message="database_id required")
+
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            name = payload.get("name", "New Lead")
+            return WorkerExecution(
+                ok=True,
+                message=f"Added lead: {name} (demo)",
+                data={
+                    "database_id": database_id,
+                    "lead_id": f"demo_lead_{name.lower().replace(' ', '_')}",
+                    "name": name,
+                    "status": payload.get("status", "Lead"),
+                    "external_links": {
+                        "notion_database": f"https://www.notion.so/{str(database_id)}"
+                    },
+                },
+            )
 
         props = [
             {"name": "Name", "value": payload.get("name", "New Lead")},
@@ -162,7 +187,12 @@ class NotionLeadsWorker(BaseWorker):
         return WorkerExecution(
             ok=not result.get("dry_run", True),
             message=f"Added lead: {payload.get('name', 'New Lead')}",
-            data=result,
+            data={
+                **result,
+                "external_links": {
+                    "notion_database": f"https://www.notion.so/{str(database_id).replace('-', '')}"
+                },
+            },
         )
 
     async def _search_leads(self, payload: dict) -> WorkerExecution:

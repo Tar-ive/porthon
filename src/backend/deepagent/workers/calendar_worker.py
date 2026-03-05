@@ -224,8 +224,17 @@ Generate a weekly calendar plan. Return JSON:
         plan = plan_model.model_dump(mode="json")
 
         # 3. Create events via Composio
-        events = plan_model.events
+        deduped: list = []
+        seen = set()
+        for event in plan_model.events:
+            key = (event.title.strip().lower(), event.start_time, event.end_time)
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped.append(event)
+        events = deduped[:4]
         created = 0
+        external_links: list[str] = []
         for event in events:
             params = {
                 "summary": event.title,
@@ -245,28 +254,44 @@ Generate a weekly calendar plan. Return JSON:
             )
             if not result.get("dry_run"):
                 created += 1
+                link = (
+                    result.get("result", {})
+                    .get("htmlLink")
+                    or result.get("result", {})
+                    .get("data", {})
+                    .get("htmlLink")
+                )
+                if isinstance(link, str) and link:
+                    external_links.append(link)
 
         logger.info("Calendar: created %d/%d events", created, len(events))
 
         return WorkerExecution(
             ok=True,
             message=f"Scheduled {created} events ({len(events)} planned)",
-            data=plan,
+            data={
+                **plan,
+                "external_links": {"calendar_events": external_links},
+            },
         )
 
     async def _create_block(self, payload: dict) -> WorkerExecution:
         """Create a single calendar event. Requires approval for moves."""
         if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
             title = payload.get("title", "Focus Block")
+            event_id = f"demo_cal_{sha256(title.encode()).hexdigest()[:10]}"
             return WorkerExecution(
                 ok=True,
                 message=f"Created demo event: {title}",
                 data={
                     "demo_mode": True,
-                    "event_id": f"demo_cal_{sha256(title.encode()).hexdigest()[:10]}",
+                    "event_id": event_id,
                     "title": title,
                     "start_time": payload.get("start_time", ""),
                     "end_time": payload.get("end_time", ""),
+                    "external_links": {
+                        "calendar_event": f"https://calendar.google.com/event?eid={event_id}"
+                    },
                 },
             )
 
@@ -294,7 +319,16 @@ Generate a weekly calendar plan. Return JSON:
         return WorkerExecution(
             ok=True,
             message=f"Created event: {title}",
-            data=result,
+            data={
+                **result,
+                "external_links": {
+                    "calendar_event": (
+                        result.get("result", {}).get("htmlLink")
+                        or result.get("result", {}).get("data", {}).get("htmlLink")
+                        or ""
+                    ),
+                },
+            },
             approval_required=is_move,
             approval_reason="Moving an existing calendar event requires approval" if is_move else "",
         )

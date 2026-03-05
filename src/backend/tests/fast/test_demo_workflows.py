@@ -5,8 +5,8 @@ import pytest
 from deepagent.workers.base import BaseWorker
 from deepagent.workers.llm_schemas import (
     CalendarPlanLLM,
-    FacebookCommentReplyLLM,
-    FacebookDraftPlanLLM,
+    FigmaCollabDeltaLLM,
+    FigmaFollowupDraftLLM,
     FigmaPlanLLM,
 )
 
@@ -60,26 +60,16 @@ def mock_offline_llm_and_tools(monkeypatch):
                 quest_connection="Supports quest execution.",
             ).model_dump(mode="json")
 
-        if "draft concise, authentic Facebook replies" in system:
-            return FacebookCommentReplyLLM(
-                reply_text="Deterministic offline reply from mocked LLM boundary."
+        if "Figma collaboration analyst" in system:
+            return FigmaCollabDeltaLLM(
+                summary="Collaborator requested tighter CTA emphasis and hierarchy cleanup.",
+                next_action="Apply CTA hierarchy pass and post before/after frame.",
+                severity="medium",
             ).model_dump(mode="json")
 
-        if "personal brand content strategist" in system:
-            return FacebookDraftPlanLLM(
-                posts=[
-                    {
-                        "platform": "facebook",
-                        "content": "Offline deterministic post.",
-                        "scheduled_unix": 1773180000,
-                        "post_type": "learning_in_public",
-                        "hashtags": ["demo"],
-                        "linked_milestone": "Milestone A",
-                    }
-                ],
-                posting_cadence="1x per week",
-                brand_voice_notes="Grounded and clear.",
-                quest_connection="Supports scenario momentum.",
+        if "draft concise Figma follow-up comments" in system:
+            return FigmaFollowupDraftLLM(
+                draft_comment="Great catch. I will apply a CTA hierarchy pass and share an updated frame shortly."
             ).model_dump(mode="json")
 
         if "ADHD-aware calendar coach" in system:
@@ -104,11 +94,9 @@ def mock_offline_llm_and_tools(monkeypatch):
     async def _fake_execute_action(*args, **kwargs):
         return {"dry_run": True, "result": {"data": {}}}
 
-    import deepagent.workers.facebook_worker as fb_mod
     import deepagent.workers.figma_worker as fig_mod
 
     monkeypatch.setattr(BaseWorker, "_llm_json", _fake_llm_json, raising=True)
-    monkeypatch.setattr(fb_mod, "execute_action", _fake_execute_action, raising=True)
     monkeypatch.setattr(fig_mod, "execute_action", _fake_execute_action, raising=True)
 
     return llm_calls
@@ -130,6 +118,7 @@ def test_demo_workflow_proactive_preview_commit_offline_llm_boundary(
     runtime = client.get("/v1/runtime", headers=DEMO_HEADERS).json()
     preview = runtime.get("demo_artifacts", {}).get("proactive_preview", {})
     assert len(preview.get("calendar", {}).get("events", [])) == 4
+    assert len(preview.get("notion_leads", {}).get("leads", [])) == 3
     assert "notion_leads" in preview
     assert "notion_opportunity" in preview
     assert runtime.get("value_signals")
@@ -176,7 +165,7 @@ def test_demo_workflow_proactive_preview_commit_offline_llm_boundary(
 
 
 @pytest.mark.fast
-def test_demo_workflow_facebook_watch_start_inject_poll_offline_llm_boundary(
+def test_demo_workflow_figma_watch_webhook_offline_llm_boundary(
     client, mock_offline_llm_and_tools
 ):
     _activate_demo_quest(client)
@@ -184,83 +173,56 @@ def test_demo_workflow_facebook_watch_start_inject_poll_offline_llm_boundary(
     r_start = client.post(
         "/v1/events",
         json={
-            "type": "demo.workflow.facebook_watch.start",
+            "type": "demo.workflow.figma_watch.start",
             "payload": {
-                "page_id": "me",
+                "file_key": "demo_file_123",
                 "demo_mode": False,
-                "demo_comments": [
-                    {
-                        "comment_id": "c_seed_001",
-                        "post_id": "p_seed_001",
-                        "message": "Seed comment one",
-                    },
-                    {
-                        "comment_id": "c_seed_002",
-                        "post_id": "p_seed_001",
-                        "message": "Seed comment two",
-                    },
-                ],
             },
         },
         headers=DEMO_HEADERS,
     )
     assert r_start.status_code == 200
 
-    r_inject = client.post(
-        "/v1/events",
-        json={
-            "type": "demo.workflow.facebook_watch.inject",
-            "payload": {
-                "comments": [
-                    {
-                        "comment_id": "c_inject_001",
-                        "post_id": "p_seed_001",
-                        "message": "Injected comment",
-                    }
-                ]
-            },
-        },
+    webhook_payload = {
+        "id": "wh_001",
+        "event_id": "wh_001",
+        "comment_id": "fig_c_001",
+        "file_key": "demo_file_123",
+        "message": "Can we tighten CTA hierarchy in this frame?",
+        "from": {"name": "Design Peer"},
+        "created_at": "2026-03-09T10:00:00Z",
+    }
+    r_webhook = client.post(
+        "/v1/integrations/composio/webhook",
+        json=webhook_payload,
         headers=DEMO_HEADERS,
     )
-    assert r_inject.status_code == 200
-
-    r_poll = client.post(
-        "/v1/events",
-        json={"type": "demo.workflow.facebook_watch.poll", "payload": {}},
-        headers=DEMO_HEADERS,
-    )
-    assert r_poll.status_code == 200
+    assert r_webhook.status_code == 200
 
     runtime = client.get("/v1/runtime", headers=DEMO_HEADERS).json()
-    watch_state = runtime.get("workflow_state", {}).get("facebook_watch", {})
+    watch_state = runtime.get("workflow_state", {}).get("figma_watch", {})
     assert watch_state
     assert watch_state.get("demo_mode") is False
 
-    pending = (
-        runtime.get("demo_artifacts", {})
-        .get("facebook_watch", {})
-        .get("pending_replies", [])
-    )
-    pending_ids = {p.get("comment_id") for p in pending}
-    assert {"c_seed_001", "c_seed_002", "c_inject_001"}.issubset(pending_ids)
-    assert all(p.get("status") == "ready_to_send" for p in pending)
-    assert all(bool(str(p.get("draft_reply", "")).strip()) for p in pending)
+    pending = runtime.get("demo_artifacts", {}).get("figma_watch", {}).get("pending_items", [])
+    assert len(pending) == 1
+    first = pending[0]
+    assert first.get("comment_id") == "fig_c_001"
+    assert first.get("status") == "ready_to_send"
+    assert bool(str(first.get("draft_reply", "")).strip())
+    assert bool(str(first.get("summary", "")).strip())
 
     before_count = len(pending)
-    r_poll_again = client.post(
-        "/v1/events",
-        json={"type": "demo.workflow.facebook_watch.poll", "payload": {}},
+    r_webhook_again = client.post(
+        "/v1/integrations/composio/webhook",
+        json=webhook_payload,
         headers=DEMO_HEADERS,
     )
-    assert r_poll_again.status_code == 200
+    assert r_webhook_again.status_code == 200
     runtime_after = client.get("/v1/runtime", headers=DEMO_HEADERS).json()
-    after_pending = (
-        runtime_after.get("demo_artifacts", {})
-        .get("facebook_watch", {})
-        .get("pending_replies", [])
-    )
+    after_pending = runtime_after.get("demo_artifacts", {}).get("figma_watch", {}).get("pending_items", [])
     assert len(after_pending) == before_count
 
     events_body = client.get("/v1/events", headers=DEMO_HEADERS).json()
-    assert any(e.get("type") == "facebook_comment_received" for e in events_body.get("data", []))
+    assert any(e.get("type") == "figma_comment_received" for e in events_body.get("data", []))
     assert len(mock_offline_llm_and_tools) >= 1

@@ -83,6 +83,11 @@ def paginate(
     starting_after: str | None = None,
 ) -> tuple[list[Any], bool]:
     """Return (page, has_more) using cursor-based pagination."""
+    try:
+        limit = int(limit)
+    except (TypeError, ValueError):
+        limit = 20
+    limit = max(1, min(100, limit))
     if starting_after:
         idx = next((i for i, item in enumerate(items) if getattr(item, "id", None) == starting_after or (isinstance(item, dict) and item.get("id") == starting_after)), -1)
         if idx >= 0:

@@ -11,6 +11,7 @@ from typing import Any
 from uuid import uuid4
 
 from deepagent.demo_artifacts import (
+    build_figma_watch_state,
     build_facebook_watch_state,
     build_proactive_artifacts,
     make_draft_reply,
@@ -229,6 +230,18 @@ class AlwaysOnMaster:
             await self._enqueue_proactive_commit(state, payload)
             return
 
+        if event_type == "demo.workflow.figma_watch.start":
+            state.workflow_state["figma_watch"] = build_figma_watch_state(payload)
+            state.demo_artifacts.setdefault("figma_watch", {})
+            state.demo_artifacts["figma_watch"].setdefault("pending_items", [])
+            return
+
+        if event_type == "demo.workflow.figma_watch.stop":
+            cfg = state.workflow_state.get("figma_watch", {})
+            if isinstance(cfg, dict):
+                cfg["enabled"] = False
+            return
+
         if event_type == "demo.workflow.facebook_watch.start":
             state.workflow_state["facebook_watch"] = build_facebook_watch_state(payload)
             state.demo_artifacts.setdefault("facebook_watch", {})
@@ -259,6 +272,10 @@ class AlwaysOnMaster:
 
         if event_type == "demo.workflow.facebook_watch.poll":
             await self._poll_facebook_watch(state, payload)
+            return
+
+        if event_type == "integration.figma.webhook.received":
+            await self._handle_figma_webhook(state, payload)
 
     async def _enqueue_proactive_commit(
         self,
@@ -304,6 +321,25 @@ class AlwaysOnMaster:
                 updated_at=created,
             )
         )
+        seeded_leads = preview.get("notion_leads", {}).get("leads", [])[:3]
+        for lead in seeded_leads:
+            state.queue.append(
+                WorkerTask(
+                    task_id=_prefixed_id("task_"),
+                    worker_id="notion_leads_worker",
+                    action="add_lead",
+                    priority=22,
+                    payload={
+                        "database_id": "demo_notion_pipeline",
+                        "name": lead.get("name", "Lead"),
+                        "status": lead.get("status", "Lead"),
+                        "value": lead.get("value", 0),
+                        "demo_mode": True,
+                    },
+                    created_at=created,
+                    updated_at=created,
+                )
+            )
         state.queue.append(
             WorkerTask(
                 task_id=_prefixed_id("task_"),
@@ -312,6 +348,26 @@ class AlwaysOnMaster:
                 priority=20,
                 payload={
                     "scenario_title": state.active_scenario.title if state.active_scenario else "Questline",
+                    "demo_mode": True,
+                },
+                created_at=created,
+                updated_at=created,
+            )
+        )
+        state.queue.append(
+            WorkerTask(
+                task_id=_prefixed_id("task_"),
+                worker_id="notion_opportunity_worker",
+                action="add_progress_page",
+                priority=23,
+                payload={
+                    "workspace_id": "demo_notion_workspace",
+                    "title": "Progress: Next Actions",
+                    "content_markdown": (
+                        "1. Send one conversion-focused follow-up.\n\n"
+                        "2. Complete one 45-minute admin sprint.\n\n"
+                        "3. Ship one portfolio challenge milestone."
+                    ),
                     "demo_mode": True,
                 },
                 created_at=created,
@@ -336,6 +392,81 @@ class AlwaysOnMaster:
                     updated_at=created,
                 )
             )
+
+    async def _handle_figma_webhook(
+        self,
+        state: AgentRuntimeState,
+        payload: dict[str, Any],
+    ) -> None:
+        from deepagent.workers.figma_worker import FigmaWorker
+
+        cfg = state.workflow_state.get("figma_watch")
+        if not isinstance(cfg, dict):
+            cfg = build_figma_watch_state(payload)
+            state.workflow_state["figma_watch"] = cfg
+        if cfg.get("enabled") is False:
+            return
+
+        raw_event_id = str(payload.get("event_id", "")).strip() or str(payload.get("id", "")).strip()
+        file_key = str(payload.get("file_key", "")).strip()
+        message = str(payload.get("message", "")).strip()
+        comment_id = str(payload.get("comment_id", "")).strip()
+        dedupe_key = raw_event_id or comment_id or f"{file_key}:{message}:{payload.get('created_at', '')}"
+        if not dedupe_key:
+            dedupe_key = _prefixed_id("evt_")
+
+        seen = set(cfg.get("seen_event_ids", []))
+        if dedupe_key in seen:
+            return
+
+        worker = FigmaWorker()
+        scenario_title = state.active_scenario.title if state.active_scenario else ""
+        result = await worker.execute(
+            "process_webhook_event",
+            {
+                "event": payload,
+                "scenario_title": scenario_title,
+                "demo_mode": bool(cfg.get("demo_mode", True)),
+            },
+        )
+        if not result.ok:
+            return
+
+        item = {
+            "event_id": result.data.get("event_id", dedupe_key),
+            "comment_id": result.data.get("comment_id", comment_id),
+            "file_key": result.data.get("file_key", file_key),
+            "message": result.data.get("message", message),
+            "summary": result.data.get("summary", ""),
+            "next_action": result.data.get("next_action", ""),
+            "draft_reply": result.data.get("draft_reply", ""),
+            "status": result.data.get("status", "ready_to_send"),
+            "created_at": self._now_iso(),
+            "external_links": result.data.get("external_links", {}),
+        }
+        watch = state.demo_artifacts.setdefault("figma_watch", {})
+        pending = watch.setdefault("pending_items", [])
+        pending.append(item)
+
+        links = state.demo_artifacts.setdefault("integration_links", {})
+        figma_links = links.setdefault("figma", [])
+        for link in item.get("external_links", {}).values():
+            if isinstance(link, str) and link and link not in figma_links:
+                figma_links.append(link)
+
+        seen.add(dedupe_key)
+        cfg["seen_event_ids"] = sorted(seen)
+        cfg["last_event_at"] = self._now_iso()
+
+        await self._append_event(
+            state,
+            event_type="figma_comment_received",
+            payload={
+                "event_id": item["event_id"],
+                "comment_id": item["comment_id"],
+                "file_key": item["file_key"],
+            },
+        )
 
     async def _poll_facebook_watch(
         self,
@@ -478,5 +609,19 @@ class AlwaysOnMaster:
             "edges": edges,
             "approvals": [a.model_dump(mode="json") for a in state.approvals if a.decision is None],
             "recent_events": state.event_history[-12:],
+            "tasks": [
+                {
+                    "task_id": t.task_id,
+                    "worker_id": t.worker_id,
+                    "action": t.action,
+                    "status": t.status,
+                    "result_summary": t.result_summary,
+                    "external_links": t.external_links,
+                    "updated_at": t.updated_at,
+                }
+                for t in state.queue[-30:]
+            ],
+            "workflow_state": state.workflow_state,
+            "demo_artifacts": state.demo_artifacts,
             "updated_at": state.updated_at,
         }

@@ -25,6 +25,17 @@ interface AgentMapResponse {
   edges: { from: string; to: string }[];
   approvals: ApprovalItem[];
   recent_events: { event_id: string; type: string; payload: Record<string, unknown>; created_at: string }[];
+  tasks?: Array<{
+    task_id: string;
+    worker_id: string;
+    action: string;
+    status: string;
+    result_summary?: string | null;
+    external_links?: Record<string, string>;
+    updated_at: string;
+  }>;
+  workflow_state?: Record<string, unknown>;
+  demo_artifacts?: Record<string, unknown>;
   updated_at: string;
 }
 
@@ -104,6 +115,30 @@ export default function AgentMap() {
   }, []);
 
   const workers = useMemo(() => data?.nodes.filter((n) => n.type === 'worker') ?? [], [data]);
+  const recentTasks = useMemo(() => (data?.tasks ?? []).slice(-8).reverse(), [data]);
+  const integrationLinks = useMemo(() => {
+    const artifacts = data?.demo_artifacts ?? {};
+    const links = (artifacts['integration_links'] as Record<string, unknown> | undefined) ?? {};
+    const out: Array<{ label: string; href: string }> = [];
+    for (const [k, v] of Object.entries(links)) {
+      if (Array.isArray(v)) {
+        for (const item of v) {
+          if (typeof item === 'string' && item) {
+            out.push({ label: k, href: item });
+          }
+        }
+      } else if (typeof v === 'string' && v) {
+        out.push({ label: k, href: v });
+      }
+    }
+    return out.slice(0, 8);
+  }, [data]);
+  const figmaPending = useMemo(() => {
+    const artifacts = data?.demo_artifacts ?? {};
+    const figmaWatch = (artifacts['figma_watch'] as Record<string, unknown> | undefined) ?? {};
+    const pending = (figmaWatch['pending_items'] as Array<Record<string, unknown>> | undefined) ?? [];
+    return pending.slice(-4).reverse();
+  }, [data]);
 
   const resolveApproval = async (approvalId: string, decision: 'approved' | 'rejected') => {
     try {
@@ -186,6 +221,48 @@ export default function AgentMap() {
               <span>{skill.display_name}</span>
               <span>{skill.actions.length} actions</span>
             </div>
+          ))}
+        </div>
+      )}
+
+      {recentTasks.length > 0 && (
+        <div className="agent-map-events">
+          <div className="agent-map-events-title">Recent task outcomes</div>
+          {recentTasks.map((task) => (
+            <div key={task.task_id} className="agent-map-event-item">
+              <span>{task.worker_id}.{task.action} · {task.status}</span>
+              <span>{task.result_summary || new Date(task.updated_at).toLocaleTimeString()}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {figmaPending.length > 0 && (
+        <div className="agent-map-events">
+          <div className="agent-map-events-title">Figma watch pending</div>
+          {figmaPending.map((item, idx) => (
+            <div key={`${String(item['event_id'] || idx)}`} className="agent-map-event-item">
+              <span>{String(item['summary'] || item['message'] || 'Pending item')}</span>
+              <span>{String(item['status'] || 'ready_to_send')}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {integrationLinks.length > 0 && (
+        <div className="agent-map-events">
+          <div className="agent-map-events-title">Integration links</div>
+          {integrationLinks.map((link, idx) => (
+            <a
+              key={`${link.href}-${idx}`}
+              className="agent-map-event-item"
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>{link.label}</span>
+              <span>open</span>
+            </a>
           ))}
         </div>
       )}

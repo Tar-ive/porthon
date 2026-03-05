@@ -70,6 +70,11 @@ def build_proactive_artifacts(scenario: dict[str, Any]) -> dict[str, Any]:
                 "ADHD execution constraints",
             ]
         },
+        "integration_links": {
+            "calendar": [],
+            "notion": [],
+            "figma": [],
+        },
     }
 
 
@@ -103,6 +108,18 @@ def build_facebook_watch_state(payload: dict[str, Any]) -> dict[str, Any]:
         "seen_comment_ids": payload.get("seen_comment_ids", []),
         "started_at": _now_iso(),
         "last_polled_at": None,
+    }
+
+
+def build_figma_watch_state(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "enabled": True,
+        "team_id": str(payload.get("team_id", "")),
+        "file_key": str(payload.get("file_key", "")),
+        "demo_mode": bool(payload.get("demo_mode", True)),
+        "seen_event_ids": payload.get("seen_event_ids", []),
+        "started_at": _now_iso(),
+        "last_event_at": None,
     }
 
 

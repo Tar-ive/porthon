@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-HIGH_IMPACT_ACTIONS = {
-    "facebook_worker": {"publish_post", "schedule_post", "reply_comment"},
-    "calendar_worker": {"reschedule_week", "delete_block"},
-}
+from deepagent.policy import requires_approval as _requires_approval
 
 
 def requires_approval(worker_id: str, action: str) -> bool:
-    return action in HIGH_IMPACT_ACTIONS.get(worker_id, set())
+    return _requires_approval(worker_id, action)

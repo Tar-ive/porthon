@@ -17,7 +17,11 @@ import logging
 import os
 
 from deepagent.workers.base import BaseWorker, WorkerExecution
-from deepagent.workers.llm_schemas import FigmaPlanLLM
+from deepagent.workers.llm_schemas import (
+    FigmaCollabDeltaLLM,
+    FigmaFollowupDraftLLM,
+    FigmaPlanLLM,
+)
 from integrations.composio_client import execute_action
 
 logger = logging.getLogger(__name__)
@@ -32,6 +36,8 @@ class FigmaWorker(BaseWorker):
         "verify_connection": "_verify_connection",
         "generate_plan": "_generate_challenge",
         "comment_file": "_comment_file",
+        "process_webhook_event": "_process_webhook_event",
+        "summarize_collab_delta": "_process_webhook_event",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -197,7 +203,12 @@ Return JSON:
             return WorkerExecution(
                 ok=True,
                 message="Figma comment logged (demo)",
-                data={"demo_mode": True, "file_key": file_key, "message": message},
+                data={
+                    "demo_mode": True,
+                    "file_key": file_key,
+                    "message": message,
+                    "external_links": {"figma_file": f"https://www.figma.com/file/{file_key}"},
+                },
             )
 
         file_key = payload.get("file_key", "")
@@ -213,5 +224,139 @@ Return JSON:
         return WorkerExecution(
             ok=not result.get("dry_run", True),
             message="Figma comment added" if not result.get("dry_run") else "Figma comment logged (dry run)",
-            data=result,
+            data={
+                **result,
+                "external_links": {"figma_file": f"https://www.figma.com/file/{file_key}"},
+            },
+        )
+
+    def _extract_comment_event(self, payload: dict) -> dict:
+        event = payload.get("event", payload) if isinstance(payload, dict) else {}
+        data = event.get("data", {}) if isinstance(event.get("data", {}), dict) else {}
+        resource = event.get("resource", {}) if isinstance(event.get("resource", {}), dict) else {}
+        comment = data.get("comment", {}) if isinstance(data.get("comment", {}), dict) else {}
+
+        comment_id = (
+            str(payload.get("comment_id", "")).strip()
+            or str(event.get("comment_id", "")).strip()
+            or str(comment.get("id", "")).strip()
+            or str(event.get("id", "")).strip()
+        )
+        file_key = (
+            str(payload.get("file_key", "")).strip()
+            or str(event.get("file_key", "")).strip()
+            or str(resource.get("file_key", "")).strip()
+            or str(comment.get("file_key", "")).strip()
+        )
+        message = (
+            str(payload.get("message", "")).strip()
+            or str(event.get("message", "")).strip()
+            or str(comment.get("message", "")).strip()
+        )
+        actor = payload.get("from") or event.get("from") or comment.get("from") or {}
+        if not isinstance(actor, dict):
+            actor = {}
+
+        return {
+            "event_id": str(payload.get("event_id", "")).strip() or str(event.get("event_id", "")).strip() or comment_id,
+            "comment_id": comment_id,
+            "file_key": file_key,
+            "message": message,
+            "from": actor,
+        }
+
+    async def _process_webhook_event(self, payload: dict) -> WorkerExecution:
+        normalized = self._extract_comment_event(payload)
+        if not normalized["comment_id"] or not normalized["message"]:
+            return WorkerExecution(ok=False, message="comment_id and message are required")
+
+        file_key = normalized["file_key"]
+        file_url = f"https://www.figma.com/file/{file_key}" if file_key else ""
+        fallback_summary = "New collaboration comment received and queued for focused follow-up."
+        fallback_next_action = "Acknowledge the comment and propose one concrete next design action."
+        fallback_comment = (
+            "Thanks for the context. I captured this and will respond with one clear next step on the design."
+        )
+
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            return WorkerExecution(
+                ok=True,
+                message="Processed Figma collaboration event (demo)",
+                data={
+                    "event_id": normalized["event_id"],
+                    "comment_id": normalized["comment_id"],
+                    "file_key": file_key,
+                    "message": normalized["message"],
+                    "summary": fallback_summary,
+                    "next_action": fallback_next_action,
+                    "draft_reply": fallback_comment,
+                    "status": "ready_to_send",
+                    "external_links": {"figma_file": file_url} if file_url else {},
+                },
+            )
+
+        if not os.environ.get("OPENAI_API_KEY"):
+            return WorkerExecution(
+                ok=True,
+                message="Processed Figma collaboration event (fallback)",
+                data={
+                    "event_id": normalized["event_id"],
+                    "comment_id": normalized["comment_id"],
+                    "file_key": file_key,
+                    "message": normalized["message"],
+                    "summary": fallback_summary,
+                    "next_action": fallback_next_action,
+                    "draft_reply": fallback_comment,
+                    "status": "ready_to_send",
+                    "external_links": {"figma_file": file_url} if file_url else {},
+                },
+            )
+
+        try:
+            delta = await self._llm_typed(
+                system=(
+                    "You are a Figma collaboration analyst. Summarize the collaboration delta "
+                    "and propose one concrete next step. Return only JSON."
+                ),
+                user=(
+                    f"Incoming Figma comment: {normalized['message']}\n"
+                    f"Scenario: {payload.get('scenario_title', '')}\n"
+                    "Respond with concise, execution-focused output."
+                ),
+                schema=FigmaCollabDeltaLLM,
+            )
+            draft = await self._llm_typed(
+                system=(
+                    "You draft concise Figma follow-up comments for collaborative design work. "
+                    "Return only JSON."
+                ),
+                user=(
+                    f"Incoming comment: {normalized['message']}\n"
+                    f"Suggested next action: {delta.next_action}\n"
+                    "Draft a short collaborative follow-up comment."
+                ),
+                schema=FigmaFollowupDraftLLM,
+            )
+            summary = delta.summary
+            next_action = delta.next_action
+            draft_reply = draft.draft_comment
+        except Exception:  # noqa: BLE001
+            summary = fallback_summary
+            next_action = fallback_next_action
+            draft_reply = fallback_comment
+
+        return WorkerExecution(
+            ok=True,
+            message="Processed Figma collaboration event",
+            data={
+                "event_id": normalized["event_id"],
+                "comment_id": normalized["comment_id"],
+                "file_key": file_key,
+                "message": normalized["message"],
+                "summary": summary,
+                "next_action": next_action,
+                "draft_reply": draft_reply,
+                "status": "ready_to_send",
+                "external_links": {"figma_file": file_url} if file_url else {},
+            },
         )

@@ -72,6 +72,9 @@ class NotionOpportunityWorker(BaseWorker):
                     "reused": False,
                     "workspace_title": root_title,
                     "progress_page": "Progress: Next Actions",
+                    "external_links": {
+                        "notion_workspace": "https://www.notion.so/demo_notion_workspace"
+                    },
                 },
             )
 
@@ -128,7 +131,13 @@ class NotionOpportunityWorker(BaseWorker):
         return WorkerExecution(
             ok=True,
             message=f"Created workspace: {root_title}",
-            data={"page_id": page_id, "reused": False},
+            data={
+                "page_id": page_id,
+                "reused": False,
+                "external_links": {
+                    "notion_workspace": f"https://www.notion.so/{str(page_id).replace('-', '')}"
+                },
+            },
         )
 
     async def _add_progress_page(self, payload: dict) -> WorkerExecution:
@@ -139,6 +148,19 @@ class NotionOpportunityWorker(BaseWorker):
 
         title = payload.get("title", "Progress Update")
         content = payload.get("content_markdown", "")
+
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            demo_page_id = "demo_notion_progress_page"
+            return WorkerExecution(
+                ok=True,
+                message=f"Added progress page: {title} (demo)",
+                data={
+                    "page_id": demo_page_id,
+                    "external_links": {
+                        "notion_progress_page": f"https://www.notion.so/{demo_page_id}"
+                    },
+                },
+            )
 
         # Create the page
         page_result = await execute_action(
@@ -168,5 +190,10 @@ class NotionOpportunityWorker(BaseWorker):
         return WorkerExecution(
             ok=True,
             message=f"Added progress page: {title}",
-            data={"page_id": page_id},
+            data={
+                "page_id": page_id,
+                "external_links": {
+                    "notion_progress_page": f"https://www.notion.so/{str(page_id).replace('-', '')}"
+                },
+            },
         )

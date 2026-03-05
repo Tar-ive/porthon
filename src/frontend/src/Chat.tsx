@@ -48,7 +48,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [questsCollapsed, setQuestsCollapsed] = useState(false);
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
   const [workflowStatus, setWorkflowStatus] = useState<string>('');
-  const [workflowBusy, setWorkflowBusy] = useState<'proactive' | 'facebook' | null>(null);
+  const [workflowBusy, setWorkflowBusy] = useState<'proactive' | 'figma' | null>(null);
 
   useEffect(() => {
     fetch('/api/agent/activate', {
@@ -141,22 +141,30 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
     }
   };
 
-  const runFacebookWorkflow = async () => {
-    setWorkflowBusy('facebook');
-    setWorkflowStatus('Running facebook watch workflow...');
+  const runFigmaWorkflow = async () => {
+    setWorkflowBusy('figma');
+    setWorkflowStatus('Running figma watch workflow...');
     try {
-      await postDemoEvent('demo.workflow.facebook_watch.start', {
-        page_id: 'me',
+      await postDemoEvent('demo.workflow.figma_watch.start', {
+        file_key: 'demo_file_123',
         demo_mode: false,
-        demo_comments: [
-          { comment_id: 'ui_seed_001', post_id: 'ui_post_001', message: 'Love your recent update.' },
-          { comment_id: 'ui_seed_002', post_id: 'ui_post_001', message: 'Can you share milestones?' },
-        ],
       });
-      await postDemoEvent('demo.workflow.facebook_watch.poll', {});
-      setWorkflowStatus('Facebook watch workflow complete. Pending replies updated.');
+      await fetch('/v1/integrations/composio/webhook', {
+        method: 'POST',
+        headers: DEMO_JSON_HEADERS,
+        body: JSON.stringify({
+          id: 'ui_wh_001',
+          event_id: 'ui_wh_001',
+          comment_id: 'ui_comment_001',
+          file_key: 'demo_file_123',
+          message: 'Can we simplify this frame hierarchy?',
+          from: { name: 'Teammate' },
+          created_at: new Date().toISOString(),
+        }),
+      });
+      setWorkflowStatus('Figma watch workflow complete. Pending items updated.');
     } catch {
-      setWorkflowStatus('Facebook workflow failed. Check /v1/events.');
+      setWorkflowStatus('Figma workflow failed. Check /v1/events.');
     } finally {
       setWorkflowBusy(null);
     }
@@ -294,10 +302,10 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
           <button
             type="button"
             className="workflow-btn"
-            onClick={runFacebookWorkflow}
+            onClick={runFigmaWorkflow}
             disabled={workflowBusy !== null}
           >
-            {workflowBusy === 'facebook' ? 'Running...' : 'Run Facebook Watch'}
+            {workflowBusy === 'figma' ? 'Running...' : 'Run Figma Watch'}
           </button>
         </div>
         {workflowStatus && <div className="workflow-strip-status">{workflowStatus}</div>}

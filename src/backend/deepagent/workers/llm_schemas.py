@@ -85,3 +85,17 @@ class FigmaPlanLLM(BaseModel):
     quest_connection: str
 
     model_config = {"extra": "forbid"}
+
+
+class FigmaCollabDeltaLLM(BaseModel):
+    summary: str
+    next_action: str
+    severity: Literal["low", "medium", "high"] = "medium"
+
+    model_config = {"extra": "forbid"}
+
+
+class FigmaFollowupDraftLLM(BaseModel):
+    draft_comment: str
+
+    model_config = {"extra": "forbid"}
