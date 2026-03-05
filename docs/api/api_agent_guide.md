@@ -35,6 +35,14 @@ START
   |     -> PATCH /v1/notion/leads/{lead_key}
   |     -> POST /v1/notion/leads/realtime
   |
+  +-- Need Lead OS pod scheduling state and dispatch?
+  |     -> GET /v1/notion/leads/os/state
+  |     -> POST /v1/notion/leads/os/tick
+  |     -> POST /v1/notion/leads/os/dispatch
+  |
+  +-- Need to convert a Figma comment into a CRM lead?
+  |     -> POST /v1/figma/comments/{comment_id}/promote-to-lead
+  |
   +-- Need to send an external event into the loop?
   |     -> POST /v1/events  {type, payload}
   |
@@ -159,6 +167,24 @@ Never use offset-based pagination. Only `starting_after` with a resource ID.
 3. GET /v1/notion/leads?view=today_followups
 4. PATCH /v1/notion/leads/{lead_key} {status,next_follow_up_date,...}
 5. POST /v1/notion/leads/realtime {action,task_payload} for async edits
+```
+
+## Lead OS Workflow
+
+```
+1. POST /v1/notion/leads/os/tick {top_n}
+2. GET /v1/notion/leads/os/state
+3. POST /v1/notion/leads/os/dispatch {limit,min_score,dry_run}
+4. Use /v1/approvals when irreversible customer-facing actions are queued
+```
+
+## Figma-to-Lead Workflow
+
+```
+1. POST /v1/figma/webhooks  (comment intake)
+2. GET /v1/figma/comments/pending
+3. POST /v1/figma/comments/{comment_id}/promote-to-lead
+4. Continue lead maintenance via /v1/notion/leads/*
 ```
 
 ## Test Mode

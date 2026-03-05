@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, Query, Request
@@ -13,9 +13,11 @@ from app.api.v1.schemas import ListObject, epoch_now, generate_id, paginate
 from app.auth import get_livemode, get_mode
 from app.deps import get_master
 from app.middleware.errors import ApiException
+from deepagent.lead_os import ensure_lead_os_config, figma_actor_file_key
 from deepagent.loop import AlwaysOnMaster
 from integrations.figma_api import FigmaApiError, get_figma_api
 from integrations.figma_webhooks import normalize_figma_webhook_payload, passcode_matches
+from integrations.notion_leads_service import canonical_lead_key
 
 router = APIRouter()
 
@@ -123,6 +125,15 @@ class UpdateFigmaWatcherRequest(BaseModel):
 class PrepareSendReplyRequest(BaseModel):
     message: str | None = None
     priority: int = Field(default=12, ge=1, le=100)
+
+
+class PromoteFigmaCommentRequest(BaseModel):
+    lead_name: str | None = None
+    priority: Literal["High", "Medium", "Low"] = "Medium"
+    deal_size: float = Field(default=1500.0, ge=0.0)
+    next_action: str | None = None
+    next_follow_up_date: str | None = None
+    dispatch_now: bool = True
 
 
 @router.post("/figma/watchers")
@@ -533,4 +544,140 @@ async def prepare_send_figma_comment(
         "approval_id": resolved_item.get("approval_id"),
         "send_task_id": resolved_item.get("send_task_id"),
         "cycle": cycle_result.get("cycle"),
+    }
+
+
+@router.post("/figma/comments/{comment_id}/promote-to-lead")
+async def promote_figma_comment_to_lead(
+    comment_id: str,
+    body: PromoteFigmaCommentRequest,
+    request: Request,
+    master: AlwaysOnMaster = Depends(get_master),
+):
+    state = await master.get_state()
+    livemode = get_livemode(request.headers.get("Authorization"))
+    mode = get_mode(request.headers.get("Authorization"))
+    pending = (
+        state.get("demo_artifacts", {})
+        .get("figma_watch", {})
+        .get("pending_items", [])
+    )
+    if not isinstance(pending, list):
+        pending = []
+
+    item = next((p for p in pending if isinstance(p, dict) and str(p.get("comment_id", "")) == comment_id), None)
+    if item is None:
+        raise ApiException(status_code=404, code="resource_missing", message="Pending Figma comment not found.", param="comment_id")
+
+    actor = item.get("from", {}) if isinstance(item.get("from", {}), dict) else {}
+    actor_handle = str(actor.get("handle") or actor.get("id") or "figma-collaborator").strip()
+    file_key = str(item.get("file_key", "")).strip()
+    source = "Inbound"
+    lead_name = str(body.lead_name or f"{actor_handle} (Figma)").strip() or "Figma Lead"
+
+    now = datetime.now(UTC).date()
+    next_follow_up_date = (
+        str(body.next_follow_up_date or "").strip()
+        or (now + timedelta(days=2)).isoformat()
+    )
+    next_action = (
+        str(body.next_action or "").strip()
+        or "Reply in Figma and propose one concrete next design step"
+    )
+
+    lead_os_cfg = ensure_lead_os_config(
+        await master.get_workflow_key("lead_os"),
+        persona_id=str(state.get("persona_id", "p05")),
+        now_iso=_now_iso(),
+    )
+    comment_links = lead_os_cfg.get("figma_comment_links", {})
+    if not isinstance(comment_links, dict):
+        comment_links = {}
+    actor_links = lead_os_cfg.get("figma_actor_file_links", {})
+    if not isinstance(actor_links, dict):
+        actor_links = {}
+
+    actor_key = figma_actor_file_key(file_key=file_key, actor_handle=actor_handle)
+    existing_lead_key = str(comment_links.get(comment_id) or actor_links.get(actor_key) or "").strip()
+    lead_key = existing_lead_key or canonical_lead_key(lead_name, source)
+
+    notes = (
+        f"Promoted from Figma comment {comment_id} in file {file_key}. "
+        f"Actor: {actor_handle}. Message: {str(item.get('message', '')).strip()}"
+    )
+    task_payload = {
+        "lead_key": lead_key,
+        "name": lead_name,
+        "status": "Contacted",
+        "lead_type": "Inbound",
+        "priority": body.priority,
+        "deal_size": body.deal_size,
+        "source": source,
+        "next_action": next_action,
+        "next_follow_up_date": next_follow_up_date,
+        "notes": notes,
+    }
+    if mode == "demo":
+        task_payload["demo_mode"] = True
+
+    upsert_result = await master.ingest_event(
+        "manual_enqueue",
+        {
+            "enqueue": True,
+            "worker_id": "notion_leads_worker",
+            "action": "upsert_lead",
+            "priority": 16,
+            "task_payload": task_payload,
+        },
+    )
+
+    dispatch_cycle: dict[str, Any] | None = None
+    if body.dispatch_now:
+        dispatch_result = await master.ingest_event(
+            "manual_enqueue",
+            {
+                "enqueue": True,
+                "worker_id": "notion_leads_worker",
+                "action": "patch_lead",
+                "priority": 18,
+                "task_payload": {
+                    "lead_key": lead_key,
+                    "next_action": next_action,
+                    "next_follow_up_date": next_follow_up_date,
+                    "source": source,
+                    "demo_mode": mode == "demo",
+                },
+            },
+        )
+        raw_cycle = dispatch_result.get("cycle", {})
+        dispatch_cycle = raw_cycle if isinstance(raw_cycle, dict) else None
+
+    comment_links[comment_id] = lead_key
+    actor_links[actor_key] = lead_key
+    lead_os_cfg["figma_comment_links"] = comment_links
+    lead_os_cfg["figma_actor_file_links"] = actor_links
+    lead_os_cfg["last_promoted_comment"] = {
+        "comment_id": comment_id,
+        "lead_key": lead_key,
+        "promoted_at": _now_iso(),
+    }
+    await master.update_workflow_key("lead_os", lead_os_cfg, merge=False)
+
+    upsert_cycle = upsert_result.get("cycle", {})
+    return {
+        "id": str(comment_id),
+        "object": "figma_comment_lead_promotion",
+        "created": epoch_now(),
+        "livemode": livemode,
+        "metadata": {},
+        "comment_id": comment_id,
+        "file_key": file_key,
+        "actor_handle": actor_handle,
+        "lead_key": lead_key,
+        "lead_name": lead_name,
+        "source": source,
+        "next_action": next_action,
+        "next_follow_up_date": next_follow_up_date,
+        "upsert_cycle": upsert_cycle if isinstance(upsert_cycle, dict) else None,
+        "dispatch_cycle": dispatch_cycle,
     }

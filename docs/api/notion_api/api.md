@@ -183,6 +183,28 @@ When needed, attach relations to:
 
 Keep leads sync deterministic first, then add rollups for conversion and revenue metrics.
 
+## V3 Lead OS Extensions
+
+Lead OS introduces pod-scheduled execution on top of the same deterministic Notion schema.
+
+Additional operational fields (additive, optional):
+- `Lane` (`select`) - `Inbound`, `Referral`, `Outbound`, `Previous client`
+- `Owner pod` (`select`) - `intake_pod`, `nurture_pod`, `close_pod`, `finance_pod`
+- `Response SLA due` (`date`)
+- `Effort estimate (min)` (`number`)
+- `Acquisition cost est` (`number`)
+- `Conversion confidence` (`number`)
+
+New runtime endpoints:
+- `GET /v1/notion/leads/os/state`
+- `POST /v1/notion/leads/os/tick`
+- `POST /v1/notion/leads/os/dispatch`
+
+Figma conversion endpoint:
+- `POST /v1/figma/comments/{comment_id}/promote-to-lead`
+
+This keeps Notion as source-of-truth for lead records while agent pods manage prioritization and dispatch.
+
 ## Determinism Rules
 
 - Pin `Notion-Version: 2025-09-03`.

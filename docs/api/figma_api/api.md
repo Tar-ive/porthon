@@ -31,6 +31,7 @@ Comment queue / approval pipeline:
 
 - `GET /v1/figma/comments/pending`
 - `POST /v1/figma/comments/{comment_id}/prepare-send`
+- `POST /v1/figma/comments/{comment_id}/promote-to-lead`
 
 Back-compat alias:
 
@@ -69,6 +70,13 @@ Policy:
 7. Approval is resolved through existing approvals API:
    - `POST /v1/approvals/{approval_id}/resolve` with `decision="approved"` to send.
 8. Pending status resolves to `sent` or `failed` based on task execution.
+
+Lead procurement extension:
+9. Promote collaboration comment to CRM lead:
+   - `POST /v1/figma/comments/{comment_id}/promote-to-lead`
+10. Persist mapping:
+   - `comment_id -> lead_key`
+   - `file_key + actor_handle -> lead_key` for continuity on future comments.
 
 ## Programmatic Setup Example
 

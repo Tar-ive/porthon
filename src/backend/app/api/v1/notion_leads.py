@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, Query, Request
@@ -13,6 +13,13 @@ from app.api.v1.schemas import ListObject, epoch_now, generate_id, paginate
 from app.auth import get_livemode, get_mode
 from app.deps import get_master
 from app.middleware.errors import ApiException
+from deepagent.lead_os import (
+    build_pod_snapshot,
+    build_recommendations,
+    ensure_lead_os_config,
+    reconcile_leads,
+    sustainability_snapshot,
+)
 from deepagent.loop import AlwaysOnMaster
 from integrations.notion_leads_service import (
     default_demo_leads,
@@ -62,6 +69,17 @@ class LeadsRealtimeRequest(BaseModel):
     action: Literal["sync_leads", "upsert_lead", "patch_lead"] = "upsert_lead"
     priority: int = 20
     task_payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class LeadOsTickRequest(BaseModel):
+    top_n: int = Field(default=12, ge=1, le=100)
+
+
+class LeadOsDispatchRequest(BaseModel):
+    limit: int = Field(default=5, ge=1, le=20)
+    min_score: float = 0.0
+    priority: int = Field(default=18, ge=1, le=100)
+    dry_run: bool = False
 
 
 def _now_iso() -> str:
@@ -192,6 +210,30 @@ async def _resolve_workspace(
         "parent_page_id": parent_page_id,
         **setup,
     }
+
+
+async def _load_leads_for_os(master: AlwaysOnMaster, mode: str) -> list[dict[str, Any]]:
+    if mode == "demo":
+        return [normalize_lead_payload(item) for item in default_demo_leads()]
+
+    try:
+        workspace = await _resolve_workspace(master=master, payload={}, allow_setup=False)
+    except ApiException:
+        return []
+
+    try:
+        service = get_notion_leads_service()
+        rows = await service.list_leads(str(workspace["data_source_id"]))
+        return [normalize_lead_payload(item) for item in rows if isinstance(item, dict)]
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _runtime_queue(state: dict[str, Any]) -> list[dict[str, Any]]:
+    raw = state.get("queue", [])
+    if not isinstance(raw, list):
+        return []
+    return [item for item in raw if isinstance(item, dict)]
 
 
 @router.post("/notion/leads/setup")
@@ -418,6 +460,178 @@ async def patch_notion_lead(
         raise ApiException(status_code=500, code="internal_error", message=str(exc))
 
 
+@router.get("/notion/leads/os/state")
+async def get_notion_lead_os_state(
+    request: Request,
+    top_n: int = Query(12, ge=1, le=100),
+    master: AlwaysOnMaster = Depends(get_master),
+):
+    mode = get_mode(request.headers.get("Authorization"))
+    livemode = get_livemode(request.headers.get("Authorization"))
+    now_iso = _now_iso()
+    runtime_state = await master.get_state()
+    persona_id = str(runtime_state.get("persona_id", "p05"))
+    queue = _runtime_queue(runtime_state)
+
+    cfg_raw = await master.get_workflow_key("lead_os")
+    cfg = ensure_lead_os_config(cfg_raw, persona_id=persona_id, now_iso=now_iso)
+    recommendations = build_recommendations(cfg, top_n=top_n)
+    pod_snapshot = build_pod_snapshot(cfg, recommendations, queue)
+    snapshot = sustainability_snapshot(cfg)
+
+    return {
+        "id": generate_id("nlos_"),
+        "object": "notion_lead_os_state",
+        "created": epoch_now(),
+        "livemode": livemode,
+        "metadata": {},
+        "mode": mode,
+        "objective": cfg.get("objective", {}),
+        "pods": pod_snapshot,
+        "lead_count": len((cfg.get("lead_pcb") or {}).keys()) if isinstance(cfg.get("lead_pcb"), dict) else 0,
+        "recommended_actions": recommendations,
+        "sustainability": snapshot,
+        "updated_at": cfg.get("updated_at", now_iso),
+    }
+
+
+@router.post("/notion/leads/os/tick")
+async def tick_notion_lead_os(
+    body: LeadOsTickRequest,
+    request: Request,
+    master: AlwaysOnMaster = Depends(get_master),
+):
+    mode = get_mode(request.headers.get("Authorization"))
+    livemode = get_livemode(request.headers.get("Authorization"))
+    now_iso = _now_iso()
+    runtime_state = await master.get_state()
+    persona_id = str(runtime_state.get("persona_id", "p05"))
+    queue = _runtime_queue(runtime_state)
+    leads = await _load_leads_for_os(master, mode)
+
+    cfg_raw = await master.get_workflow_key("lead_os")
+    cfg = ensure_lead_os_config(cfg_raw, persona_id=persona_id, now_iso=now_iso)
+    cfg = reconcile_leads(cfg, leads, now_iso=now_iso)
+    recommendations = build_recommendations(cfg, top_n=body.top_n)
+    cfg["recommended_actions"] = recommendations
+    cfg["pods"] = build_pod_snapshot(cfg, recommendations, queue)
+    cfg["sustainability"] = sustainability_snapshot(cfg)
+    cfg["last_tick_at"] = now_iso
+    cfg["updated_at"] = now_iso
+    await master.update_workflow_key("lead_os", cfg, merge=False)
+
+    return {
+        "id": generate_id("nlos_tick_"),
+        "object": "notion_lead_os_tick",
+        "created": epoch_now(),
+        "livemode": livemode,
+        "metadata": {},
+        "leads_reconciled": len(leads),
+        "recommended_count": len(recommendations),
+        "pods": cfg["pods"],
+        "sustainability": cfg["sustainability"],
+        "updated_at": cfg["updated_at"],
+    }
+
+
+@router.post("/notion/leads/os/dispatch")
+async def dispatch_notion_lead_os(
+    body: LeadOsDispatchRequest,
+    request: Request,
+    master: AlwaysOnMaster = Depends(get_master),
+):
+    mode = get_mode(request.headers.get("Authorization"))
+    livemode = get_livemode(request.headers.get("Authorization"))
+    now_iso = _now_iso()
+    runtime_state = await master.get_state()
+    persona_id = str(runtime_state.get("persona_id", "p05"))
+    leads = await _load_leads_for_os(master, mode)
+
+    cfg_raw = await master.get_workflow_key("lead_os")
+    cfg = ensure_lead_os_config(cfg_raw, persona_id=persona_id, now_iso=now_iso)
+    cfg = reconcile_leads(cfg, leads, now_iso=now_iso)
+    recommendations = build_recommendations(cfg, top_n=max(body.limit * 2, 12))
+
+    selected = [
+        item
+        for item in recommendations
+        if float(item.get("score", 0.0)) >= float(body.min_score)
+    ][: body.limit]
+
+    dispatches: list[dict[str, Any]] = []
+    cycles: list[dict[str, Any]] = []
+    for action in selected:
+        task_payload = {
+            "lead_key": action.get("lead_key", ""),
+            "name": action.get("name", ""),
+            "source": action.get("source", "Unknown"),
+            "next_action": action.get("next_step", ""),
+            "next_follow_up_date": action.get("next_touch_date", datetime.now(UTC).date().isoformat()),
+            "priority": action.get("priority", "Medium"),
+        }
+        if mode == "demo":
+            task_payload["demo_mode"] = True
+
+        dispatches.append(
+            {
+                "lead_key": task_payload["lead_key"],
+                "worker_id": "notion_leads_worker",
+                "action": "patch_lead",
+                "task_payload": task_payload,
+            }
+        )
+
+        if body.dry_run:
+            continue
+
+        result = await master.ingest_event(
+            "manual_enqueue",
+            {
+                "enqueue": True,
+                "worker_id": "notion_leads_worker",
+                "action": "patch_lead",
+                "priority": int(body.priority),
+                "task_payload": task_payload,
+            },
+        )
+        cycle = result.get("cycle", {})
+        if isinstance(cycle, dict):
+            cycles.append(cycle)
+
+    cfg["recommended_actions"] = recommendations
+    cfg["pods"] = build_pod_snapshot(cfg, recommendations, _runtime_queue(await master.get_state()))
+    cfg["sustainability"] = sustainability_snapshot(cfg)
+    cfg["last_dispatch_at"] = now_iso
+    cfg["dispatch_log"] = (
+        [entry for entry in cfg.get("dispatch_log", []) if isinstance(entry, dict)]
+        + [
+            {
+                "dispatched_at": now_iso,
+                "count": len(dispatches),
+                "dry_run": body.dry_run,
+                "lead_keys": [str(item.get("lead_key", "")) for item in selected],
+            }
+        ]
+    )[-50:]
+    cfg["updated_at"] = now_iso
+    await master.update_workflow_key("lead_os", cfg, merge=False)
+
+    return {
+        "id": generate_id("nlos_dispatch_"),
+        "object": "notion_lead_os_dispatch",
+        "created": epoch_now(),
+        "livemode": livemode,
+        "metadata": {},
+        "dry_run": body.dry_run,
+        "requested": body.limit,
+        "selected": len(selected),
+        "dispatches": dispatches,
+        "cycles": cycles,
+        "sustainability": cfg["sustainability"],
+        "updated_at": cfg["updated_at"],
+    }
+
+
 @router.post("/notion/leads/realtime")
 async def enqueue_realtime_notion_leads(
     body: LeadsRealtimeRequest,
@@ -451,4 +665,3 @@ async def enqueue_realtime_notion_leads(
         "payload": event.get("payload", {}),
         "cycle": result.get("cycle"),
     }
-

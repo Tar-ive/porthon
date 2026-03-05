@@ -145,3 +145,52 @@ def test_figma_prepare_send_enters_approval_flow(client):
     )
     assert task["status"] == "waiting_approval"
     assert any(a.get("approval_id") == body.get("approval_id") for a in runtime.get("approvals", []))
+
+
+@pytest.mark.fast
+def test_figma_promote_comment_to_lead_and_reuse_mapping(client):
+    create = client.post(
+        "/v1/figma/watchers",
+        json={
+            "file_key": "demo_file_123",
+            "endpoint": "https://example.com/hooks/figma",
+            "passcode": "pc_demo_123",
+            "event_type": "FILE_COMMENT",
+        },
+        headers=DEMO_HEADERS,
+    )
+    assert create.status_code == 200
+    webhook_id = create.json()["webhook_id"]
+
+    payload = _file_comment_payload(
+        passcode="pc_demo_123",
+        webhook_id=webhook_id,
+        comment_id="fig_c_301",
+    )
+    assert client.post("/v1/figma/webhooks", json=payload, headers=DEMO_HEADERS).status_code == 200
+
+    promote = client.post(
+        "/v1/figma/comments/fig_c_301/promote-to-lead",
+        json={"deal_size": 2200, "priority": "High", "dispatch_now": True},
+        headers=DEMO_HEADERS,
+    )
+    assert promote.status_code == 200
+    promoted = promote.json()
+    assert promoted["object"] == "figma_comment_lead_promotion"
+    first_lead_key = promoted["lead_key"]
+    assert first_lead_key.endswith("::inbound")
+
+    payload_2 = _file_comment_payload(
+        passcode="pc_demo_123",
+        webhook_id=webhook_id,
+        comment_id="fig_c_302",
+    )
+    assert client.post("/v1/figma/webhooks", json=payload_2, headers=DEMO_HEADERS).status_code == 200
+
+    pending = client.get("/v1/figma/comments/pending", headers=DEMO_HEADERS).json()["data"]
+    second = next(item for item in pending if item.get("comment_id") == "fig_c_302")
+    assert second.get("lead_key") == first_lead_key
+
+    runtime = client.get("/v1/runtime", headers=DEMO_HEADERS).json()
+    lead_os = runtime.get("workflow_state", {}).get("lead_os", {})
+    assert lead_os.get("figma_comment_links", {}).get("fig_c_301") == first_lead_key

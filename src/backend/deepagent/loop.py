@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from deepagent.lead_os import figma_actor_file_key
 from deepagent.demo_artifacts import (
     build_figma_watch_state,
     build_facebook_watch_state,
@@ -409,7 +410,7 @@ class AlwaysOnMaster:
         file_key = str(payload.get("file_key", "")).strip()
         message = str(payload.get("message", "")).strip()
         comment_id = str(payload.get("comment_id", "")).strip()
-        dedupe_key = raw_event_id or comment_id or f"{file_key}:{message}:{payload.get('created_at', '')}"
+        dedupe_key = comment_id or raw_event_id or f"{file_key}:{message}:{payload.get('created_at', '')}"
         if not dedupe_key:
             dedupe_key = _prefixed_id("evt_")
 
@@ -430,6 +431,8 @@ class AlwaysOnMaster:
         if not result.ok:
             return
 
+        actor = payload.get("from", {}) if isinstance(payload.get("from", {}), dict) else {}
+        actor_handle = str(actor.get("handle") or actor.get("id") or "").strip()
         item = {
             "event_id": result.data.get("event_id", dedupe_key),
             "comment_id": result.data.get("comment_id", comment_id),
@@ -441,7 +444,31 @@ class AlwaysOnMaster:
             "status": result.data.get("status", "ready_to_send"),
             "created_at": self._now_iso(),
             "external_links": result.data.get("external_links", {}),
+            "from": actor,
         }
+
+        lead_os_cfg = state.workflow_state.get("lead_os", {})
+        if isinstance(lead_os_cfg, dict):
+            comment_links = lead_os_cfg.get("figma_comment_links", {})
+            if not isinstance(comment_links, dict):
+                comment_links = {}
+            actor_links = lead_os_cfg.get("figma_actor_file_links", {})
+            if not isinstance(actor_links, dict):
+                actor_links = {}
+
+            actor_key = figma_actor_file_key(item["file_key"], actor_handle)
+            linked_lead_key = str(
+                comment_links.get(item["comment_id"], "")
+                or actor_links.get(actor_key, "")
+            ).strip()
+            if linked_lead_key:
+                item["lead_key"] = linked_lead_key
+                if item["comment_id"]:
+                    comment_links[item["comment_id"]] = linked_lead_key
+                lead_os_cfg["figma_comment_links"] = comment_links
+                lead_os_cfg["figma_actor_file_links"] = actor_links
+                state.workflow_state["lead_os"] = lead_os_cfg
+
         watch = state.demo_artifacts.setdefault("figma_watch", {})
         pending = watch.setdefault("pending_items", [])
         pending.append(item)

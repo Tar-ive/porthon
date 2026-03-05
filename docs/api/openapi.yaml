@@ -9,7 +9,7 @@ info:
     Resource IDs are prefixed by type: `scen_`, `qst_`, `act_`, `apprv_`,
     `evt_`, `msg_`, `wrkr_`. All mutating endpoints require an
     `Idempotency-Key` header.
-  version: "2026-03-04"
+  version: "2026-03-05"
   contact:
     name: Questline Team
 
@@ -520,6 +520,175 @@ paths:
                           type: array
                           items:
                             type: string
+
+  # ---------- Notion Leads (V3 Lead OS) ----------
+  /v1/notion/leads/os/state:
+    get:
+      operationId: getNotionLeadOsState
+      summary: Get Lead OS pod state and recommendations
+      tags: [NotionLeads]
+      parameters:
+        - name: top_n
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 12
+      responses:
+        "200":
+          description: Lead OS state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: notion_lead_os_state
+                  pods:
+                    type: object
+                  recommended_actions:
+                    type: array
+                    items:
+                      type: object
+                  sustainability:
+                    type: object
+
+  /v1/notion/leads/os/tick:
+    post:
+      operationId: tickNotionLeadOs
+      summary: Reconcile leads and recompute Lead OS recommendations
+      tags: [NotionLeads]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                top_n:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 12
+      responses:
+        "200":
+          description: Lead OS tick result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: notion_lead_os_tick
+                  leads_reconciled:
+                    type: integer
+                  recommended_count:
+                    type: integer
+
+  /v1/notion/leads/os/dispatch:
+    post:
+      operationId: dispatchNotionLeadOs
+      summary: Dispatch top Lead OS actions into runtime queue
+      tags: [NotionLeads]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 20
+                  default: 5
+                min_score:
+                  type: number
+                  default: 0
+                priority:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 18
+                dry_run:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Lead OS dispatch result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: notion_lead_os_dispatch
+                  selected:
+                    type: integer
+                  dispatches:
+                    type: array
+                    items:
+                      type: object
+
+  # ---------- Figma ----------
+  /v1/figma/comments/{comment_id}/promote-to-lead:
+    post:
+      operationId: promoteFigmaCommentToLead
+      summary: Promote a pending Figma comment into a Notion lead
+      tags: [Figma]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lead_name:
+                  type: string
+                priority:
+                  type: string
+                  enum: [High, Medium, Low]
+                deal_size:
+                  type: number
+                next_action:
+                  type: string
+                next_follow_up_date:
+                  type: string
+                  format: date
+                dispatch_now:
+                  type: boolean
+                  default: true
+      responses:
+        "200":
+          description: Promotion result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: figma_comment_lead_promotion
+                  lead_key:
+                    type: string
+                  comment_id:
+                    type: string
 
   # ---------- Messages ----------
   /v1/messages:

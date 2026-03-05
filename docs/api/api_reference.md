@@ -532,6 +532,33 @@ Queue a real-time notion leads task through the runtime loop.
 | `task_payload` | object | no | Worker payload |
 | `priority` | int | no | Queue priority (lower runs first) |
 
+#### GET /v1/notion/leads/os/state
+
+Return current Lead OS runtime view: pod statuses, recommended actions, and sustainability snapshot.
+
+#### POST /v1/notion/leads/os/tick
+
+Run one deterministic Lead OS scheduling cycle over current leads.
+
+| Body Field | Type | Required | Description |
+|------------|------|----------|-------------|
+| `top_n` | int | no | Max recommendations to keep (default 12) |
+
+#### POST /v1/notion/leads/os/dispatch
+
+Enqueue top Lead OS actions into runtime queue (`notion_leads_worker`).
+
+| Body Field | Type | Required | Description |
+|------------|------|----------|-------------|
+| `limit` | int | no | Max actions to dispatch |
+| `min_score` | number | no | Minimum recommendation score |
+| `priority` | int | no | Queue priority |
+| `dry_run` | bool | no | If true, do not enqueue |
+
+#### POST /v1/figma/comments/{comment_id}/promote-to-lead
+
+Promote a pending Figma collaboration comment into a deterministic Notion lead and persist comment/actor linkage.
+
 ---
 
 ### Messages
