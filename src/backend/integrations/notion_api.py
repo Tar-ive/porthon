@@ -24,37 +24,54 @@ class NotionAPI:
         if not self.api_key:
             raise ValueError("NOTION_INTEGRATION_SECRET not found")
         
-        from notion import Notion
-        self.client = Notion(auth=self.api_key)
+        from notion_client import Client
+        self.client = Client(auth=self.api_key)
+        self._parent_page_id = None
     
-    def create_database(self, parent_page_id: str, title: str, properties: dict) -> dict:
+    def _get_parent_page_id(self) -> str:
+        """Find a valid parent page."""
+        if self._parent_page_id:
+            return self._parent_page_id
+        
+        # Search for Questline page
+        results = self.client.search(query="Questline", page_size=5)
+        pages = [r for r in results.get('results', []) if r.get('object') == 'page']
+        
+        if pages:
+            self._parent_page_id = pages[0].get('id')
+            return self._parent_page_id
+        
+        # Use any available page
+        results = self.client.search(query="", page_size=1)
+        if results.get('results'):
+            self._parent_page_id = results['results'][0]['get']('id')
+            return self._parent_page_id
+        
+        raise ValueError("No accessible pages found in Notion")
+    
+    def create_database(self, parent_page_id: str = None, title: str, properties: dict) -> dict:
         """Create a database in a Notion page."""
-        from notion.models import CreateDatabase
+        parent_id = parent_page_id or self._get_parent_page_id()
         
-        # Build title
-        title_prop = [{"text": {"content": title}}]
+        db = {
+            "parent": {"page_id": parent_id},
+            "title": [{"text": {"content": title}}],
+            "properties": properties
+        }
         
-        db = CreateDatabase(
-            parent={"page_id": parent_page_id},
-            title=title_prop,
-            properties=properties
-        )
-        
-        result = self.client.databases.create(database=db)
-        return result.raw
+        result = self.client.databases.create(**db)
+        return result
     
-    def create_page(self, parent_id: str, title: str, content: list = None) -> dict:
+    def create_page(self, parent_id: str = None, title: str = "Untitled", content: list = None) -> dict:
         """Create a page in Notion."""
-        from notion.models import CreatePage
+        parent = parent_id or self._get_parent_page_id()
         
-        # Build title property
         props = {
             "title": {
                 "title": [{"text": {"content": title}}]
             }
         }
         
-        # Build children blocks
         children = []
         if content:
             for block_text in content:
@@ -66,20 +83,18 @@ class NotionAPI:
                     }
                 })
         
-        page = CreatePage(
-            parent={"page_id": parent_id},
-            properties=props,
-            children=children if children else None
-        )
+        page = {
+            "parent": {"page_id": parent},
+            "properties": props,
+        }
+        if children:
+            page["children"] = children
         
-        result = self.client.pages.create(page=page)
-        return result.raw
+        result = self.client.pages.create(**page)
+        return result
     
     def add_page_to_database(self, database_id: str, properties: dict) -> dict:
         """Add a page (row) to a database."""
-        from notion.models import CreatePage
-        
-        # Build properties
         props = {}
         for key, value in properties.items():
             if isinstance(value, str):
@@ -89,26 +104,67 @@ class NotionAPI:
             elif isinstance(value, int):
                 props[key] = {"number": value}
         
-        page = CreatePage(
-            parent={"database_id": database_id},
-            properties=props
-        )
+        page = {
+            "parent": {"database_id": database_id},
+            "properties": props
+        }
         
-        result = self.client.pages.create(page=page)
-        return result.raw
+        result = self.client.pages.create(**page)
+        return result
     
     def query_database(self, database_id: str, filter: dict = None) -> dict:
         """Query a database."""
-        result = self.client.databases.query(
-            database_id=database_id,
-            filter=filter
-        )
-        return result.raw
+        kwargs = {"database_id": database_id}
+        if filter:
+            kwargs["filter"] = filter
+        
+        result = self.client.databases.query(**kwargs)
+        return result
     
     def get_page(self, page_id: str) -> dict:
         """Get a page."""
         result = self.client.pages.retrieve(page_id=page_id)
-        return result.raw
+        return result
+    
+    def create_scenario_page(self, scenario_title: str, goals: list, challenges: list) -> dict:
+        """Create a full scenario page with goals and challenges."""
+        parent = self._get_parent_page_id()
+        
+        # Build blocks
+        children = [
+            {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "🎯 Goals"}}]}}
+        ]
+        
+        for goal in goals:
+            children.append({
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {"rich_text": [{"text": {"content": f"• {goal}"}}]}
+            })
+        
+        children.append({
+            "object": "block",
+            "type": "heading_2",
+            "heading_2": {"rich_text": [{"text": {"content": "📅 Weekly Challenges"}}]}
+        })
+        
+        for challenge in challenges:
+            children.append({
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {"rich_text": [{"text": {"content": f"• {challenge}"}}]}
+            })
+        
+        page = {
+            "parent": {"page_id": parent},
+            "properties": {
+                "title": {"title": [{"text": {"content": scenario_title}}]}
+            },
+            "children": children
+        }
+        
+        result = self.client.pages.create(**page)
+        return result
 
 
 def get_notion_api() -> NotionAPI:
