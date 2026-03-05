@@ -13,6 +13,10 @@ Optional:
 
 - `PORTTHON_OFFLINE_MODE=1` or demo auth key (`sk_demo_*`) for deterministic test mode.
 
+Production deployment + cost model:
+
+- See `docs/milestone3_docs/V3_CLOUD_DEPLOYMENT_AND_BUDGET.md` for Cloud Run SSL deployment, webhook ingress posture, and monthly budget/runway forecasting.
+
 ## Internal API Surface
 
 Programmatic watcher management:

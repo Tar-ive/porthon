@@ -268,6 +268,14 @@ async def setup_notion_leads(
 
     try:
         setup = await _resolve_workspace(master=master, payload=body.model_dump(mode="json"), allow_setup=True)
+        await master.update_workflow_key(
+            "notion_leads",
+            {
+                **setup,
+                "parent_page_id": body.parent_page_id or setup.get("parent_page_id", "") or "",
+                "updated_at": _now_iso(),
+            },
+        )
         return {
             "id": generate_id("nlead_setup_"),
             "object": "notion_leads_setup",

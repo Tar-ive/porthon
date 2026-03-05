@@ -1,165 +1,8 @@
 {
   "persona_id": "p05",
-  "active_scenario": {
-    "scenario_id": "scen_compat",
-    "title": "Compat",
-    "horizon": "1yr",
-    "likelihood": "most_likely",
-    "summary": "Compat scenario",
-    "tags": [],
-    "activated_at": "2026-03-05T05:08:39.228094+00:00",
-    "created": 0,
-    "metadata": {}
-  },
+  "active_scenario": null,
   "archived_scenarios": [],
-  "queue": [
-    {
-      "task_id": "task_9250d5ee-a1e8-48b3-93f6-a4d60deae3b8",
-      "worker_id": "kg_worker",
-      "action": "search",
-      "priority": 10,
-      "payload": {
-        "scenario_id": "scen_compat",
-        "scenario_title": "Compat",
-        "scenario_summary": "Compat scenario",
-        "horizon": "1yr",
-        "query": "Scenario context for Compat: Compat scenario",
-        "demo_mode": false
-      },
-      "status": "completed",
-      "retries": 0,
-      "created_at": "2026-03-05T05:08:39.228196+00:00",
-      "updated_at": "2026-03-05T05:08:39.620924+00:00",
-      "finished_at": "2026-03-05T05:08:39.620938+00:00",
-      "result_summary": "Intent 'casual' does not require KG context",
-      "external_links": {},
-      "error_code": null,
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_39343150-93ba-44f5-8391-d79ab98726cc",
-      "worker_id": "calendar_worker",
-      "action": "sync_schedule",
-      "priority": 20,
-      "payload": {
-        "scenario_id": "scen_compat",
-        "scenario_title": "Compat",
-        "scenario_summary": "Compat scenario",
-        "horizon": "1yr",
-        "query": "Scenario context for Compat: Compat scenario",
-        "demo_mode": false
-      },
-      "status": "completed",
-      "retries": 0,
-      "created_at": "2026-03-05T05:08:39.228196+00:00",
-      "updated_at": "2026-03-05T05:09:34.845972+00:00",
-      "finished_at": "2026-03-05T05:09:34.845999+00:00",
-      "result_summary": "Scheduled 0 events (4 planned)",
-      "external_links": {
-        "calendar_events": []
-      },
-      "error_code": null,
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_6001dda3-3328-4828-9f3c-d596b3e393bc",
-      "worker_id": "notion_leads_worker",
-      "action": "ensure_pipeline",
-      "priority": 30,
-      "payload": {
-        "scenario_id": "scen_compat",
-        "scenario_title": "Compat",
-        "scenario_summary": "Compat scenario",
-        "horizon": "1yr",
-        "query": "Scenario context for Compat: Compat scenario",
-        "demo_mode": false
-      },
-      "status": "pending",
-      "retries": 1,
-      "created_at": "2026-03-05T05:08:39.228196+00:00",
-      "updated_at": "2026-03-05T05:08:41.362046+00:00",
-      "finished_at": "2026-03-05T05:08:41.362053+00:00",
-      "result_summary": "NOTION_INTEGRATION_SECRET is not configured",
-      "external_links": {},
-      "error_code": "execution_error",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_446396ef-e620-439c-bfe8-4607651e4cae",
-      "worker_id": "notion_opportunity_worker",
-      "action": "create_workspace",
-      "priority": 30,
-      "payload": {
-        "scenario_id": "scen_compat",
-        "scenario_title": "Compat",
-        "scenario_summary": "Compat scenario",
-        "horizon": "1yr",
-        "query": "Scenario context for Compat: Compat scenario",
-        "demo_mode": false
-      },
-      "status": "pending",
-      "retries": 1,
-      "created_at": "2026-03-05T05:08:39.228196+00:00",
-      "updated_at": "2026-03-05T05:08:41.362123+00:00",
-      "finished_at": "2026-03-05T05:08:41.362126+00:00",
-      "result_summary": "No parent page found for workspace",
-      "external_links": {},
-      "error_code": "execution_error",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_16a80474-d81c-4388-abbd-3977e559fef6",
-      "worker_id": "facebook_worker",
-      "action": "draft_posts",
-      "priority": 40,
-      "payload": {
-        "scenario_id": "scen_compat",
-        "scenario_title": "Compat",
-        "scenario_summary": "Compat scenario",
-        "horizon": "1yr",
-        "query": "Scenario context for Compat: Compat scenario",
-        "demo_mode": false
-      },
-      "status": "completed",
-      "retries": 0,
-      "created_at": "2026-03-05T05:08:39.228196+00:00",
-      "updated_at": "2026-03-05T05:09:14.721091+00:00",
-      "finished_at": "2026-03-05T05:09:14.721131+00:00",
-      "result_summary": "Drafted 5 posts (not published)",
-      "external_links": {},
-      "error_code": null,
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_e35ee710-5b30-4025-9a1b-7079315582b4",
-      "worker_id": "figma_worker",
-      "action": "generate_challenge",
-      "priority": 40,
-      "payload": {
-        "scenario_id": "scen_compat",
-        "scenario_title": "Compat",
-        "scenario_summary": "Compat scenario",
-        "horizon": "1yr",
-        "query": "Scenario context for Compat: Compat scenario",
-        "demo_mode": false
-      },
-      "status": "completed",
-      "retries": 0,
-      "created_at": "2026-03-05T05:08:39.228196+00:00",
-      "updated_at": "2026-03-05T05:09:00.931607+00:00",
-      "finished_at": "2026-03-05T05:09:00.931617+00:00",
-      "result_summary": "Generated 4 design challenges",
-      "external_links": {},
-      "error_code": null,
-      "created": 0,
-      "metadata": {}
-    }
-  ],
+  "queue": [],
   "approvals": [],
   "workers": [
     {
@@ -179,16 +22,16 @@
     {
       "worker_id": "notion_leads_worker",
       "label": "Notion Leads Tracker",
-      "status": "degraded",
-      "queue_depth": 1,
-      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "notion_opportunity_worker",
       "label": "Notion Opportunity Tracker",
-      "status": "degraded",
-      "queue_depth": 1,
-      "last_error": "No parent page found for workspace"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "facebook_worker",
@@ -258,15 +101,15 @@
     },
     {
       "worker_id": "notion_leads_worker",
-      "failure_streak": 1,
+      "failure_streak": 0,
       "open_until": null,
-      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
+      "last_error": null
     },
     {
       "worker_id": "notion_opportunity_worker",
-      "failure_streak": 1,
+      "failure_streak": 0,
       "open_until": null,
-      "last_error": "No parent page found for workspace"
+      "last_error": null
     },
     {
       "worker_id": "facebook_worker",
@@ -281,55 +124,192 @@
       "last_error": null
     }
   ],
-  "cycle_history": [
-    {
-      "cycle_id": "cycle_42f2b5f7-9a38-4f8c-8e2c-dd3e142692f0",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T05:08:39.612869+00:00",
-      "finished_at": "2026-03-05T05:09:34.847150+00:00",
-      "executed_tasks": [
-        "task_9250d5ee-a1e8-48b3-93f6-a4d60deae3b8",
-        "task_e35ee710-5b30-4025-9a1b-7079315582b4",
-        "task_16a80474-d81c-4388-abbd-3977e559fef6",
-        "task_39343150-93ba-44f5-8391-d79ab98726cc"
-      ],
-      "failed_tasks": []
-    }
-  ],
-  "event_history": [
-    {
-      "event_id": "evt_0b80f4f8-f23a-4839-a1f6-6c479b14ea6a",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "scen_compat",
-        "title": "Compat"
-      },
-      "created_at": "2026-03-05T05:08:39.228253+00:00"
-    },
-    {
-      "event_id": "evt_fbebab65-75d5-48c2-91cd-f09321fdeb47",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "tick"
-      },
-      "created_at": "2026-03-05T05:08:39.612204+00:00"
-    },
-    {
-      "event_id": "evt_5acf2765-2089-4eb7-b468-bdca5bde15fb",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "tick",
-        "cycle_id": "cycle_42f2b5f7-9a38-4f8c-8e2c-dd3e142692f0",
-        "executed": 4,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 55263
-      },
-      "created_at": "2026-03-05T05:09:34.847659+00:00"
-    }
-  ],
+  "cycle_history": [],
+  "event_history": [],
   "demo_artifacts": {},
   "value_signals": {},
-  "workflow_state": {},
-  "updated_at": "2026-03-05T05:09:34.847943+00:00"
+  "workflow_state": {
+    "lead_os": {
+      "version": "v3",
+      "persona_id": "p05",
+      "objective": {
+        "title": "Profile-driven freelance stability",
+        "persona_name": "Theo Nakamura",
+        "primary_goal": "Increase conversion and cash reliability without forcing high-anxiety outreach patterns.",
+        "constraints": {
+          "trust_first": true,
+          "ad_hoc_spam_forbidden": true,
+          "customer_approval_required_for_irreversible_sends": true,
+          "avg_monthly_revenue": 1820.0,
+          "debt": 6000.0
+        }
+      },
+      "lead_pcb": {
+        "direct lead::direct": {
+          "lead_key": "direct lead::direct",
+          "name": "Direct Lead",
+          "status": "Contacted",
+          "priority": "Medium",
+          "source": "Direct",
+          "lane": "Outbound",
+          "owner_pod": "nurture_pod",
+          "deal_size": 3000.0,
+          "next_action": "Book discovery call",
+          "next_follow_up_date": "2026-03-11",
+          "last_contact": "",
+          "overdue_days": 0,
+          "conversion_confidence": 0.26,
+          "trust_risk": 0.38,
+          "effort_est_minutes": 25,
+          "acquisition_cost_est": 36.0,
+          "response_sla_due_at": "2026-03-11",
+          "updated_at": "2026-03-05T09:34:51.814628+00:00"
+        },
+        "portfolio lead::portfolio": {
+          "lead_key": "portfolio lead::portfolio",
+          "name": "Portfolio Lead",
+          "status": "Proposal sent",
+          "priority": "High",
+          "source": "Portfolio",
+          "lane": "Inbound",
+          "owner_pod": "close_pod",
+          "deal_size": 2500.0,
+          "next_action": "Follow up on proposal feedback",
+          "next_follow_up_date": "2026-03-10",
+          "last_contact": "",
+          "overdue_days": 0,
+          "conversion_confidence": 0.8799999999999999,
+          "trust_risk": 0.2,
+          "effort_est_minutes": 35,
+          "acquisition_cost_est": 12.0,
+          "response_sla_due_at": "2026-03-10",
+          "updated_at": "2026-03-05T09:34:51.814628+00:00"
+        },
+        "referral lead::referral": {
+          "lead_key": "referral lead::referral",
+          "name": "Referral Lead",
+          "status": "Lead",
+          "priority": "High",
+          "source": "Referral",
+          "lane": "Referral",
+          "owner_pod": "intake_pod",
+          "deal_size": 1500.0,
+          "next_action": "Send intro scope and availability",
+          "next_follow_up_date": "2026-03-09",
+          "last_contact": "",
+          "overdue_days": 0,
+          "conversion_confidence": 0.37000000000000005,
+          "trust_risk": 0.12,
+          "effort_est_minutes": 20,
+          "acquisition_cost_est": 8.0,
+          "response_sla_due_at": "2026-03-09",
+          "updated_at": "2026-03-05T09:34:51.814628+00:00"
+        }
+      },
+      "recommended_actions": [
+        {
+          "lead_key": "portfolio lead::portfolio",
+          "name": "Portfolio Lead",
+          "owner_pod": "close_pod",
+          "status": "Proposal sent",
+          "source": "Portfolio",
+          "lane": "Inbound",
+          "priority": "High",
+          "deal_size": 2500.0,
+          "conversion_confidence": 0.8799999999999999,
+          "score": 2.7563,
+          "next_step": "Follow up on proposal feedback",
+          "next_touch_date": "2026-03-10"
+        },
+        {
+          "lead_key": "referral lead::referral",
+          "name": "Referral Lead",
+          "owner_pod": "intake_pod",
+          "status": "Lead",
+          "source": "Referral",
+          "lane": "Referral",
+          "priority": "High",
+          "deal_size": 1500.0,
+          "conversion_confidence": 0.37000000000000005,
+          "score": 2.1073,
+          "next_step": "Send intro scope and availability",
+          "next_touch_date": "2026-03-09"
+        },
+        {
+          "lead_key": "direct lead::direct",
+          "name": "Direct Lead",
+          "owner_pod": "nurture_pod",
+          "status": "Contacted",
+          "source": "Direct",
+          "lane": "Outbound",
+          "priority": "Medium",
+          "deal_size": 3000.0,
+          "conversion_confidence": 0.26,
+          "score": 0.8457,
+          "next_step": "Book discovery call",
+          "next_touch_date": "2026-03-11"
+        }
+      ],
+      "dispatch_log": [
+        {
+          "dispatched_at": "2026-03-05T09:34:51.814628+00:00",
+          "count": 2,
+          "dry_run": true,
+          "lead_keys": [
+            "portfolio lead::portfolio",
+            "referral lead::referral"
+          ]
+        }
+      ],
+      "figma_comment_links": {},
+      "figma_actor_file_links": {},
+      "pods": {
+        "intake_pod": {
+          "status": "active",
+          "queue_depth": 1,
+          "worker_queue_depth": 0,
+          "focus": "ingest and classify"
+        },
+        "nurture_pod": {
+          "status": "active",
+          "queue_depth": 1,
+          "worker_queue_depth": 0,
+          "focus": "follow-up cadence"
+        },
+        "close_pod": {
+          "status": "active",
+          "queue_depth": 1,
+          "worker_queue_depth": 0,
+          "focus": "proposal progression"
+        },
+        "finance_pod": {
+          "status": "ready",
+          "queue_depth": 0,
+          "worker_queue_depth": 0,
+          "focus": "sustainability guardrails"
+        }
+      },
+      "updated_at": "2026-03-05T09:34:51.814628+00:00",
+      "sustainability": {
+        "open_leads": 3,
+        "expected_pipeline_value": 7000.0,
+        "weighted_pipeline_value": 3535.0,
+        "estimated_acquisition_cost": 56.0,
+        "followup_overdue_count": 0,
+        "lane_distribution": {
+          "Referral": 1,
+          "Inbound": 1,
+          "Previous client": 0,
+          "Outbound": 1
+        },
+        "outbound_share": 0.333,
+        "trust_first_share": 0.667,
+        "efficiency_ratio": 63.125,
+        "sustainability_status": "stable"
+      },
+      "last_tick_at": "2026-03-05T09:34:51.807757+00:00",
+      "last_dispatch_at": "2026-03-05T09:34:51.814628+00:00"
+    }
+  },
+  "updated_at": "2026-03-05T09:34:51.815703+00:00"
 }

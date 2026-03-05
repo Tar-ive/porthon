@@ -1,5 +1,8 @@
 # V3 Operations Runbook
 
+See also:
+- `V3_CLOUD_DEPLOYMENT_AND_BUDGET.md` for Cloud Run setup, auth posture, monthly cost model, and credit runway.
+
 ## Daily rhythm
 
 1. Morning: run Lead OS tick, review top recommendations.
@@ -13,6 +16,7 @@
 2. Inspect lane distribution and outbound share.
 3. Tune dispatch thresholds (`min_score`, `limit`) as needed.
 4. Check approval queue latency for customer-facing actions.
+5. Check cloud spend trend, credit runway, and log volume against budget guardrails.
 
 ## Incident checks
 
@@ -25,6 +29,12 @@
   - Re-run `tick`.
   - Verify Notion schema and lead normalization.
   - Inspect sustainability snapshot for backlog and lane imbalance.
+
+- If cloud cost spikes:
+  - Check Cloud Run vCPU/GiB usage for unexpected scale changes.
+  - Inspect Cloud Logging ingestion and exclusions.
+  - Review Artifact Registry image retention and Cloud Build minute usage.
+  - Recompute runway in `V3_CLOUD_DEPLOYMENT_AND_BUDGET.md`.
 
 ## Milestone acceptance checklist
 

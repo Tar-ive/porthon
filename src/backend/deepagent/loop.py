@@ -4,13 +4,22 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import logging
+import os
 import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from deepagent.lead_os import figma_actor_file_key
+from deepagent.lead_os import (
+    build_pod_snapshot,
+    build_recommendations,
+    ensure_lead_os_config,
+    figma_actor_file_key,
+    reconcile_leads,
+    sustainability_snapshot,
+)
 from deepagent.demo_artifacts import (
     build_figma_watch_state,
     build_facebook_watch_state,
@@ -19,8 +28,11 @@ from deepagent.demo_artifacts import (
 )
 from deepagent.dispatcher import Dispatcher
 from deepagent.stream import StreamBroker
+from integrations.notion_leads_service import get_notion_leads_service, normalize_lead_payload
 from state.models import ActiveScenarioState, AgentRuntimeState, ArchivedScenarioState, TaskStatus, WorkerTask
 from state.store import JsonStateStore
+
+logger = logging.getLogger(__name__)
 
 
 def _prefixed_id(prefix: str) -> str:
@@ -290,6 +302,11 @@ class AlwaysOnMaster:
 
         if event_type == "integration.figma.webhook.received":
             await self._handle_figma_webhook(state, payload)
+            return
+
+        if event_type == "integration.notion.webhook.received":
+            await self._handle_notion_webhook(state, payload)
+            return
 
     async def _enqueue_proactive_commit(
         self,
@@ -492,6 +509,128 @@ class AlwaysOnMaster:
                 "file_key": item["file_key"],
             },
         )
+
+    @staticmethod
+    def _is_lead_relevant_notion_event(event_type: str, entity_type: str) -> bool:
+        event_text = str(event_type or "").strip().lower()
+        entity_text = str(entity_type or "").strip().lower()
+        if event_text.startswith("page.") or event_text.startswith("data_source.") or event_text.startswith("database."):
+            return True
+        return entity_text in {"page", "data_source", "database"}
+
+    async def _handle_notion_webhook(
+        self,
+        state: AgentRuntimeState,
+        payload: dict[str, Any],
+    ) -> None:
+        cfg = state.workflow_state.get("notion_watch", {})
+        if not isinstance(cfg, dict):
+            cfg = {}
+        stats = cfg.get("stats", {})
+        if not isinstance(stats, dict):
+            stats = {}
+
+        event_id = str(payload.get("event_id") or payload.get("id") or "").strip()
+        event_type = str(payload.get("event_type") or payload.get("type") or "").strip()
+        entity_type = str(payload.get("entity_type", "")).strip()
+        relevant = bool(payload.get("relevant"))
+        if not relevant:
+            relevant = self._is_lead_relevant_notion_event(event_type, entity_type)
+        if not relevant:
+            stats["ignored"] = int(stats.get("ignored", 0)) + 1
+            cfg["stats"] = stats
+            cfg["last_event_id"] = event_id
+            cfg["last_event_type"] = event_type
+            cfg["last_event_at"] = self._now_iso()
+            state.workflow_state["notion_watch"] = cfg
+            return
+
+        workspace = state.workflow_state.get("notion_leads", {})
+        if not isinstance(workspace, dict):
+            workspace = {}
+        data_source_id = str(
+            workspace.get("data_source_id")
+            or os.environ.get("NOTION_DATA_SOURCE_ID")
+            or os.environ.get("NOTION_LEADS_DATA_SOURCE_ID")
+            or ""
+        ).strip()
+        if not data_source_id:
+            stats["skipped_missing_workspace"] = int(stats.get("skipped_missing_workspace", 0)) + 1
+            cfg["stats"] = stats
+            cfg["last_error"] = "notion_leads workspace not configured"
+            cfg["last_event_id"] = event_id
+            cfg["last_event_type"] = event_type
+            cfg["last_event_at"] = self._now_iso()
+            state.workflow_state["notion_watch"] = cfg
+            return
+
+        service = get_notion_leads_service()
+        if not service.is_configured():
+            stats["skipped_unconfigured"] = int(stats.get("skipped_unconfigured", 0)) + 1
+            cfg["stats"] = stats
+            cfg["last_error"] = "NOTION_INTEGRATION_SECRET not configured"
+            cfg["last_event_id"] = event_id
+            cfg["last_event_type"] = event_type
+            cfg["last_event_at"] = self._now_iso()
+            state.workflow_state["notion_watch"] = cfg
+            return
+
+        try:
+            rows = await service.list_leads(data_source_id)
+            leads = [normalize_lead_payload(item) for item in rows if isinstance(item, dict)]
+            now_iso = self._now_iso()
+            lead_os_cfg = ensure_lead_os_config(
+                state.workflow_state.get("lead_os", {}),
+                persona_id=str(state.persona_id),
+                now_iso=now_iso,
+            )
+            lead_os_cfg = reconcile_leads(lead_os_cfg, leads, now_iso=now_iso)
+            recommendations = build_recommendations(lead_os_cfg, top_n=12)
+            runtime_queue = [task.model_dump(mode="json") for task in state.queue]
+            lead_os_cfg["recommended_actions"] = recommendations
+            lead_os_cfg["pods"] = build_pod_snapshot(lead_os_cfg, recommendations, runtime_queue)
+            lead_os_cfg["sustainability"] = sustainability_snapshot(lead_os_cfg)
+            lead_os_cfg["last_tick_at"] = now_iso
+            lead_os_cfg["last_notion_event_id"] = event_id
+            lead_os_cfg["updated_at"] = now_iso
+            state.workflow_state["lead_os"] = lead_os_cfg
+
+            stats["processed"] = int(stats.get("processed", 0)) + 1
+            cfg["stats"] = stats
+            cfg["last_processed_at"] = now_iso
+            cfg["last_processed_event_id"] = event_id
+            cfg["last_event_id"] = event_id
+            cfg["last_event_type"] = event_type
+            cfg["last_event_at"] = now_iso
+            cfg["last_error"] = None
+            state.workflow_state["notion_watch"] = cfg
+
+            await self._append_event(
+                state,
+                event_type="notion_leads_refreshed",
+                payload={
+                    "event_id": event_id,
+                    "event_type": event_type,
+                    "lead_count": len(leads),
+                    "recommended_count": len(recommendations),
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            stats["refresh_errors"] = int(stats.get("refresh_errors", 0)) + 1
+            cfg["stats"] = stats
+            cfg["last_error"] = f"{type(exc).__name__}: {exc}"
+            cfg["last_error_type"] = type(exc).__name__
+            cfg["last_error_at"] = self._now_iso()
+            cfg["last_event_id"] = event_id
+            cfg["last_event_type"] = event_type
+            cfg["last_event_at"] = self._now_iso()
+            state.workflow_state["notion_watch"] = cfg
+            logger.exception(
+                "Notion webhook refresh failed event_id=%s event_type=%s data_source_id=%s",
+                event_id,
+                event_type,
+                data_source_id,
+            )
 
     async def _poll_facebook_watch(
         self,

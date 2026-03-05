@@ -26,7 +26,18 @@ from utils import (
     ClientMessagePart,  # noqa: F401 — re-exported for Pydantic schema discovery
 )
 
-load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+_main_path = Path(__file__).resolve()
+_dotenv_candidates = [
+    _main_path.parent / ".env",
+    _main_path.parent.parent / ".env",
+    _main_path.parent.parent.parent / ".env",
+]
+for _dotenv_path in _dotenv_candidates:
+    if _dotenv_path.exists():
+        load_dotenv(_dotenv_path)
+        break
+else:
+    load_dotenv()
 
 # Map LightRAG-style LLM env vars to OpenAI SDK env vars so the openai
 # client picks up OpenRouter (or any OpenAI-compatible provider) automatically.
@@ -142,6 +153,24 @@ async def api_chat(request: Request):
     body = await request.json()
     msg = CreateMessageRequest(**body)
     return await create_message(msg, request)
+
+
+@app.post("/", include_in_schema=False)
+async def root_webhook_fallback(request: Request):
+    """Fallback for providers misconfigured to POST at service root."""
+    from app.deps import get_master
+    from app.api.v1.notion_webhooks import notion_webhooks_verify
+
+    return await notion_webhooks_verify(request, master=get_master(request))
+
+
+@app.post("/notion/webhooks", include_in_schema=False)
+async def notion_webhook_fallback(request: Request):
+    """Non-versioned alias for Notion webhook verification."""
+    from app.deps import get_master
+    from app.api.v1.notion_webhooks import notion_webhooks_verify
+
+    return await notion_webhooks_verify(request, master=get_master(request))
 
 
 class QuestRequest(BaseModel):

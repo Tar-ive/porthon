@@ -19,7 +19,7 @@ Data source title:
 
 Properties:
 - `Name` (`title`) - company or person
-- `Status` (`select`) - `Lead`, `Contacted`, `Meeting booked`, `Proposal sent`, `Won`, `Lost`
+- `Status` (`status` or `select`) - `Lead`, `Contacted`, `Meeting booked`, `Proposal sent`, `Won`, `Lost`
 - `Lead type` (`select`) - `Inbound`, `Outbound`, `Referral`, `Previous client`
 - `Priority` (`select`) - `High`, `Medium`, `Low`
 - `Deal size` (`number`) - expected value / MRR
@@ -41,6 +41,22 @@ Authorization: Bearer <NOTION_TOKEN>
 Notion-Version: 2025-09-03
 Content-Type: application/json
 ```
+
+## Webhook Automation (Agent Refresh)
+
+Active webhook intake endpoints:
+- `POST /v1/notion/webhooks` (canonical)
+- `POST /notion/webhooks` (alias)
+- `POST /` (root fallback)
+
+Runtime secret:
+- `NOTION_WEBHOOK_VERIFICATION_TOKEN` (used to verify `X-Notion-Signature` HMAC)
+
+Behavior:
+- Verification payloads (`url_verification`) are acknowledged.
+- Non-verification events require valid signature.
+- Deduped, lead-relevant events are ingested as `integration.notion.webhook.received`.
+- Agent automation refreshes Lead OS state (reconcile + score) without auto-dispatch.
 
 ## Step 1: Setup (Create or Reuse)
 
@@ -202,8 +218,12 @@ Use this `POST /v1/notion/leads/sync` body as a known-good ingestion example:
 ```
 
 Important schema compatibility note:
-- `Status` must be a Notion `select` property in this integration version.
-- If `Status` is a Notion `status` property, sync will fail with: `Status is expected to be status.`
+- Sync now supports `Status` as either Notion `status` or `select`.
+- If your workspace already uses `status`, no migration is required.
+
+Webhook troubleshooting:
+- Check `/v1/workers/map` -> `workflow_state.notion_watch.stats` (`received`, `accepted`, `processed`, `refresh_errors`).
+- On refresh failures, inspect `workflow_state.notion_watch.last_error_type` and `last_error`.
 
 ## Pipeline Views (as API Query Modes)
 

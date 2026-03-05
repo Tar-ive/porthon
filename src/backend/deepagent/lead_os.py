@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
@@ -134,8 +135,26 @@ def _acquisition_cost_est(lane: str) -> float:
     return 15.0
 
 
+def _resolve_project_root(source_file: str | None = None) -> Path:
+    env_root = str(os.environ.get("PORTHON_PROJECT_ROOT", "")).strip()
+    if env_root:
+        root = Path(env_root).expanduser().resolve()
+        if root.exists():
+            return root
+
+    base = Path(source_file).resolve() if source_file else Path(__file__).resolve()
+    candidates = [base.parent, *base.parents]
+    for candidate in candidates:
+        if (candidate / "data").exists():
+            return candidate
+
+    if len(base.parents) > 1:
+        return base.parents[1]
+    return base.parent
+
+
 def _load_profile(persona_id: str) -> dict[str, Any]:
-    root = Path(__file__).resolve().parents[3]
+    root = _resolve_project_root()
     candidates = [
         root / "data" / "summaries" / "master_profile.json",
         root / "data" / "all_personas" / f"persona_{persona_id}" / "persona_profile.json",

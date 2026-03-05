@@ -129,3 +129,41 @@ def test_notion_leads_sync_with_theo_realistic_payload_demo(client):
     assert len(body["leads"]) == 2
     assert body["leads"][0]["status"] == "Contacted"
     assert body["leads"][0]["lead_type"] == "Referral"
+
+
+@pytest.mark.fast
+def test_notion_leads_setup_persists_workspace_ids_in_live_mode(client, monkeypatch):
+    import app.api.v1.notion_leads as notion_leads_module
+
+    async def _fake_resolve_workspace(*, master, payload, allow_setup=True):  # noqa: ARG001
+        return {
+            "parent_page_id": payload.get("parent_page_id", ""),
+            "database_id": "db_live_test",
+            "data_source_id": "ds_live_test",
+            "database_title": "Theo Client Pipeline",
+            "data_source_title": "Theo Leads",
+            "database_url": "https://www.notion.so/db_live_test",
+            "schema_version": "crm_leads_v2",
+        }
+
+    monkeypatch.setattr(notion_leads_module, "_resolve_workspace", _fake_resolve_workspace)
+
+    r_setup = client.post(
+        "/v1/notion/leads/setup",
+        json={
+            "parent_page_id": "parent_live_test",
+            "database_title": "Theo Client Pipeline",
+            "data_source_title": "Theo Leads",
+            "database_id": "db_live_test",
+            "data_source_id": "ds_live_test",
+        },
+        headers={"Authorization": "Bearer sk_live_test"},
+    )
+    assert r_setup.status_code == 200
+    assert r_setup.json()["database_id"] == "db_live_test"
+    assert r_setup.json()["data_source_id"] == "ds_live_test"
+
+    runtime_map = client.get("/v1/workers/map", headers={"Authorization": "Bearer sk_live_test"}).json()
+    notion_cfg = runtime_map.get("workflow_state", {}).get("notion_leads", {})
+    assert notion_cfg.get("database_id") == "db_live_test"
+    assert notion_cfg.get("data_source_id") == "ds_live_test"

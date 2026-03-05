@@ -154,6 +154,70 @@ def _title_plain(value: Any) -> str:
     return ""
 
 
+def _property_obj(props: dict[str, Any], primary_name: str, aliases: list[str] | None = None) -> dict[str, Any]:
+    aliases = aliases or []
+    candidates = [primary_name, *aliases]
+
+    for key in candidates:
+        value = props.get(key)
+        if isinstance(value, dict):
+            return value
+
+    lowered = {name.lower() for name in candidates}
+    for key, value in props.items():
+        if not isinstance(value, dict):
+            continue
+        if str(key).strip().lower() in lowered:
+            return value
+        value_name = str(value.get("name", "")).strip().lower()
+        if value_name and value_name in lowered:
+            return value
+
+    return {}
+
+
+def _select_or_status_name(prop: dict[str, Any]) -> str:
+    if not isinstance(prop, dict):
+        return ""
+    status_name = str((prop.get("status") or {}).get("name", "")).strip()
+    if status_name:
+        return status_name
+    return str((prop.get("select") or {}).get("name", "")).strip()
+
+
+def _date_start(prop: dict[str, Any]) -> str | None:
+    if not isinstance(prop, dict):
+        return None
+    value = prop.get("date")
+    if isinstance(value, dict):
+        start = str(value.get("start", "")).strip()
+        return start or None
+    return None
+
+
+def _number_value(prop: dict[str, Any]) -> float | None:
+    if not isinstance(prop, dict):
+        return None
+    if prop.get("number") is not None:
+        return _to_number(prop.get("number"))
+    formula = prop.get("formula")
+    if isinstance(formula, dict) and formula.get("type") == "number":
+        return _to_number(formula.get("number"))
+    return None
+
+
+def _text_value(prop: dict[str, Any]) -> str:
+    if not isinstance(prop, dict):
+        return ""
+    rich = prop.get("rich_text")
+    if isinstance(rich, list):
+        return _rich_text_plain(rich)
+    title = prop.get("title")
+    if isinstance(title, list):
+        return _title_plain(title)
+    return ""
+
+
 def normalize_lead_payload(lead: dict[str, Any]) -> dict[str, Any]:
     name = str(lead.get("name") or lead.get("Name") or "").strip() or "Unnamed Lead"
     source = str(lead.get("source") or lead.get("Source") or "Unknown").strip() or "Unknown"
@@ -372,6 +436,20 @@ class NotionLeadsService:
             "database_url": f"https://www.notion.so/{db_id.replace('-', '')}",
         }
 
+    async def _status_property_kind_for_data_source(self, data_source_id: str) -> str:
+        try:
+            data_source = await self._request("GET", f"/data_sources/{data_source_id}")
+        except Exception:  # noqa: BLE001
+            return "select"
+        properties = data_source.get("properties", {})
+        if not isinstance(properties, dict):
+            return "select"
+        status_prop = _property_obj(properties, "Status", aliases=["status"])
+        prop_type = str(status_prop.get("type", "")).strip().lower()
+        if prop_type == "status" or isinstance(status_prop.get("status"), dict):
+            return "status"
+        return "select"
+
     def _data_source_patch_payload(self, data_source_title: str) -> dict[str, Any]:
         return {
             "title": [{"type": "text", "text": {"content": data_source_title}}],
@@ -412,18 +490,36 @@ class NotionLeadsService:
     def row_to_lead(self, row: dict[str, Any]) -> dict[str, Any]:
         properties = row.get("properties", {})
         props = properties if isinstance(properties, dict) else {}
-        name = _title_plain((props.get("Name") or {}).get("title", []))
-        status = str(((props.get("Status") or {}).get("select") or {}).get("name", "")).strip()
-        lead_type = str(((props.get("Lead type") or {}).get("select") or {}).get("name", "")).strip()
-        priority = str(((props.get("Priority") or {}).get("select") or {}).get("name", "")).strip()
-        deal_size = (props.get("Deal size") or {}).get("number")
-        last_contact = ((props.get("Last contact") or {}).get("date") or {}).get("start")
-        next_action = _rich_text_plain((props.get("Next action") or {}).get("rich_text", []))
-        next_follow_up = ((props.get("Next follow-up date") or {}).get("date") or {}).get("start")
-        email_handle = _rich_text_plain((props.get("Email / handle") or {}).get("rich_text", []))
-        source = str(((props.get("Source") or {}).get("select") or {}).get("name", "")).strip()
-        notes = _rich_text_plain((props.get("Notes") or {}).get("rich_text", []))
-        lead_key = _rich_text_plain((props.get("Lead Key") or {}).get("rich_text", []))
+
+        prop_name = _property_obj(props, "Name", aliases=["name"])
+        prop_status = _property_obj(props, "Status", aliases=["status"])
+        prop_lead_type = _property_obj(props, "Lead type", aliases=["Lead Type", "lead_type"])
+        prop_priority = _property_obj(props, "Priority", aliases=["priority"])
+        prop_deal_size = _property_obj(props, "Deal size", aliases=["Deal Size", "deal_size", "Value"])
+        prop_last_contact = _property_obj(props, "Last contact", aliases=["Last Contact", "last_contact"])
+        prop_next_action = _property_obj(props, "Next action", aliases=["Next Action", "next_action"])
+        prop_next_follow_up = _property_obj(
+            props,
+            "Next follow-up date",
+            aliases=["Next Follow-up Date", "next_follow_up_date"],
+        )
+        prop_email = _property_obj(props, "Email / handle", aliases=["Email", "Handle", "email_handle"])
+        prop_source = _property_obj(props, "Source", aliases=["source"])
+        prop_notes = _property_obj(props, "Notes", aliases=["notes"])
+        prop_lead_key = _property_obj(props, "Lead Key", aliases=["lead_key", "Lead key"])
+
+        name = _text_value(prop_name)
+        status = _select_or_status_name(prop_status)
+        lead_type = _select_or_status_name(prop_lead_type)
+        priority = _select_or_status_name(prop_priority)
+        deal_size = _number_value(prop_deal_size)
+        last_contact = _date_start(prop_last_contact)
+        next_action = _text_value(prop_next_action)
+        next_follow_up = _date_start(prop_next_follow_up)
+        email_handle = _text_value(prop_email)
+        source = _select_or_status_name(prop_source) or _text_value(prop_source)
+        notes = _text_value(prop_notes)
+        lead_key = _text_value(prop_lead_key)
         if not lead_key:
             lead_key = canonical_lead_key(name or "Unnamed Lead", source or "Unknown")
 
@@ -445,10 +541,27 @@ class NotionLeadsService:
             }
         ) | {"page_id": str(row.get("id", "")).strip()}
 
-    def _lead_to_properties(self, lead: dict[str, Any]) -> dict[str, Any]:
+    @staticmethod
+    def _status_kind_from_row(row: dict[str, Any]) -> str:
+        props = row.get("properties", {})
+        if not isinstance(props, dict):
+            return "select"
+        status_prop = _property_obj(props, "Status", aliases=["status"])
+        prop_type = str(status_prop.get("type", "")).strip().lower()
+        if prop_type == "status" or isinstance(status_prop.get("status"), dict):
+            return "status"
+        return "select"
+
+    def _lead_to_properties(self, lead: dict[str, Any], status_kind: str = "select") -> dict[str, Any]:
+        status_kind = "status" if str(status_kind).strip().lower() == "status" else "select"
+        status_value = (
+            {"status": {"name": lead["status"]}}
+            if status_kind == "status"
+            else {"select": {"name": lead["status"]}}
+        )
         return {
             "Name": {"title": [{"type": "text", "text": {"content": lead["name"]}}]},
-            "Status": {"select": {"name": lead["status"]}},
+            "Status": status_value,
             "Lead type": {"select": {"name": lead["lead_type"]}},
             "Priority": {"select": {"name": lead["priority"]}},
             "Deal size": {"number": lead["deal_size"]},
@@ -469,13 +582,13 @@ class NotionLeadsService:
             "Lead Key": {"rich_text": [{"type": "text", "text": {"content": lead["lead_key"]}}]},
         }
 
-    async def create_row(self, data_source_id: str, lead: dict[str, Any]) -> dict[str, Any]:
+    async def create_row(self, data_source_id: str, lead: dict[str, Any], status_kind: str = "select") -> dict[str, Any]:
         row = await self._request(
             "POST",
             "/pages",
             payload={
                 "parent": {"type": "data_source_id", "data_source_id": data_source_id},
-                "properties": self._lead_to_properties(lead),
+                "properties": self._lead_to_properties(lead, status_kind=status_kind),
             },
         )
         return row
@@ -520,10 +633,11 @@ class NotionLeadsService:
         if target is None or current_lead is None:
             raise ValueError(f"lead_key not found: {lead_key}")
 
+        status_kind = self._status_kind_from_row(target)
         merged = dict(current_lead)
         merged.update(patch)
         merged = normalize_lead_payload(merged)
-        properties = self._lead_to_properties(merged)
+        properties = self._lead_to_properties(merged, status_kind=status_kind)
         await self.update_row(str(target.get("id", "")), properties)
         return {"lead_key": merged["lead_key"], "page_id": str(target.get("id", "")), "lead": merged}
 
@@ -542,6 +656,11 @@ class NotionLeadsService:
             desired_by_key[normalized["lead_key"]] = normalized
 
         existing_rows = await self.query_all_rows(data_source_id)
+        status_kind = "select"
+        if existing_rows:
+            status_kind = self._status_kind_from_row(existing_rows[0])
+        else:
+            status_kind = await self._status_property_kind_for_data_source(data_source_id)
         existing_by_key: dict[str, dict[str, Any]] = {}
         page_id_by_key: dict[str, str] = {}
         for row in existing_rows:
@@ -576,13 +695,13 @@ class NotionLeadsService:
             desired = desired_by_key[key]
             existing = existing_by_key.get(key)
             if existing is None:
-                await self.create_row(data_source_id, desired)
+                await self.create_row(data_source_id, desired, status_kind=status_kind)
                 created_keys.append(key)
                 continue
 
             changed = any(existing.get(field) != desired.get(field) for field in managed_fields)
             if changed:
-                await self.update_row(page_id_by_key[key], self._lead_to_properties(desired))
+                await self.update_row(page_id_by_key[key], self._lead_to_properties(desired, status_kind=status_kind))
                 updated_keys.append(key)
             else:
                 noop_keys.append(key)
@@ -621,4 +740,3 @@ def get_notion_leads_service() -> NotionLeadsService:
     if _notion_leads_service is None:
         _notion_leads_service = NotionLeadsService()
     return _notion_leads_service
-
