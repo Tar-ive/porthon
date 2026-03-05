@@ -184,7 +184,7 @@ Cursor-based: `limit` (1-100) + `starting_after` (last item ID) → `has_more: b
 - All resources support a `metadata` key-value store for custom state
 - Pin API version via header: `X-Api-Version: 2026-03-01`
 
-See `docs/openapi.yaml` for full OpenAPI spec and `docs/api_reference.md` for usage guide.
+See `docs/api/openapi.yaml` for full OpenAPI spec and `docs/api/api_reference.md` for usage guide.
 
 ## Serving
 

@@ -1,7 +1,7 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
-import AgentMap from './AgentMap';
+import ChatSidebar from './components/ChatSidebar';
 import { MemoizedMarkdown } from './MemoizedMarkdown';
 
 interface Scenario {
@@ -311,94 +311,99 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         {workflowStatus && <div className="workflow-strip-status">{workflowStatus}</div>}
       </div>
 
-      <AgentMap />
+      {/* Left sidebar + Main chat split */}
+      <div className="chat-layout">
+        <ChatSidebar quests={quests} />
 
-      {/* Messages */}
-      <div className="chat-messages">
-        {messages.length === 0 && !isStreaming ? (
-          <div className="chat-empty">
-            <div className="chat-empty-glyph">◈</div>
-            <div className="chat-empty-text">Begin your inquiry</div>
-          </div>
-        ) : (
-          messages.map((message, msgIndex) => (
-            <div
-              key={message.id}
-              className={`msg msg--${message.role}`}
-            >
-              <div className="msg-meta">
-                <span className={`msg-role msg-role--${message.role}`}>
-                  {message.role === 'user' ? 'You' : 'Oracle'}
+        {/* Messages */}
+        <div className="chat-main">
+          <div className="chat-messages">
+            {messages.length === 0 && !isStreaming ? (
+              <div className="chat-empty">
+                <div className="chat-empty-glyph">◈</div>
+                <div className="chat-empty-text">Begin your inquiry</div>
+              </div>
+            ) : (
+              messages.map((message, msgIndex) => (
+                <div
+                  key={message.id}
+                  className={`msg msg--${message.role}`}
+                >
+                  <div className="msg-meta">
+                    <span className={`msg-role msg-role--${message.role}`}>
+                      {message.role === 'user' ? 'You' : 'Oracle'}
+                    </span>
+                    {message.role === 'assistant' && intent && msgIndex === messages.length - 1 && INTENT_COLORS[intent] && (
+                      <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border ${INTENT_COLORS[intent]}`}>
+                        {intent}
+                      </span>
+                    )}
+                    <span className="msg-line" />
+                  </div>
+                  <div className="msg-body">
+                    {message.parts.map((part, i) =>
+                      part.type === 'text' ? (
+                        <MemoizedMarkdown key={i} id={`${message.id}-${i}`} content={part.text} />
+                      ) : null
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+
+            {isStreaming && (
+              <div className="thinking">
+                <span className="thinking-rune">✦</span>
+                <span className="thinking-text">
+                  {status === 'submitted' ? 'Consulting the data' : 'Composing response'}
                 </span>
-                {message.role === 'assistant' && intent && msgIndex === messages.length - 1 && INTENT_COLORS[intent] && (
-                  <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border ${INTENT_COLORS[intent]}`}>
-                    {intent}
-                  </span>
-                )}
-                <span className="msg-line" />
               </div>
-              <div className="msg-body">
-                {message.parts.map((part, i) =>
-                  part.type === 'text' ? (
-                    <MemoizedMarkdown key={i} id={`${message.id}-${i}`} content={part.text} />
-                  ) : null
-                )}
-              </div>
-            </div>
-          ))
-        )}
+            )}
 
-        {isStreaming && (
-          <div className="thinking">
-            <span className="thinking-rune">✦</span>
-            <span className="thinking-text">
-              {status === 'submitted' ? 'Consulting the data' : 'Composing response'}
-            </span>
-          </div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input */}
-      <div className="chat-input-area">
-        <form className="chat-form" onSubmit={handleSubmit}>
-          <div className="chat-input-wrap">
-            <label className="chat-input-label" htmlFor="chat-input">
-              Your query · shift+enter for newline
-            </label>
-            <textarea
-              id="chat-input"
-              ref={textareaRef}
-              className="chat-input"
-              value={input}
-              onChange={handleTextareaChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about patterns, scenarios, or actions…"
-              disabled={isStreaming}
-              rows={1}
-            />
+            <div ref={messagesEndRef} />
           </div>
 
-          {isStreaming ? (
-            <button
-              type="button"
-              className="chat-btn chat-btn--stop"
-              onClick={stop}
-            >
-              ◼ Stop
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="chat-btn chat-btn--send"
-              disabled={!input.trim()}
-            >
-              Send ◆
-            </button>
-          )}
-        </form>
-      </div>
+          {/* Input */}
+          <div className="chat-input-area">
+            <form className="chat-form" onSubmit={handleSubmit}>
+              <div className="chat-input-wrap">
+                <label className="chat-input-label" htmlFor="chat-input">
+                  Your query · shift+enter for newline
+                </label>
+                <textarea
+                  id="chat-input"
+                  ref={textareaRef}
+                  className="chat-input"
+                  value={input}
+                  onChange={handleTextareaChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask about patterns, scenarios, or actions…"
+                  disabled={isStreaming}
+                  rows={1}
+                />
+              </div>
+
+              {isStreaming ? (
+                <button
+                  type="button"
+                  className="chat-btn chat-btn--stop"
+                  onClick={stop}
+                >
+                  ◼ Stop
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="chat-btn chat-btn--send"
+                  disabled={!input.trim()}
+                >
+                  Send ◆
+                </button>
+              )}
+            </form>
+          </div>
+        </div>{/* end chat-main */}
+      </div>{/* end chat-layout */}
     </div>
   );
 }

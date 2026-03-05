@@ -1,175 +1,161 @@
 {
   "persona_id": "p05",
   "active_scenario": {
-    "scenario_id": "scen_001",
-    "title": "Conversion-First Freelance Stabilization",
+    "scenario_id": "scen_compat",
+    "title": "Compat",
     "horizon": "1yr",
     "likelihood": "most_likely",
-    "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-    "tags": [
-      "conversion",
-      "revenue",
-      "focus",
-      "freelance"
-    ],
-    "activated_at": "2026-03-05T01:04:14.287722+00:00",
+    "summary": "Compat scenario",
+    "tags": [],
+    "activated_at": "2026-03-05T05:08:39.228094+00:00",
     "created": 0,
     "metadata": {}
   },
-  "archived_scenarios": [
-    {
-      "scenario_id": "scen_001",
-      "title": "Conversion-First Freelance Stabilization",
-      "horizon": "1yr",
-      "likelihood": "most_likely",
-      "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-      "tags": [
-        "conversion",
-        "revenue",
-        "focus",
-        "freelance"
-      ],
-      "activated_at": "2026-03-05T00:33:34.049733+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-05T00:44:10.697911+00:00"
-    },
-    {
-      "scenario_id": "scen_001",
-      "title": "Conversion-First Freelance Stabilization",
-      "horizon": "1yr",
-      "likelihood": "most_likely",
-      "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-      "tags": [
-        "conversion",
-        "revenue",
-        "focus",
-        "freelance"
-      ],
-      "activated_at": "2026-03-05T00:44:10.697951+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-05T01:04:14.287650+00:00"
-    }
-  ],
+  "archived_scenarios": [],
   "queue": [
     {
-      "task_id": "task_87cddcfd-cac5-4e65-81ae-167a14823440",
+      "task_id": "task_9250d5ee-a1e8-48b3-93f6-a4d60deae3b8",
       "worker_id": "kg_worker",
       "action": "search",
       "priority": 10,
       "payload": {
-        "scenario_id": "scen_001",
-        "scenario_title": "Conversion-First Freelance Stabilization",
-        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "scenario_id": "scen_compat",
+        "scenario_title": "Compat",
+        "scenario_summary": "Compat scenario",
         "horizon": "1yr",
-        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": true
+        "query": "Scenario context for Compat: Compat scenario",
+        "demo_mode": false
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-05T01:04:14.287791+00:00",
-      "updated_at": "2026-03-05T01:04:14.289436+00:00",
+      "created_at": "2026-03-05T05:08:39.228196+00:00",
+      "updated_at": "2026-03-05T05:08:39.620924+00:00",
+      "finished_at": "2026-03-05T05:08:39.620938+00:00",
+      "result_summary": "Intent 'casual' does not require KG context",
+      "external_links": {},
+      "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_d8b77ee2-b0b0-435f-944c-e13ba40757be",
+      "task_id": "task_39343150-93ba-44f5-8391-d79ab98726cc",
       "worker_id": "calendar_worker",
       "action": "sync_schedule",
       "priority": 20,
       "payload": {
-        "scenario_id": "scen_001",
-        "scenario_title": "Conversion-First Freelance Stabilization",
-        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "scenario_id": "scen_compat",
+        "scenario_title": "Compat",
+        "scenario_summary": "Compat scenario",
         "horizon": "1yr",
-        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": true
+        "query": "Scenario context for Compat: Compat scenario",
+        "demo_mode": false
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-05T01:04:14.287791+00:00",
-      "updated_at": "2026-03-05T01:04:14.289542+00:00",
+      "created_at": "2026-03-05T05:08:39.228196+00:00",
+      "updated_at": "2026-03-05T05:09:34.845972+00:00",
+      "finished_at": "2026-03-05T05:09:34.845999+00:00",
+      "result_summary": "Scheduled 0 events (4 planned)",
+      "external_links": {
+        "calendar_events": []
+      },
+      "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_1d74f2b5-0c40-4a6f-9f4c-a5efb4da360a",
+      "task_id": "task_6001dda3-3328-4828-9f3c-d596b3e393bc",
       "worker_id": "notion_leads_worker",
-      "action": "create_pipeline",
+      "action": "ensure_pipeline",
       "priority": 30,
       "payload": {
-        "scenario_id": "scen_001",
-        "scenario_title": "Conversion-First Freelance Stabilization",
-        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "scenario_id": "scen_compat",
+        "scenario_title": "Compat",
+        "scenario_summary": "Compat scenario",
         "horizon": "1yr",
-        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": true
+        "query": "Scenario context for Compat: Compat scenario",
+        "demo_mode": false
       },
-      "status": "completed",
-      "retries": 0,
-      "created_at": "2026-03-05T01:04:14.287791+00:00",
-      "updated_at": "2026-03-05T01:04:14.289649+00:00",
+      "status": "pending",
+      "retries": 1,
+      "created_at": "2026-03-05T05:08:39.228196+00:00",
+      "updated_at": "2026-03-05T05:08:41.362046+00:00",
+      "finished_at": "2026-03-05T05:08:41.362053+00:00",
+      "result_summary": "NOTION_INTEGRATION_SECRET is not configured",
+      "external_links": {},
+      "error_code": "execution_error",
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_2dd8f689-9d65-4632-92ea-4aeb1c1cdd09",
+      "task_id": "task_446396ef-e620-439c-bfe8-4607651e4cae",
       "worker_id": "notion_opportunity_worker",
       "action": "create_workspace",
       "priority": 30,
       "payload": {
-        "scenario_id": "scen_001",
-        "scenario_title": "Conversion-First Freelance Stabilization",
-        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "scenario_id": "scen_compat",
+        "scenario_title": "Compat",
+        "scenario_summary": "Compat scenario",
         "horizon": "1yr",
-        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": true
+        "query": "Scenario context for Compat: Compat scenario",
+        "demo_mode": false
       },
-      "status": "completed",
-      "retries": 0,
-      "created_at": "2026-03-05T01:04:14.287791+00:00",
-      "updated_at": "2026-03-05T01:04:14.289732+00:00",
+      "status": "pending",
+      "retries": 1,
+      "created_at": "2026-03-05T05:08:39.228196+00:00",
+      "updated_at": "2026-03-05T05:08:41.362123+00:00",
+      "finished_at": "2026-03-05T05:08:41.362126+00:00",
+      "result_summary": "No parent page found for workspace",
+      "external_links": {},
+      "error_code": "execution_error",
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_a124d75d-e108-4672-af41-9846952515ff",
+      "task_id": "task_16a80474-d81c-4388-abbd-3977e559fef6",
       "worker_id": "facebook_worker",
       "action": "draft_posts",
       "priority": 40,
       "payload": {
-        "scenario_id": "scen_001",
-        "scenario_title": "Conversion-First Freelance Stabilization",
-        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "scenario_id": "scen_compat",
+        "scenario_title": "Compat",
+        "scenario_summary": "Compat scenario",
         "horizon": "1yr",
-        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": true
+        "query": "Scenario context for Compat: Compat scenario",
+        "demo_mode": false
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-05T01:04:14.287791+00:00",
-      "updated_at": "2026-03-05T01:04:14.289775+00:00",
+      "created_at": "2026-03-05T05:08:39.228196+00:00",
+      "updated_at": "2026-03-05T05:09:14.721091+00:00",
+      "finished_at": "2026-03-05T05:09:14.721131+00:00",
+      "result_summary": "Drafted 5 posts (not published)",
+      "external_links": {},
+      "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_27f17df5-cf1b-4931-952d-db208288c224",
+      "task_id": "task_e35ee710-5b30-4025-9a1b-7079315582b4",
       "worker_id": "figma_worker",
       "action": "generate_challenge",
       "priority": 40,
       "payload": {
-        "scenario_id": "scen_001",
-        "scenario_title": "Conversion-First Freelance Stabilization",
-        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "scenario_id": "scen_compat",
+        "scenario_title": "Compat",
+        "scenario_summary": "Compat scenario",
         "horizon": "1yr",
-        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": true
+        "query": "Scenario context for Compat: Compat scenario",
+        "demo_mode": false
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-05T01:04:14.287791+00:00",
-      "updated_at": "2026-03-05T01:04:14.289794+00:00",
+      "created_at": "2026-03-05T05:08:39.228196+00:00",
+      "updated_at": "2026-03-05T05:09:00.931607+00:00",
+      "finished_at": "2026-03-05T05:09:00.931617+00:00",
+      "result_summary": "Generated 4 design challenges",
+      "external_links": {},
+      "error_code": null,
       "created": 0,
       "metadata": {}
     }
@@ -193,16 +179,16 @@
     {
       "worker_id": "notion_leads_worker",
       "label": "Notion Leads Tracker",
-      "status": "ready",
-      "queue_depth": 0,
-      "last_error": null
+      "status": "degraded",
+      "queue_depth": 1,
+      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
     },
     {
       "worker_id": "notion_opportunity_worker",
       "label": "Notion Opportunity Tracker",
-      "status": "ready",
-      "queue_depth": 0,
-      "last_error": null
+      "status": "degraded",
+      "queue_depth": 1,
+      "last_error": "No parent page found for workspace"
     },
     {
       "worker_id": "facebook_worker",
@@ -272,15 +258,15 @@
     },
     {
       "worker_id": "notion_leads_worker",
-      "failure_streak": 0,
+      "failure_streak": 1,
       "open_until": null,
-      "last_error": null
+      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
     },
     {
       "worker_id": "notion_opportunity_worker",
-      "failure_streak": 0,
+      "failure_streak": 1,
       "open_until": null,
-      "last_error": null
+      "last_error": "No parent page found for workspace"
     },
     {
       "worker_id": "facebook_worker",
@@ -297,1237 +283,53 @@
   ],
   "cycle_history": [
     {
-      "cycle_id": "cycle_9c000fca-3402-474c-a5e4-4d0a5f276525",
+      "cycle_id": "cycle_42f2b5f7-9a38-4f8c-8e2c-dd3e142692f0",
       "trigger": "dispatch",
-      "started_at": "2026-03-05T00:33:34.050582+00:00",
-      "finished_at": "2026-03-05T00:33:34.051140+00:00",
+      "started_at": "2026-03-05T05:08:39.612869+00:00",
+      "finished_at": "2026-03-05T05:09:34.847150+00:00",
       "executed_tasks": [
-        "task_5a1015ab-bd18-4c88-a728-eb1494da9cf3",
-        "task_14a07ca7-e413-4919-b39a-6995c9f233cc",
-        "task_f534c6ed-d94e-42f8-8da7-8fe01b4a5310",
-        "task_4a47ec2c-7ad9-439c-b78b-5cd76a6b0089",
-        "task_b84f08c2-9aa6-4713-bbb8-d770d33aaade",
-        "task_17861cf8-df93-4e86-acd9-7a3c39a9f574"
+        "task_9250d5ee-a1e8-48b3-93f6-a4d60deae3b8",
+        "task_e35ee710-5b30-4025-9a1b-7079315582b4",
+        "task_16a80474-d81c-4388-abbd-3977e559fef6",
+        "task_39343150-93ba-44f5-8391-d79ab98726cc"
       ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_2c96d895-c528-4fe9-bdc2-c763bab2dc4d",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:33:34.057963+00:00",
-      "finished_at": "2026-03-05T00:33:34.057976+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_57f944f7-a557-46b1-b69a-2e074d545547",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:33:34.065485+00:00",
-      "finished_at": "2026-03-05T00:33:34.065617+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_1d8ccc7c-bc8a-486d-849c-6ebaca77e217",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:33:34.072027+00:00",
-      "finished_at": "2026-03-05T00:33:34.072042+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_f6daef7d-a6a0-47cf-9b83-175407e7d14d",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:33:34.080857+00:00",
-      "finished_at": "2026-03-05T00:33:34.080871+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_ba65b66a-5070-4363-bcae-45e42aeb67bd",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:44:10.724754+00:00",
-      "finished_at": "2026-03-05T00:44:10.725675+00:00",
-      "executed_tasks": [
-        "task_335b20d4-2023-411e-b49b-0ad78df22250",
-        "task_727e916a-4bb7-4cf7-a824-bdb946e6e1c1",
-        "task_bf4488fd-ae94-43bd-b3dd-9ef0e5b80e9f",
-        "task_26014a85-f70d-4c52-88ba-b4e9ac144d64",
-        "task_a22b6704-fcf7-4a84-a1bf-2baa66c42ce9",
-        "task_33d2b250-c250-4c92-a0c7-2841f733e3f7"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_1fb3504e-46ce-40ca-a27c-e601d9e6de60",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:44:14.174821+00:00",
-      "finished_at": "2026-03-05T00:44:14.174857+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_fea06d55-3201-43f6-ac9a-0d3771b49878",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:44:14.190686+00:00",
-      "finished_at": "2026-03-05T00:44:14.193409+00:00",
-      "executed_tasks": [
-        "task_4a664891-45fa-45c5-b15c-653446859235",
-        "task_cc73bc52-665a-4115-889f-6de74e03aa2f",
-        "task_9fdb973d-b1f2-40ed-9565-ddd4d68e2960",
-        "task_28967419-d5f0-4b08-b79a-a67293fb33c2",
-        "task_481faf59-c7e5-42f0-b684-6ccf457438ec",
-        "task_ec9bd109-8812-4c56-87f4-b50840551a54"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_aa4ed830-1160-4d08-a354-03e52447c90d",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:55:25.543923+00:00",
-      "finished_at": "2026-03-05T00:55:25.543975+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_20dab899-75b0-46d1-8dcb-f283f09208b9",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:55:35.139917+00:00",
-      "finished_at": "2026-03-05T00:55:35.139958+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_0ddb2c84-a115-46e9-8d17-d9ddf9c9809f",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T00:58:59.461210+00:00",
-      "finished_at": "2026-03-05T00:58:59.461264+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_69cce8bf-5acd-4f28-989c-a2a526204659",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:04:14.288927+00:00",
-      "finished_at": "2026-03-05T01:04:14.290017+00:00",
-      "executed_tasks": [
-        "task_87cddcfd-cac5-4e65-81ae-167a14823440",
-        "task_d8b77ee2-b0b0-435f-944c-e13ba40757be",
-        "task_1d74f2b5-0c40-4a6f-9f4c-a5efb4da360a",
-        "task_2dd8f689-9d65-4632-92ea-4aeb1c1cdd09",
-        "task_a124d75d-e108-4672-af41-9846952515ff",
-        "task_27f17df5-cf1b-4931-952d-db208288c224"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_109284d9-a661-4130-a25b-d85c0adda345",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:04:25.056987+00:00",
-      "finished_at": "2026-03-05T01:04:25.057062+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_45b2b652-1d8e-4e7c-be1e-45ec7717748b",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:05:04.174324+00:00",
-      "finished_at": "2026-03-05T01:05:04.174874+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_1ba1e4c7-2877-4aa7-a59f-764ec55e9276",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:05:13.699482+00:00",
-      "finished_at": "2026-03-05T01:05:13.699611+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_634ae5c5-8468-4df2-afdf-f5c2cf329d87",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:05:45.237240+00:00",
-      "finished_at": "2026-03-05T01:05:45.237287+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_56c9763c-17c4-41a5-801d-6a710fb7ffe1",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:13:59.480220+00:00",
-      "finished_at": "2026-03-05T01:13:59.480288+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_048f4eb0-224f-414a-b34d-56bc47d6bfc5",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:17:58.181629+00:00",
-      "finished_at": "2026-03-05T01:17:58.181659+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_8baa6e4e-ad10-4e18-a01e-d068edc6112a",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:20:09.174374+00:00",
-      "finished_at": "2026-03-05T01:20:09.174430+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_bde429c5-137c-4dda-b77f-0be61145b6c6",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:20:22.238585+00:00",
-      "finished_at": "2026-03-05T01:20:22.238627+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_72ce8776-1e1f-430b-bcf6-6f3f3815864e",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:20:45.624573+00:00",
-      "finished_at": "2026-03-05T01:20:45.624607+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_a2d7c9c6-04de-4d20-8881-dc75ee6ae84b",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:28:59.498070+00:00",
-      "finished_at": "2026-03-05T01:28:59.498122+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_f5a507fb-74b4-4b17-bcef-e69d6ac3796b",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:43:59.520438+00:00",
-      "finished_at": "2026-03-05T01:43:59.520495+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_2c22a925-176f-49c6-bd56-d3179cc09955",
-      "trigger": "dispatch",
-      "started_at": "2026-03-05T01:58:59.494389+00:00",
-      "finished_at": "2026-03-05T01:58:59.494446+00:00",
-      "executed_tasks": [],
       "failed_tasks": []
     }
   ],
   "event_history": [
     {
-      "event_id": "evt_fffe3909-4e7e-4eaa-9630-89f0cb71d606",
+      "event_id": "evt_0b80f4f8-f23a-4839-a1f6-6c479b14ea6a",
       "type": "scenario_activated",
       "payload": {
-        "scenario_id": "scen_001",
-        "title": "Conversion-First Freelance Stabilization"
+        "scenario_id": "scen_compat",
+        "title": "Compat"
       },
-      "created_at": "2026-03-05T00:33:34.050018+00:00"
+      "created_at": "2026-03-05T05:08:39.228253+00:00"
     },
     {
-      "event_id": "evt_e4a2e572-7e56-4c07-bcf2-647037105d4b",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-05T00:33:34.050575+00:00"
-    },
-    {
-      "event_id": "evt_f87fd5e6-0719-42a1-96e2-f5694cfad5c3",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_9c000fca-3402-474c-a5e4-4d0a5f276525",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T00:33:34.051186+00:00"
-    },
-    {
-      "event_id": "evt_d49193ad-9356-4410-9006-e9924f91196a",
-      "type": "demo.workflow.facebook_watch.start",
-      "payload": {
-        "page_id": "me",
-        "demo_mode": false,
-        "demo_comments": [
-          {
-            "comment_id": "c_seed_001",
-            "post_id": "p_seed_001",
-            "message": "Seed comment one"
-          },
-          {
-            "comment_id": "c_seed_002",
-            "post_id": "p_seed_001",
-            "message": "Seed comment two"
-          }
-        ]
-      },
-      "created_at": "2026-03-05T00:33:34.057602+00:00"
-    },
-    {
-      "event_id": "evt_e76185a8-ef93-4a1b-a45d-86cf9011b08d",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start"
-      },
-      "created_at": "2026-03-05T00:33:34.057959+00:00"
-    },
-    {
-      "event_id": "evt_26e26d9f-8e6b-4f9e-aada-df8a44d7399b",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start",
-        "cycle_id": "cycle_2c96d895-c528-4fe9-bdc2-c763bab2dc4d",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T00:33:34.057986+00:00"
-    },
-    {
-      "event_id": "evt_ffd35258-9c5a-4ae0-87bc-e4ccc240391b",
-      "type": "demo.workflow.facebook_watch.inject",
-      "payload": {
-        "comments": [
-          {
-            "comment_id": "c_inject_001",
-            "post_id": "p_seed_001",
-            "message": "Injected comment"
-          }
-        ],
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T00:33:34.063683+00:00"
-    },
-    {
-      "event_id": "evt_86c84a38-a5a7-4b45-a644-f83c9977baca",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.inject"
-      },
-      "created_at": "2026-03-05T00:33:34.065444+00:00"
-    },
-    {
-      "event_id": "evt_6edf9cb3-7ab2-4463-880c-9b9123e50c4d",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.inject",
-        "cycle_id": "cycle_57f944f7-a557-46b1-b69a-2e074d545547",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T00:33:34.065717+00:00"
-    },
-    {
-      "event_id": "evt_cbdc0c03-9933-4762-92a3-ab0d7b5f41a1",
-      "type": "demo.workflow.facebook_watch.poll",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T00:33:34.071151+00:00"
-    },
-    {
-      "event_id": "evt_f266af77-3160-49c1-ab4d-c4cde563dafb",
-      "type": "facebook_comment_received",
-      "payload": {
-        "comment_id": "c_seed_001",
-        "post_id": "p_seed_001",
-        "message": "Seed comment one"
-      },
-      "created_at": "2026-03-05T00:33:34.071195+00:00"
-    },
-    {
-      "event_id": "evt_d1f538c7-f944-4c7d-91ee-274ede0a9dd1",
-      "type": "facebook_comment_received",
-      "payload": {
-        "comment_id": "c_seed_002",
-        "post_id": "p_seed_001",
-        "message": "Seed comment two"
-      },
-      "created_at": "2026-03-05T00:33:34.071211+00:00"
-    },
-    {
-      "event_id": "evt_2809ea61-0db1-4491-bfdf-591c4a8fb075",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll"
-      },
-      "created_at": "2026-03-05T00:33:34.072023+00:00"
-    },
-    {
-      "event_id": "evt_3ac06e26-2989-46f9-90b3-326d03e79123",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll",
-        "cycle_id": "cycle_1d8ccc7c-bc8a-486d-849c-6ebaca77e217",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T00:33:34.072053+00:00"
-    },
-    {
-      "event_id": "evt_6ed7a87f-4a58-479a-a53c-f81647c0082c",
-      "type": "demo.workflow.facebook_watch.poll",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T00:33:34.079694+00:00"
-    },
-    {
-      "event_id": "evt_af84c8eb-422c-4388-9af2-41647e24f2a6",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll"
-      },
-      "created_at": "2026-03-05T00:33:34.080854+00:00"
-    },
-    {
-      "event_id": "evt_27c2088c-7abb-46c7-9308-0e0bf2feae9f",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll",
-        "cycle_id": "cycle_f6daef7d-a6a0-47cf-9b83-175407e7d14d",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T00:33:34.080880+00:00"
-    },
-    {
-      "event_id": "evt_e5d2ca4c-c2f5-4bb7-965f-f319833eead6",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "scen_001",
-        "title": "Conversion-First Freelance Stabilization"
-      },
-      "created_at": "2026-03-05T00:44:10.698109+00:00"
-    },
-    {
-      "event_id": "evt_121ec492-88f1-48da-b0af-b2b205e9a3f0",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-05T00:44:10.724709+00:00"
-    },
-    {
-      "event_id": "evt_0d954767-2fb4-4021-a908-86cc905a221c",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_ba65b66a-5070-4363-bcae-45e42aeb67bd",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T00:44:10.725700+00:00"
-    },
-    {
-      "event_id": "evt_bfa324b4-55d3-4d70-9ca5-6d0d1855f7b3",
-      "type": "demo.workflow.proactive.preview",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T00:44:14.173594+00:00"
-    },
-    {
-      "event_id": "evt_f29c9d50-b6f3-4379-b89f-d10bead9dbab",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.proactive.preview"
-      },
-      "created_at": "2026-03-05T00:44:14.174805+00:00"
-    },
-    {
-      "event_id": "evt_5b1cf4ff-daf3-453b-a696-b3169b2a70cb",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.proactive.preview",
-        "cycle_id": "cycle_1fb3504e-46ce-40ca-a27c-e601d9e6de60",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T00:44:14.174884+00:00"
-    },
-    {
-      "event_id": "evt_d56e0746-e402-4973-842a-fbdbf67bf643",
-      "type": "demo.workflow.proactive.commit",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T00:44:14.185707+00:00"
-    },
-    {
-      "event_id": "evt_5533af34-caa2-41c4-b09d-035af5d1af50",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.proactive.commit"
-      },
-      "created_at": "2026-03-05T00:44:14.190665+00:00"
-    },
-    {
-      "event_id": "evt_a8bf3692-7d17-478b-9300-81e70406583c",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.proactive.commit",
-        "cycle_id": "cycle_fea06d55-3201-43f6-ac9a-0d3771b49878",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 3
-      },
-      "created_at": "2026-03-05T00:44:14.193525+00:00"
-    },
-    {
-      "event_id": "evt_7ef12d60-50dc-4ec4-9ce0-b5eb85a3f35d",
-      "type": "demo.workflow.facebook_watch.start",
-      "payload": {
-        "page_id": "me",
-        "demo_mode": false,
-        "demo_comments": [
-          {
-            "comment_id": "ui_seed_001",
-            "post_id": "ui_post_001",
-            "message": "Love your recent update."
-          },
-          {
-            "comment_id": "ui_seed_002",
-            "post_id": "ui_post_001",
-            "message": "Can you share milestones?"
-          }
-        ]
-      },
-      "created_at": "2026-03-05T00:55:25.541746+00:00"
-    },
-    {
-      "event_id": "evt_3e438157-c847-46c8-8485-70bb0c41d7b0",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start"
-      },
-      "created_at": "2026-03-05T00:55:25.543899+00:00"
-    },
-    {
-      "event_id": "evt_9ad26e11-d6e9-43dc-94d9-62140ced552f",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start",
-        "cycle_id": "cycle_aa4ed830-1160-4d08-a354-03e52447c90d",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T00:55:25.544009+00:00"
-    },
-    {
-      "event_id": "evt_d75101ce-4822-4a5f-b767-b8ff239a10e0",
-      "type": "demo.workflow.facebook_watch.poll",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T00:55:25.553101+00:00"
-    },
-    {
-      "event_id": "evt_544c08fe-2579-4039-892f-cb82d958cd9b",
-      "type": "facebook_comment_received",
-      "payload": {
-        "comment_id": "ui_seed_001",
-        "post_id": "ui_post_001",
-        "message": "Love your recent update."
-      },
-      "created_at": "2026-03-05T00:55:31.339433+00:00"
-    },
-    {
-      "event_id": "evt_257ceb69-741d-45f3-9d91-859dcce2099f",
-      "type": "facebook_comment_received",
-      "payload": {
-        "comment_id": "ui_seed_002",
-        "post_id": "ui_post_001",
-        "message": "Can you share milestones?"
-      },
-      "created_at": "2026-03-05T00:55:35.138324+00:00"
-    },
-    {
-      "event_id": "evt_fceaead1-8037-4d52-8dcc-726387580c32",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll"
-      },
-      "created_at": "2026-03-05T00:55:35.139903+00:00"
-    },
-    {
-      "event_id": "evt_c9d96c5c-3295-408f-8763-6f973a2316f3",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll",
-        "cycle_id": "cycle_20dab899-75b0-46d1-8dcb-f283f09208b9",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T00:55:35.139986+00:00"
-    },
-    {
-      "event_id": "evt_2c28319b-ab3a-40c6-9872-22a30f04aac3",
+      "event_id": "evt_fbebab65-75d5-48c2-91cd-f09321fdeb47",
       "type": "cycle_start",
       "payload": {
         "trigger": "tick"
       },
-      "created_at": "2026-03-05T00:58:59.461185+00:00"
+      "created_at": "2026-03-05T05:08:39.612204+00:00"
     },
     {
-      "event_id": "evt_d18a14a0-9383-467d-97c5-0033cefaf633",
+      "event_id": "evt_5acf2765-2089-4eb7-b468-bdca5bde15fb",
       "type": "cycle_end",
       "payload": {
         "trigger": "tick",
-        "cycle_id": "cycle_0ddb2c84-a115-46e9-8d17-d9ddf9c9809f",
-        "executed": 0,
+        "cycle_id": "cycle_42f2b5f7-9a38-4f8c-8e2c-dd3e142692f0",
+        "executed": 4,
         "failed": 0,
         "approval_waiting": 0,
-        "cycle_duration_ms": 1
+        "cycle_duration_ms": 55263
       },
-      "created_at": "2026-03-05T00:58:59.461294+00:00"
-    },
-    {
-      "event_id": "evt_734822d8-b441-4cf4-8186-f80b3392a9dd",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "scen_001",
-        "title": "Conversion-First Freelance Stabilization"
-      },
-      "created_at": "2026-03-05T01:04:14.287891+00:00"
-    },
-    {
-      "event_id": "evt_cc6ce92d-5dc2-4582-a612-bd86e5255e90",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-05T01:04:14.288919+00:00"
-    },
-    {
-      "event_id": "evt_ae02a578-5448-4f78-82e8-dba1fa425fac",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_69cce8bf-5acd-4f28-989c-a2a526204659",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T01:04:14.290050+00:00"
-    },
-    {
-      "event_id": "evt_5e194166-e01f-4c1e-9613-f0cb8b4dd30a",
-      "type": "demo.workflow.proactive.preview",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T01:04:25.055537+00:00"
-    },
-    {
-      "event_id": "evt_f3fdff4a-4c7b-44de-95c0-feeb69de522b",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.proactive.preview"
-      },
-      "created_at": "2026-03-05T01:04:25.056971+00:00"
-    },
-    {
-      "event_id": "evt_ac452dd0-08f5-4832-ad60-cdc4883f9990",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.proactive.preview",
-        "cycle_id": "cycle_109284d9-a661-4130-a25b-d85c0adda345",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T01:04:25.057110+00:00"
-    },
-    {
-      "event_id": "evt_ac75ac9d-c88b-4482-a6bd-8761be8412cb",
-      "type": "demo.workflow.facebook_watch.start",
-      "payload": {
-        "page_id": "me",
-        "demo_mode": false,
-        "demo_comments": [
-          {
-            "comment_id": "c_seed_001",
-            "post_id": "p_seed_001",
-            "message": "Seed comment one"
-          },
-          {
-            "comment_id": "c_seed_002",
-            "post_id": "p_seed_001",
-            "message": "Seed comment two"
-          }
-        ]
-      },
-      "created_at": "2026-03-05T01:05:04.172110+00:00"
-    },
-    {
-      "event_id": "evt_db409752-c3df-4e4c-9418-04b49e2a2fb7",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start"
-      },
-      "created_at": "2026-03-05T01:05:04.174250+00:00"
-    },
-    {
-      "event_id": "evt_47512d30-d6bc-45ee-8fc9-038710a5db96",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start",
-        "cycle_id": "cycle_45b2b652-1d8e-4e7c-be1e-45ec7717748b",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T01:05:04.174969+00:00"
-    },
-    {
-      "event_id": "evt_dc0371ea-4dc4-4115-98d7-fe5dd9a18a9d",
-      "type": "demo.workflow.facebook_watch.inject",
-      "payload": {
-        "comments": [
-          {
-            "comment_id": "c_inject_001",
-            "post_id": "p_seed_001",
-            "message": "Injected comment"
-          }
-        ],
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T01:05:13.696729+00:00"
-    },
-    {
-      "event_id": "evt_06ac5f53-452d-4be5-b1dd-34288335ee00",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.inject"
-      },
-      "created_at": "2026-03-05T01:05:13.699442+00:00"
-    },
-    {
-      "event_id": "evt_f00e9cc2-44f1-4861-85df-4054444686ab",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.inject",
-        "cycle_id": "cycle_1ba1e4c7-2877-4aa7-a59f-764ec55e9276",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T01:05:13.699766+00:00"
-    },
-    {
-      "event_id": "evt_97c96ce1-63bb-4a7f-9e22-9262d29bdd22",
-      "type": "demo.workflow.facebook_watch.poll",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T01:05:23.509992+00:00"
-    },
-    {
-      "event_id": "evt_23e61919-5899-4b88-8b70-ef96e492494a",
-      "type": "facebook_comment_received",
-      "payload": {
-        "comment_id": "c_seed_001",
-        "post_id": "p_seed_001",
-        "message": "Seed comment one"
-      },
-      "created_at": "2026-03-05T01:05:28.703981+00:00"
-    },
-    {
-      "event_id": "evt_db24245c-0a8e-4a79-b0cd-715ad13cdbae",
-      "type": "facebook_comment_received",
-      "payload": {
-        "comment_id": "c_seed_002",
-        "post_id": "p_seed_001",
-        "message": "Seed comment two"
-      },
-      "created_at": "2026-03-05T01:05:45.234426+00:00"
-    },
-    {
-      "event_id": "evt_f23a0dd3-bb5f-43f5-a0ee-1ab041bb76d9",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll"
-      },
-      "created_at": "2026-03-05T01:05:45.237217+00:00"
-    },
-    {
-      "event_id": "evt_40678923-2e81-4062-b3cf-745b77412583",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll",
-        "cycle_id": "cycle_634ae5c5-8468-4df2-afdf-f5c2cf329d87",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T01:05:45.237314+00:00"
-    },
-    {
-      "event_id": "evt_3d6ff635-acd6-4117-9283-ff7eda2e4a65",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "tick"
-      },
-      "created_at": "2026-03-05T01:13:59.480184+00:00"
-    },
-    {
-      "event_id": "evt_81b85e93-fd28-4e06-a2c0-bc8bad69fbcc",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "tick",
-        "cycle_id": "cycle_56c9763c-17c4-41a5-801d-6a710fb7ffe1",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T01:13:59.480347+00:00"
-    },
-    {
-      "event_id": "evt_9f3a3a79-e568-4b34-8b69-3f0a575feca4",
-      "type": "demo.workflow.proactive.preview",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T01:17:58.178999+00:00"
-    },
-    {
-      "event_id": "evt_c0d1de0c-d270-4efb-8083-eb70327f31d6",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.proactive.preview"
-      },
-      "created_at": "2026-03-05T01:17:58.181606+00:00"
-    },
-    {
-      "event_id": "evt_97a93db9-2875-475f-be50-6d100b0244d3",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.proactive.preview",
-        "cycle_id": "cycle_048f4eb0-224f-414a-b34d-56bc47d6bfc5",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T01:17:58.181683+00:00"
-    },
-    {
-      "event_id": "evt_e1d4ba9e-cf87-4337-9539-8724e18c4b08",
-      "type": "demo.workflow.facebook_watch.poll",
-      "payload": {
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T01:20:09.171866+00:00"
-    },
-    {
-      "event_id": "evt_5259e976-b8eb-4c9d-8000-49be5fb7a849",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll"
-      },
-      "created_at": "2026-03-05T01:20:09.174351+00:00"
-    },
-    {
-      "event_id": "evt_c5ece435-96bd-43f7-9dcb-324b9bcbb318",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.poll",
-        "cycle_id": "cycle_8baa6e4e-ad10-4e18-a01e-d068edc6112a",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T01:20:09.174466+00:00"
-    },
-    {
-      "event_id": "evt_a070595c-52f1-4f00-ab50-03bed9e2e92c",
-      "type": "demo.workflow.facebook_watch.inject",
-      "payload": {
-        "comments": [
-          {
-            "comment_id": "c_inject_001",
-            "post_id": "p_seed_001",
-            "message": "Injected comment"
-          }
-        ],
-        "demo_mode": true
-      },
-      "created_at": "2026-03-05T01:20:22.237124+00:00"
-    },
-    {
-      "event_id": "evt_5df32369-1637-4731-8487-3d818b4b8951",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.inject"
-      },
-      "created_at": "2026-03-05T01:20:22.238568+00:00"
-    },
-    {
-      "event_id": "evt_ce36ce46-f85f-4c05-bac9-752a1b98d787",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.inject",
-        "cycle_id": "cycle_bde429c5-137c-4dda-b77f-0be61145b6c6",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T01:20:22.238642+00:00"
-    },
-    {
-      "event_id": "evt_ae19e667-2231-4b7d-b344-022f0899102b",
-      "type": "demo.workflow.facebook_watch.start",
-      "payload": {
-        "page_id": "me",
-        "demo_mode": false,
-        "demo_comments": [
-          {
-            "comment_id": "c_seed_001",
-            "post_id": "p_seed_001",
-            "message": "Seed comment one"
-          },
-          {
-            "comment_id": "c_seed_002",
-            "post_id": "p_seed_001",
-            "message": "Seed comment two"
-          }
-        ]
-      },
-      "created_at": "2026-03-05T01:20:45.619696+00:00"
-    },
-    {
-      "event_id": "evt_ca2f25f6-89b9-4542-9909-f43843a90ba4",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start"
-      },
-      "created_at": "2026-03-05T01:20:45.624558+00:00"
-    },
-    {
-      "event_id": "evt_c73fcdc4-14d4-40a0-a3a2-06d4d8e72c4f",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "demo.workflow.facebook_watch.start",
-        "cycle_id": "cycle_72ce8776-1e1f-430b-bcf6-6f3f3815864e",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 0
-      },
-      "created_at": "2026-03-05T01:20:45.624624+00:00"
-    },
-    {
-      "event_id": "evt_ec22a93d-524b-4e91-a278-3590ced79ae6",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "tick"
-      },
-      "created_at": "2026-03-05T01:28:59.498030+00:00"
-    },
-    {
-      "event_id": "evt_5882872c-0177-4071-b156-26f81d9976ba",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "tick",
-        "cycle_id": "cycle_a2d7c9c6-04de-4d20-8881-dc75ee6ae84b",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 2
-      },
-      "created_at": "2026-03-05T01:28:59.498154+00:00"
-    },
-    {
-      "event_id": "evt_d3818150-d424-44b3-aabd-4b53d2e8ba75",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "tick"
-      },
-      "created_at": "2026-03-05T01:43:59.520405+00:00"
-    },
-    {
-      "event_id": "evt_be3873fd-2a45-4452-86d3-2cd602aee304",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "tick",
-        "cycle_id": "cycle_f5a507fb-74b4-4b17-bcef-e69d6ac3796b",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 2
-      },
-      "created_at": "2026-03-05T01:43:59.520525+00:00"
-    },
-    {
-      "event_id": "evt_01df66a3-4bd5-4d2d-97ab-95f3c22ab8f2",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "tick"
-      },
-      "created_at": "2026-03-05T01:58:59.494355+00:00"
-    },
-    {
-      "event_id": "evt_cc089e72-8d3a-4381-b872-396446b55e0d",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "tick",
-        "cycle_id": "cycle_2c22a925-176f-49c6-bd56-d3179cc09955",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0,
-        "cycle_duration_ms": 1
-      },
-      "created_at": "2026-03-05T01:58:59.494494+00:00"
+      "created_at": "2026-03-05T05:09:34.847659+00:00"
     }
   ],
-  "demo_artifacts": {
-    "proactive_preview": {
-      "calendar": {
-        "events": [
-          {
-            "title": "Deep Work: Portfolio Sprint (UT Library)",
-            "type": "focus_block",
-            "duration_minutes": 180,
-            "location": "UT Library"
-          },
-          {
-            "title": "Deep Work: Client Deliverable Block (UT Library)",
-            "type": "focus_block",
-            "duration_minutes": 180,
-            "location": "UT Library"
-          },
-          {
-            "title": "Admin Sprint: Invoice Follow-up",
-            "type": "admin",
-            "duration_minutes": 45,
-            "location": "Home Desk"
-          },
-          {
-            "title": "Debt-Paydown Review",
-            "type": "review",
-            "duration_minutes": 30,
-            "location": "Home Desk"
-          }
-        ]
-      },
-      "notion_leads": {
-        "database_title": "Client Pipeline",
-        "leads": [
-          {
-            "name": "Referral Lead",
-            "source": "Referral",
-            "status": "Lead"
-          },
-          {
-            "name": "Portfolio Lead",
-            "source": "Portfolio",
-            "status": "Proposal"
-          },
-          {
-            "name": "Direct Lead",
-            "source": "Direct",
-            "status": "Lead"
-          }
-        ]
-      },
-      "notion_opportunity": {
-        "workspace_title": "Questline: Conversion-First Freelance Stabilization",
-        "progress_page": "Progress: Next Actions"
-      },
-      "figma": {
-        "challenge_briefs": [
-          "Challenge 1: Conversion-first landing refresh for a local service brand",
-          "Challenge 2: Brand motion system for an Austin creator collective",
-          "Challenge 3: Portfolio case-study narrative sprint with measurable KPI"
-        ],
-        "weekly_milestones": [
-          "Week 1: Brief + concept frames",
-          "Week 2: Mid-fidelity exploration",
-          "Week 3: Final polish + share-out"
-        ]
-      },
-      "kg_context": {
-        "signals": [
-          "public/private delta",
-          "learning-vs-conversion mismatch",
-          "financial stress triangulation",
-          "ADHD execution constraints"
-        ]
-      }
-    },
-    "facebook_watch": {
-      "pending_replies": [
-        {
-          "comment_id": "c_inject_001",
-          "post_id": "p_seed_001",
-          "from": {},
-          "message": "Injected comment",
-          "draft_reply": "Thanks for the comment, really appreciate you following this. I\u2019m currently focused on 'Conversion-First Freelance Stabilization' and sharing progress transparently. I\u2019ll post an update tied to a measurable milestone shortly.",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T00:33:34.063743+00:00"
-        },
-        {
-          "comment_id": "c_seed_001",
-          "post_id": "p_seed_001",
-          "from": {},
-          "message": "Seed comment one",
-          "draft_reply": "Deterministic offline reply from mocked LLM boundary.",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T00:33:34.071189+00:00"
-        },
-        {
-          "comment_id": "c_seed_002",
-          "post_id": "p_seed_001",
-          "from": {},
-          "message": "Seed comment two",
-          "draft_reply": "Deterministic offline reply from mocked LLM boundary.",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T00:33:34.071207+00:00"
-        },
-        {
-          "comment_id": "ui_seed_001",
-          "post_id": "ui_post_001",
-          "from": {},
-          "message": "Love your recent update.",
-          "draft_reply": "Aw, thanks so much! Thrilled you're digging the update\u2014conversions are finally stabilizing my freelance game with consistent 5-figure months. What's one win you've had lately? \ud83d\ude80",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T00:55:31.339385+00:00"
-        },
-        {
-          "comment_id": "ui_seed_002",
-          "post_id": "ui_post_001",
-          "from": {},
-          "message": "Can you share milestones?",
-          "draft_reply": "Absolutely! We've hit consistent $5k/month revenue, closed 4 high-ticket retainers from webinar leads, and boosted our conversion rate to 25% with optimized funnels\u2014game-changer for stability! What's one milestone you're chasing? \ud83d\ude0a",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T00:55:35.138282+00:00"
-        },
-        {
-          "comment_id": "c_inject_001",
-          "post_id": "p_seed_001",
-          "from": {},
-          "message": "Injected comment",
-          "draft_reply": "Thanks for the comment, really appreciate you following this. I\u2019m currently focused on 'Conversion-First Freelance Stabilization' and sharing progress transparently. I\u2019ll post an update tied to a measurable milestone shortly.",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T01:05:13.696760+00:00"
-        },
-        {
-          "comment_id": "c_seed_001",
-          "post_id": "p_seed_001",
-          "from": {},
-          "message": "Seed comment one",
-          "draft_reply": "Hey, loving that you're already seeing those first steady clients trickle in\u2014that's real progress toward freelance stability! You've got this; keep nurturing those conversions and watch it snowball. \ud83d\ude80",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T01:05:28.703933+00:00"
-        },
-        {
-          "comment_id": "c_seed_002",
-          "post_id": "p_seed_001",
-          "from": {},
-          "message": "Seed comment two",
-          "draft_reply": "That's fantastic progress\u2014seeing you stabilize those freelance gigs with consistent conversions is so inspiring! Keep sharing your wins; you're crushing it! \ud83d\ude80",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T01:05:45.234320+00:00"
-        },
-        {
-          "comment_id": "c_inject_001",
-          "post_id": "p_seed_001",
-          "from": {},
-          "message": "Injected comment",
-          "draft_reply": "Thanks for the comment, really appreciate you following this. I\u2019m currently focused on 'Conversion-First Freelance Stabilization' and sharing progress transparently. I\u2019ll post an update tied to a measurable milestone shortly.",
-          "status": "ready_to_send",
-          "created_at": "2026-03-05T01:20:22.237147+00:00"
-        }
-      ]
-    }
-  },
-  "value_signals": {
-    "public_private_delta": {
-      "signal": "Public confidence is ahead of private certainty.",
-      "evidence_refs": [
-        "c_0001"
-      ]
-    },
-    "learning_vs_conversion_mismatch": {
-      "signal": "Learning intensity outpaces direct revenue conversion loops.",
-      "evidence_refs": [
-        "t_0120",
-        "cal_0078"
-      ]
-    },
-    "financial_stress_triangulation": {
-      "signal": "Debt stress is an execution drag, not just a budgeting issue.",
-      "evidence_refs": [
-        "ll_0142",
-        "t_0120"
-      ]
-    },
-    "adhd_execution_constraints": {
-      "signal": "Execution improves when tasks are chunked and environment-scaffolded.",
-      "evidence_refs": [
-        "cal_0078",
-        "c_0001"
-      ]
-    }
-  },
-  "workflow_state": {
-    "facebook_watch": {
-      "page_id": "me",
-      "post_ids": [],
-      "limit_posts": 5,
-      "limit_comments": 20,
-      "demo_mode": false,
-      "demo_comments": [
-        {
-          "comment_id": "c_seed_001",
-          "post_id": "p_seed_001",
-          "message": "Seed comment one",
-          "from": {},
-          "created_time": null
-        },
-        {
-          "comment_id": "c_seed_002",
-          "post_id": "p_seed_001",
-          "message": "Seed comment two",
-          "from": {},
-          "created_time": null
-        }
-      ],
-      "seen_comment_ids": [],
-      "started_at": "2026-03-05T01:20:45.619783+00:00",
-      "last_polled_at": null
-    }
-  },
-  "updated_at": "2026-03-05T01:58:59.494510+00:00"
+  "demo_artifacts": {},
+  "value_signals": {},
+  "workflow_state": {},
+  "updated_at": "2026-03-05T05:09:34.847943+00:00"
 }

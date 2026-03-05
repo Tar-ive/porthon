@@ -11,13 +11,20 @@
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.107",
+    "@react-sigma/core": "^5.0.6",
+    "@react-sigma/layout-forceatlas2": "^5.0.6",
     "@tailwindcss/vite": "^4.2.1",
     "ai": "^6.0.105",
+    "graphology": "^0.26.0",
+    "graphology-layout-forceatlas2": "^0.10.1",
+    "graphology-types": "^0.24.8",
     "marked": "^17.0.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.13.1",
     "remark-gfm": "^4.0.1",
+    "sigma": "^3.0.2",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {

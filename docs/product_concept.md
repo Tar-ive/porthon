@@ -2,7 +2,7 @@
 
 ## Why This Deserves to Exist
 
-There's a generation of people like Theo building lives without a playbook.
+*There's a generation of people like Theo building lives without a playbook.*
 
 No corporate ladder. No pension. No annual review that tells them if they're on track. Freelancers, gig workers, creatives — they chose autonomy, and the trade-off is that **nobody is watching out for them**. No manager notices they're undercharging. No HR flags that they haven't taken a break in three weeks. No financial advisor sees the credit card minimum payments piling up.
 

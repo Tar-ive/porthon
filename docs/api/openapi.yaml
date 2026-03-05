@@ -9,7 +9,7 @@ info:
     Resource IDs are prefixed by type: `scen_`, `qst_`, `act_`, `apprv_`,
     `evt_`, `msg_`, `wrkr_`. All mutating endpoints require an
     `Idempotency-Key` header.
-  version: "2026-03-01"
+  version: "2026-03-04"
   contact:
     name: Questline Team
 
@@ -602,7 +602,7 @@ components:
       type: http
       scheme: bearer
       description: |
-        API key prefixed with `sk_demo_` (test mode) or `sk_live_` (live mode).
+        API key prefixed with `sk_test_` (test mode) or `sk_live_` (live mode).
         Authentication is optional for local development.
 
   parameters:
