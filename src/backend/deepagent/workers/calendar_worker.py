@@ -8,6 +8,7 @@ Absorbs agents/calendar_coach.py:
 Composio actions:
   GOOGLECALENDAR_FREE_BUSY_QUERY  — find open slots
   GOOGLECALENDAR_CREATE_EVENT     — create focus blocks
+  GOOGLECALENDAR_FIND_EVENT       — verify/avoid duplicates
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ import logging
 import os
 from hashlib import sha256
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
 from deepagent.workers.base import BaseWorker, WorkerExecution
 from deepagent.workers.llm_schemas import CalendarPlanLLM
@@ -27,11 +29,18 @@ logger = logging.getLogger(__name__)
 class CalendarWorker(BaseWorker):
     worker_id = "calendar_worker"
     label = "Calendar Scheduler"
+    TIME_ZONE = "America/Chicago"
+    CALENDAR_ID = "primary"
+    FOCUS_TIME_PROPERTIES = {
+        "autoDeclineMode": "declineOnlyNewConflictingInvitations",
+        "chatStatus": "doNotDisturb",
+    }
 
     ACTIONS = {
         "sync_schedule": "_sync_schedule",
         "create_block": "_create_block",
         "move_block": "_create_block",
+        "check_conflict": "_check_conflict",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -55,8 +64,8 @@ class CalendarWorker(BaseWorker):
             params={
                 "timeMin": start.isoformat(),
                 "timeMax": end.isoformat(),
-                "items": [{"id": "primary"}],
-                "timeZone": "America/Chicago",
+                "items": [{"id": self.CALENDAR_ID}],
+                "timeZone": self.TIME_ZONE,
             },
             app_name="googlecalendar",
         )
@@ -68,7 +77,7 @@ class CalendarWorker(BaseWorker):
             result.get("result", {})
             .get("data", {})
             .get("calendars", {})
-            .get("primary", {})
+            .get(self.CALENDAR_ID, {})
             .get("busy", [])
         )
 
@@ -99,6 +108,178 @@ class CalendarWorker(BaseWorker):
                 })
 
         return free
+
+    @staticmethod
+    def _parse_iso_datetime(value: str) -> datetime | None:
+        if not isinstance(value, str) or not value.strip():
+            return None
+        normalized = value.strip().replace("Z", "+00:00")
+        try:
+            return datetime.fromisoformat(normalized)
+        except ValueError:
+            return None
+
+    def _duration_parts(self, start: str, end: str) -> tuple[int, int, int]:
+        start_dt = self._parse_iso_datetime(start)
+        end_dt = self._parse_iso_datetime(end)
+        if start_dt is None or end_dt is None:
+            return 0, 0, 0
+        total_minutes = int((end_dt - start_dt).total_seconds() // 60)
+        if total_minutes <= 0:
+            return 0, 0, 0
+        hours, minutes = divmod(total_minutes, 60)
+        return hours, minutes, total_minutes
+
+    @staticmethod
+    def _is_focus_block(event_type: str | None, title: str) -> bool:
+        if event_type == "focus_block":
+            return True
+        lowered = title.strip().lower()
+        return "focus" in lowered or "deep work" in lowered or "hyperfocus" in lowered
+
+    async def _query_busy_windows(self, start: str, end: str) -> list[dict[str, Any]]:
+        result = await execute_action(
+            "GOOGLECALENDAR_FREE_BUSY_QUERY",
+            params={
+                "timeMin": start,
+                "timeMax": end,
+                "items": [{"id": self.CALENDAR_ID}],
+                "timeZone": self.TIME_ZONE,
+            },
+            app_name="googlecalendar",
+        )
+        if result.get("dry_run"):
+            return []
+        busy = (
+            result.get("result", {})
+            .get("data", {})
+            .get("calendars", {})
+            .get(self.CALENDAR_ID, {})
+            .get("busy", [])
+        )
+        if not isinstance(busy, list):
+            return []
+        return [b for b in busy if isinstance(b, dict)]
+
+    async def _check_conflict(self, payload: dict) -> WorkerExecution:
+        start = payload.get("start_time", "")
+        end = payload.get("end_time", "")
+        if not start or not end:
+            return WorkerExecution(ok=False, message="start_time and end_time required")
+        busy = await self._query_busy_windows(start=start, end=end)
+        has_conflict = len(busy) > 0
+        return WorkerExecution(
+            ok=True,
+            message="Conflict found" if has_conflict else "No conflict",
+            data={"has_conflict": has_conflict, "busy_windows": busy},
+        )
+
+    def _build_create_event_params(
+        self,
+        *,
+        title: str,
+        description: str,
+        start: str,
+        end: str,
+        is_focus: bool,
+    ) -> tuple[dict[str, Any], dict[str, Any], int]:
+        hours, minutes, total_minutes = self._duration_parts(start, end)
+        primary_params: dict[str, Any] = {
+            "summary": title,
+            "description": description,
+            "start_datetime": start,
+            "event_duration_hour": hours,
+            "event_duration_minutes": minutes,
+            "time_zone": self.TIME_ZONE,
+            "calendar_id": self.CALENDAR_ID,
+        }
+        legacy_params: dict[str, Any] = {
+            "summary": title,
+            "description": description,
+            "start_datetime": start,
+            "end_datetime": end,
+            "timezone": self.TIME_ZONE,
+            "calendar_id": self.CALENDAR_ID,
+        }
+        if is_focus:
+            primary_params["eventType"] = "focusTime"
+            primary_params["focusTimeProperties"] = dict(self.FOCUS_TIME_PROPERTIES)
+            legacy_params["eventType"] = "focusTime"
+            legacy_params["focusTimeProperties"] = dict(self.FOCUS_TIME_PROPERTIES)
+        return primary_params, legacy_params, total_minutes
+
+    @staticmethod
+    def _extract_calendar_link(result: dict[str, Any]) -> str:
+        link = (
+            result.get("result", {}).get("htmlLink")
+            or result.get("result", {}).get("data", {}).get("htmlLink")
+            or ""
+        )
+        return link if isinstance(link, str) else ""
+
+    async def _create_event_with_fallback(
+        self,
+        *,
+        primary_params: dict[str, Any],
+        legacy_params: dict[str, Any],
+    ) -> tuple[dict[str, Any], str]:
+        primary = await execute_action(
+            "GOOGLECALENDAR_CREATE_EVENT",
+            params=primary_params,
+            app_name="googlecalendar",
+        )
+        if not primary.get("dry_run"):
+            return primary, "primary"
+        if primary.get("error"):
+            logger.warning("Calendar create: primary payload failed, retrying legacy payload")
+            fallback = await execute_action(
+                "GOOGLECALENDAR_CREATE_EVENT",
+                params=legacy_params,
+                app_name="googlecalendar",
+            )
+            return fallback, "legacy"
+        return primary, "primary"
+
+    @staticmethod
+    def _extract_find_event_items(result: dict[str, Any]) -> list[dict[str, Any]]:
+        payload = result.get("result", {})
+        if isinstance(payload, list):
+            return [x for x in payload if isinstance(x, dict)]
+        data = payload.get("data", payload)
+        if isinstance(data, list):
+            return [x for x in data if isinstance(x, dict)]
+        if not isinstance(data, dict):
+            return []
+        for key in ("items", "results", "events"):
+            entries = data.get(key, [])
+            if isinstance(entries, list):
+                return [x for x in entries if isinstance(x, dict)]
+        return []
+
+    async def _is_duplicate_event(self, title: str, start: str) -> bool:
+        result = await execute_action(
+            "GOOGLECALENDAR_FIND_EVENT",
+            params={"search_term": title},
+            app_name="googlecalendar",
+        )
+        if result.get("dry_run"):
+            return False
+        candidates = self._extract_find_event_items(result)
+        target_title = title.strip().lower()
+        target_start_prefix = start[:16]
+        for item in candidates:
+            summary = str(item.get("summary") or item.get("title") or "").strip().lower()
+            if summary != target_title:
+                continue
+            start_obj = item.get("start")
+            start_dt = ""
+            if isinstance(start_obj, dict):
+                start_dt = str(start_obj.get("dateTime") or "")
+            if not start_dt:
+                start_dt = str(item.get("start_datetime") or item.get("start_time") or "")
+            if start_dt[:16] == target_start_prefix:
+                return True
+        return False
 
     def _build_scheduling_prompt(
         self, free_slots: list[dict], kg_context: dict, payload: dict,
@@ -236,31 +417,27 @@ Generate a weekly calendar plan. Return JSON:
         created = 0
         external_links: list[str] = []
         for event in events:
-            params = {
-                "summary": event.title,
-                "description": event.description,
-                "start_datetime": event.start_time,
-                "end_datetime": event.end_time,
-                "timezone": "America/Chicago",
-                "calendar_id": "primary",
-            }
-            if event.event_type == "focus_block":
-                params["eventType"] = "focusTime"
-
-            result = await execute_action(
-                "GOOGLECALENDAR_CREATE_EVENT",
-                params=params,
-                app_name="googlecalendar",
+            if await self._is_duplicate_event(event.title, event.start_time):
+                continue
+            busy = await self._query_busy_windows(start=event.start_time, end=event.end_time)
+            if busy:
+                continue
+            primary_params, legacy_params, total_minutes = self._build_create_event_params(
+                title=event.title,
+                description=event.description,
+                start=event.start_time,
+                end=event.end_time,
+                is_focus=self._is_focus_block(event.event_type, event.title),
+            )
+            if total_minutes <= 0:
+                continue
+            result, _variant = await self._create_event_with_fallback(
+                primary_params=primary_params,
+                legacy_params=legacy_params,
             )
             if not result.get("dry_run"):
                 created += 1
-                link = (
-                    result.get("result", {})
-                    .get("htmlLink")
-                    or result.get("result", {})
-                    .get("data", {})
-                    .get("htmlLink")
-                )
+                link = self._extract_calendar_link(result)
                 if isinstance(link, str) and link:
                     external_links.append(link)
 
@@ -302,31 +479,64 @@ Generate a weekly calendar plan. Return JSON:
         if not start or not end:
             return WorkerExecution(ok=False, message="start_time and end_time required")
 
-        result = await execute_action(
-            "GOOGLECALENDAR_CREATE_EVENT",
-            params={
-                "summary": title,
-                "description": payload.get("description", ""),
-                "start_datetime": start,
-                "end_datetime": end,
-                "timezone": "America/Chicago",
-                "calendar_id": "primary",
-            },
-            app_name="googlecalendar",
+        primary_params, legacy_params, total_minutes = self._build_create_event_params(
+            title=title,
+            description=payload.get("description", ""),
+            start=start,
+            end=end,
+            is_focus=self._is_focus_block(payload.get("event_type"), title),
+        )
+        if total_minutes <= 0:
+            return WorkerExecution(ok=False, message="end_time must be after start_time")
+
+        busy = await self._query_busy_windows(start=start, end=end)
+        if busy and not payload.get("allow_conflict"):
+            return WorkerExecution(
+                ok=False,
+                message="Requested window conflicts with existing events",
+                data={"busy_windows": busy},
+            )
+
+        if await self._is_duplicate_event(title, start):
+            return WorkerExecution(
+                ok=True,
+                message=f"Skipped duplicate event: {title}",
+                data={"duplicate": True},
+            )
+
+        result, payload_variant = await self._create_event_with_fallback(
+            primary_params=primary_params,
+            legacy_params=legacy_params,
         )
 
         is_move = payload.get("moves_existing", False)
+        verify = await execute_action(
+            "GOOGLECALENDAR_FIND_EVENT",
+            params={"search_term": title},
+            app_name="googlecalendar",
+        )
+        if result.get("error"):
+            return WorkerExecution(
+                ok=False,
+                message=f"Failed to create event: {title}",
+                data={
+                    **result,
+                    "payload_variant": payload_variant,
+                    "verification_result": verify,
+                },
+                approval_required=is_move,
+                approval_reason="Moving an existing calendar event requires approval" if is_move else "",
+            )
+
         return WorkerExecution(
             ok=True,
             message=f"Created event: {title}",
             data={
                 **result,
+                "payload_variant": payload_variant,
+                "verification_result": verify,
                 "external_links": {
-                    "calendar_event": (
-                        result.get("result", {}).get("htmlLink")
-                        or result.get("result", {}).get("data", {}).get("htmlLink")
-                        or ""
-                    ),
+                    "calendar_event": self._extract_calendar_link(result),
                 },
             },
             approval_required=is_move,

@@ -44,6 +44,7 @@ SKILL_REGISTRY: list[SkillDef] = [
             SkillActionDef(name="sync_schedule"),
             SkillActionDef(name="create_block", risk=SkillRisk.MEDIUM, required_params=["start_time", "end_time", "title"]),
             SkillActionDef(name="move_block", risk=SkillRisk.MEDIUM, required_params=["start_time", "end_time", "title"]),
+            SkillActionDef(name="check_conflict", required_params=["start_time", "end_time"]),
         ],
     ),
     SkillDef(
