@@ -66,7 +66,7 @@ All errors return:
 
 ### Authentication
 
-Pass a bearer token via `Authorization: Bearer sk_test_demo` (test mode) or `Authorization: Bearer sk_live_...` (live mode). The `livemode` field on every resource reflects the key type.
+Pass a bearer token via `Authorization: Bearer sk_demo_default` (test mode) or `Authorization: Bearer sk_live_...` (live mode). The `livemode` field on every resource reflects the key type.
 
 ### API Version
 
@@ -91,7 +91,7 @@ Returns server status.
 **curl:**
 ```bash
 curl http://localhost:8000/v1/health \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 **Response:**
@@ -123,7 +123,7 @@ List generated scenarios for a persona.
 **curl:**
 ```bash
 curl "http://localhost:8000/v1/scenarios?persona_id=p05" \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 **Response:**
@@ -162,7 +162,7 @@ Retrieve a single scenario.
 **curl:**
 ```bash
 curl "http://localhost:8000/v1/scenarios/scen_01j5...?expand[]=patterns" \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 **Response:** Same shape as a single item in the list `data` array.
@@ -185,7 +185,7 @@ Activate a quest from a scenario. Runs the full pipeline: scenario lookup, actio
 **curl:**
 ```bash
 curl -X POST http://localhost:8000/v1/quests \
-  -H "Authorization: Bearer sk_test_demo" \
+  -H "Authorization: Bearer sk_demo_default" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: idem_activate_001" \
   -d '{"scenario_id": "scen_01j5...", "persona_id": "p05"}'
@@ -224,7 +224,7 @@ List active quests (currently at most one).
 **curl:**
 ```bash
 curl "http://localhost:8000/v1/quests?expand[]=tasks.worker&expand[]=scenario" \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 #### GET /v1/quests/{quest_id}
@@ -248,7 +248,7 @@ Generate actions for a scenario.
 **curl:**
 ```bash
 curl -X POST http://localhost:8000/v1/actions \
-  -H "Authorization: Bearer sk_test_demo" \
+  -H "Authorization: Bearer sk_demo_default" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: idem_actions_001" \
   -d '{"scenario_id": "scen_01j5..."}'
@@ -297,7 +297,7 @@ List pending and resolved approvals.
 **curl:**
 ```bash
 curl http://localhost:8000/v1/approvals \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 **Response:**
@@ -339,7 +339,7 @@ Approve or reject a pending approval.
 **curl:**
 ```bash
 curl -X POST http://localhost:8000/v1/approvals/apprv_01j5.../resolve \
-  -H "Authorization: Bearer sk_test_demo" \
+  -H "Authorization: Bearer sk_demo_default" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: idem_approve_001" \
   -d '{"decision": "approved"}'
@@ -373,7 +373,7 @@ Ingest a custom event into the master loop.
 **curl:**
 ```bash
 curl -X POST http://localhost:8000/v1/events \
-  -H "Authorization: Bearer sk_test_demo" \
+  -H "Authorization: Bearer sk_demo_default" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: idem_event_001" \
   -d '{"type": "calendar_update", "payload": {"item": "meeting"}}'
@@ -406,7 +406,7 @@ List recent events.
 **curl:**
 ```bash
 curl "http://localhost:8000/v1/events?quest=qst_01j5...&limit=20" \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 #### GET /v1/events/stream
@@ -416,7 +416,7 @@ Server-Sent Events stream of real-time events. Sends `data: {...}\n\n` frames. K
 **curl:**
 ```bash
 curl -N http://localhost:8000/v1/events/stream \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 ---
@@ -436,7 +436,7 @@ List all registered workers.
 **curl:**
 ```bash
 curl "http://localhost:8000/v1/workers?expand[]=skills" \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 **Response:**
@@ -469,7 +469,7 @@ Returns the full worker map (topology, capabilities, status).
 **curl:**
 ```bash
 curl http://localhost:8000/v1/workers/map \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 #### GET /v1/workers/skills
@@ -496,7 +496,7 @@ Chat with the AI agent. Returns a Server-Sent Events stream.
 **curl:**
 ```bash
 curl -X POST http://localhost:8000/v1/messages \
-  -H "Authorization: Bearer sk_test_demo" \
+  -H "Authorization: Bearer sk_demo_default" \
   -H "Content-Type: application/json" \
   -N \
   -d '{
@@ -518,7 +518,7 @@ Returns the full agent runtime state: active scenario, worker statuses, queue, e
 **curl:**
 ```bash
 curl http://localhost:8000/v1/runtime \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 **Response:**

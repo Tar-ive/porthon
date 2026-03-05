@@ -13,9 +13,13 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, TypeVar
+
+from pydantic import BaseModel, ValidationError
 
 logger = logging.getLogger(__name__)
+
+TModel = TypeVar("TModel", bound=BaseModel)
 
 
 @dataclass
@@ -86,6 +90,27 @@ class BaseWorker(ABC):
             if isinstance(repaired_obj, list):
                 return {"items": repaired_obj}
             raise
+
+    async def _llm_typed(
+        self,
+        system: str,
+        user: str,
+        schema: type[TModel],
+    ) -> TModel:
+        """Call LLM and validate the JSON response with a strict Pydantic schema."""
+        payload = await self._llm_json(system=system, user=user)
+        try:
+            return schema.model_validate(payload)
+        except ValidationError as exc:
+            logger.error(
+                "[%s] LLM output failed schema %s validation: %s",
+                self.worker_id,
+                schema.__name__,
+                exc,
+            )
+            raise ValueError(
+                f"LLM output failed {schema.__name__} validation"
+            ) from exc
 
     def _load_persona(self) -> tuple[str, str]:
         """Load SOUL.md and USER.md from deepagent/persona/.

@@ -18,7 +18,7 @@ Navigate to [http://localhost:8000/docs](http://localhost:8000/docs) in your bro
 Click the **Authorize** button (lock icon, top right). Enter:
 
 ```
-Bearer sk_test_demo
+Bearer sk_demo_default
 ```
 
 This puts all requests in test mode (`livemode: false`). No real external actions will fire.

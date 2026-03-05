@@ -34,6 +34,8 @@ interface Props {
   onSelect: (scenario: Scenario) => void;
 }
 
+const DEMO_AUTH_HEADER = { Authorization: 'Bearer sk_demo_default' };
+
 export default function ScenarioSelect({ onSelect }: Props) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
@@ -42,9 +44,10 @@ export default function ScenarioSelect({ onSelect }: Props) {
   const handleGenerate = async () => {
     setPhase('loading');
     try {
-      const res = await fetch('/api/scenarios');
+      const res = await fetch('/api/scenarios', { headers: DEMO_AUTH_HEADER });
       const data = await res.json();
-      setScenarios(data);
+      const next = Array.isArray(data) ? data : data?.data ?? [];
+      setScenarios(next);
       setPhase('ready');
     } catch {
       setPhase('idle');

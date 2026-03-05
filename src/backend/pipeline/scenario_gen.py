@@ -59,7 +59,7 @@ Generate exactly 3 life scenarios for this person. Each must:
 
 Return a JSON array with exactly 3 objects. Each object:
 {{
-  "id": "s_001",   // s_001, s_002, s_003
+  "id": "scen_001",   // scen_001, scen_002, scen_003
   "title": "short title",
   "horizon": "1yr" | "5yr" | "10yr",
   "likelihood": "most_likely" | "possible" | "aspirational",

@@ -1,5 +1,5 @@
+import os
 from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass
@@ -12,24 +12,23 @@ class AuthContext:
 
 
 def parse_auth(auth_header: str | None) -> AuthContext:
-    if not auth_header:
-        return AuthContext(
-            mode="live", livemode=True, persona_id="p05", temperature=0.7
-        )
-
-    if auth_header.startswith("Bearer sk_live_"):
-        return AuthContext(
-            mode="live", livemode=True, persona_id="p05", temperature=0.7
-        )
-    elif auth_header.startswith("Bearer sk_test_"):
-        return AuthContext(
-            mode="test", livemode=False, persona_id="p05", temperature=0.0
-        )
-    elif auth_header.startswith("Bearer sk_demo_p5"):
+    if os.environ.get("PORTTHON_OFFLINE_MODE", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
         return AuthContext(
             mode="demo", livemode=False, persona_id="p05", temperature=0.0, demo=True
         )
-
+    if auth_header and auth_header.startswith("Bearer sk_demo_"):
+        return AuthContext(
+            mode="demo", livemode=False, persona_id="p05", temperature=0.0, demo=True
+        )
+    if auth_header and auth_header.startswith("Bearer sk_live_"):
+        return AuthContext(
+            mode="live", livemode=True, persona_id="p05", temperature=0.7
+        )
     return AuthContext(mode="live", livemode=True, persona_id="p05", temperature=0.7)
 
 
@@ -43,6 +42,10 @@ def get_persona_id(auth_header: str | None) -> str:
 
 def get_temperature(auth_header: str | None) -> float:
     return parse_auth(auth_header).temperature
+
+
+def get_mode(auth_header: str | None) -> str:
+    return parse_auth(auth_header).mode
 
 
 def is_demo_mode(auth_header: str | None) -> bool:

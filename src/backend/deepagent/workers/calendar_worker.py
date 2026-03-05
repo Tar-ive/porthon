@@ -13,9 +13,12 @@ Composio actions:
 from __future__ import annotations
 
 import logging
+import os
+from hashlib import sha256
 from datetime import datetime, timedelta, timezone
 
 from deepagent.workers.base import BaseWorker, WorkerExecution
+from deepagent.workers.llm_schemas import CalendarPlanLLM
 from integrations.composio_client import execute_action
 
 logger = logging.getLogger(__name__)
@@ -28,6 +31,7 @@ class CalendarWorker(BaseWorker):
     ACTIONS = {
         "sync_schedule": "_sync_schedule",
         "create_block": "_create_block",
+        "move_block": "_create_block",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -150,6 +154,56 @@ Generate a weekly calendar plan. Return JSON:
 
     async def _sync_schedule(self, payload: dict) -> WorkerExecution:
         """Fetch free slots and create ADHD-aware schedule blocks."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            plan = {
+                "events": [
+                    {
+                        "title": "Deep Work: Portfolio Sprint (UT Library)",
+                        "description": "3h focused portfolio build block.",
+                        "start_time": "2026-03-09T09:00:00",
+                        "end_time": "2026-03-09T12:00:00",
+                        "event_type": "focus_block",
+                        "adhd_note": "Body-doubling friendly location.",
+                    },
+                    {
+                        "title": "Deep Work: Client Deliverable Block (UT Library)",
+                        "description": "Client conversion deliverable sprint.",
+                        "start_time": "2026-03-11T09:00:00",
+                        "end_time": "2026-03-11T12:00:00",
+                        "event_type": "focus_block",
+                        "adhd_note": "Low-distraction environment.",
+                    },
+                    {
+                        "title": "Admin Sprint: Invoice Follow-up",
+                        "description": "Short admin loop for receivables.",
+                        "start_time": "2026-03-10T16:00:00",
+                        "end_time": "2026-03-10T16:45:00",
+                        "event_type": "admin",
+                        "adhd_note": "25-minute chunks + short break.",
+                    },
+                    {
+                        "title": "Debt-Paydown Review",
+                        "description": "Weekly debt stress reduction check-in.",
+                        "start_time": "2026-03-12T17:00:00",
+                        "end_time": "2026-03-12T17:30:00",
+                        "event_type": "review",
+                        "adhd_note": "One clear decision before stopping.",
+                    },
+                ],
+                "weekly_rhythm_summary": "Two deep-work blocks, one admin block, one review block.",
+                "adhd_accommodations": [
+                    "Body-doubling location",
+                    "Short admin sprint",
+                    "Protected focus windows",
+                ],
+                "quest_connection": "Calendar schedule supports conversion-first execution.",
+            }
+            return WorkerExecution(
+                ok=True,
+                message="Scheduled 4 deterministic demo events",
+                data=plan,
+            )
+
         kg_context = payload.get("kg_context", {})
 
         # 1. Get free slots from Google Calendar
@@ -158,28 +212,30 @@ Generate a weekly calendar plan. Return JSON:
 
         # 2. Generate ADHD-aware schedule via LLM
         prompt = self._build_scheduling_prompt(free_slots, kg_context, payload)
-        plan = await self._llm_json(
+        plan_model = await self._llm_typed(
             system=(
                 "You are an ADHD-aware calendar coach. You create weekly schedules "
                 "optimized for neurodivergent users. Use ISO datetime strings. "
                 "Return ONLY valid JSON."
             ),
             user=prompt,
+            schema=CalendarPlanLLM,
         )
+        plan = plan_model.model_dump(mode="json")
 
         # 3. Create events via Composio
-        events = plan.get("events", [])
+        events = plan_model.events
         created = 0
         for event in events:
             params = {
-                "summary": event.get("title", ""),
-                "description": event.get("description", ""),
-                "start_datetime": event.get("start_time", ""),
-                "end_datetime": event.get("end_time", ""),
+                "summary": event.title,
+                "description": event.description,
+                "start_datetime": event.start_time,
+                "end_datetime": event.end_time,
                 "timezone": "America/Chicago",
                 "calendar_id": "primary",
             }
-            if event.get("event_type") == "focus_block":
+            if event.event_type == "focus_block":
                 params["eventType"] = "focusTime"
 
             result = await execute_action(
@@ -200,6 +256,20 @@ Generate a weekly calendar plan. Return JSON:
 
     async def _create_block(self, payload: dict) -> WorkerExecution:
         """Create a single calendar event. Requires approval for moves."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            title = payload.get("title", "Focus Block")
+            return WorkerExecution(
+                ok=True,
+                message=f"Created demo event: {title}",
+                data={
+                    "demo_mode": True,
+                    "event_id": f"demo_cal_{sha256(title.encode()).hexdigest()[:10]}",
+                    "title": title,
+                    "start_time": payload.get("start_time", ""),
+                    "end_time": payload.get("end_time", ""),
+                },
+            )
+
         title = payload.get("title", "Focus Block")
         start = payload.get("start_time", "")
         end = payload.get("end_time", "")

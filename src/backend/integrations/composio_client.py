@@ -4,7 +4,7 @@ Moved from agents/composio_tools.py → integrations/composio_client.py
 so all deep-agent workers can share it.
 
 Demo Mode:
-    Set DEMO_MODE=true or use Authorization: Bearer sk_demo_p5 header.
+    Set DEMO_MODE=true or use Authorization: Bearer sk_demo_* header.
     Returns mock responses that mimic Composio's real response format.
 """
 
@@ -58,7 +58,13 @@ def set_demo_mode(enabled: bool):
 
 def is_demo_mode() -> bool:
     """Check if demo mode is enabled."""
-    return _demo_mode
+    env_demo = os.environ.get("PORTTHON_OFFLINE_MODE", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    return _demo_mode or env_demo
 
 
 def _demo_response(action_name: str, params: dict[str, Any]) -> dict[str, Any]:
@@ -174,7 +180,7 @@ async def execute_action(
     if params is None:
         params = {}
 
-    if _demo_mode:
+    if is_demo_mode():
         return _demo_response(action_name, params)
 
     if _client is None:

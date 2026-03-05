@@ -14,8 +14,10 @@ Composio actions:
 from __future__ import annotations
 
 import logging
+import os
 
 from deepagent.workers.base import BaseWorker, WorkerExecution
+from deepagent.workers.llm_schemas import FigmaPlanLLM
 from integrations.composio_client import execute_action
 
 logger = logging.getLogger(__name__)
@@ -28,6 +30,8 @@ class FigmaWorker(BaseWorker):
     ACTIONS = {
         "generate_challenge": "_generate_challenge",
         "verify_connection": "_verify_connection",
+        "generate_plan": "_generate_challenge",
+        "comment_file": "_comment_file",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -103,28 +107,73 @@ Return JSON:
 
     async def _generate_challenge(self, payload: dict) -> WorkerExecution:
         """Generate design challenges calibrated to KG context."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            plan = {
+                "challenges": [
+                    {
+                        "title": "Conversion-first landing refresh",
+                        "brief": "Rework a local service landing page to improve inquiry conversion.",
+                        "skill_focus": ["layout", "copy hierarchy", "CTA clarity"],
+                        "difficulty": "intermediate",
+                        "estimated_hours": 4.0,
+                        "portfolio_worthy": True,
+                    },
+                    {
+                        "title": "Austin creative brand motion kit",
+                        "brief": "Build a lightweight motion system for a creator collective.",
+                        "skill_focus": ["motion", "component systems"],
+                        "difficulty": "intermediate",
+                        "estimated_hours": 4.0,
+                        "portfolio_worthy": True,
+                    },
+                    {
+                        "title": "Case-study narrative sprint",
+                        "brief": "Turn one shipped piece into a KPI-anchored case study.",
+                        "skill_focus": ["storytelling", "visual sequencing"],
+                        "difficulty": "intermediate",
+                        "estimated_hours": 4.0,
+                        "portfolio_worthy": True,
+                    },
+                ],
+                "milestones": [
+                    {"title": "Week 1", "target_date": "Week 1", "deliverable": "Brief + concepts", "linked_challenge": "Conversion-first landing refresh"},
+                    {"title": "Week 2", "target_date": "Week 2", "deliverable": "Mid-fidelity exploration", "linked_challenge": "Austin creative brand motion kit"},
+                    {"title": "Week 3", "target_date": "Week 3", "deliverable": "Final polish + recap", "linked_challenge": "Case-study narrative sprint"},
+                ],
+                "weekly_practice_hours": 6.0,
+                "portfolio_targets": ["3 portfolio-ready briefs completed"],
+                "quest_connection": "Challenges directly support scenario execution and visibility.",
+            }
+            return WorkerExecution(
+                ok=True,
+                message="Generated 3 deterministic demo challenges",
+                data=plan,
+            )
+
         kg_context = payload.get("kg_context", {})
 
         figma_ctx = await self._fetch_figma_context()
 
         prompt = self._build_challenge_prompt(figma_ctx, kg_context, payload)
-        plan = await self._llm_json(
+        plan_model = await self._llm_typed(
             system=(
                 "You are a design learning coach. Create structured design challenges "
                 "that produce portfolio-worthy work. Return ONLY valid JSON."
             ),
             user=prompt,
+            schema=FigmaPlanLLM,
         )
+        plan = plan_model.model_dump(mode="json")
 
         logger.info(
             "Figma: generated %d challenges, %d milestones",
-            len(plan.get("challenges", [])),
-            len(plan.get("milestones", [])),
+            len(plan_model.challenges),
+            len(plan_model.milestones),
         )
 
         return WorkerExecution(
             ok=True,
-            message=f"Generated {len(plan.get('challenges', []))} design challenges",
+            message=f"Generated {len(plan_model.challenges)} design challenges",
             data=plan,
         )
 
@@ -136,4 +185,33 @@ Return JSON:
             ok=connected,
             message="Figma connected" if connected else "Figma not connected",
             data=ctx,
+        )
+
+    async def _comment_file(self, payload: dict) -> WorkerExecution:
+        """Add a comment on a Figma file for demo milestone tracking."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            file_key = payload.get("file_key", "")
+            message = payload.get("message", "")
+            if not file_key or not message:
+                return WorkerExecution(ok=False, message="file_key and message are required")
+            return WorkerExecution(
+                ok=True,
+                message="Figma comment logged (demo)",
+                data={"demo_mode": True, "file_key": file_key, "message": message},
+            )
+
+        file_key = payload.get("file_key", "")
+        message = payload.get("message", "")
+        if not file_key or not message:
+            return WorkerExecution(ok=False, message="file_key and message are required")
+
+        result = await execute_action(
+            "FIGMA_ADD_A_COMMENT_TO_A_FILE",
+            params={"file_key": file_key, "message": message},
+            app_name="figma",
+        )
+        return WorkerExecution(
+            ok=not result.get("dry_run", True),
+            message="Figma comment added" if not result.get("dry_run") else "Figma comment logged (dry run)",
+            data=result,
         )

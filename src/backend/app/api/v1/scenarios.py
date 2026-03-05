@@ -11,7 +11,7 @@ from typing import Any
 from fastapi import APIRouter, Query, Request
 
 from app.api.v1.schemas import ListObject, epoch_now, paginate
-from app.auth import get_livemode
+from app.auth import get_livemode, get_mode
 from app.middleware.errors import ApiException
 
 logger = logging.getLogger(__name__)
@@ -22,12 +22,13 @@ router = APIRouter()
 _scenario_cache: dict[str, dict[str, Any]] = {}
 
 # Cache for generated scenarios with TTL (60 seconds)
-_scenarios_generated_at: float = 0
 _SCENARIOS_CACHE_TTL: float = 60.0  # seconds
 
 
 def _stable_scen_id(raw_id: str) -> str:
     """Deterministic scen_ ID from pipeline ID so it's stable across calls."""
+    if raw_id.startswith("scen_"):
+        return raw_id
     h = hashlib.sha256(raw_id.encode()).hexdigest()[:20]
     return f"scen_{h}"
 
@@ -56,19 +57,29 @@ def _to_resource(raw: dict[str, Any], livemode: bool = True) -> dict[str, Any]:
 
 
 # Cache for generated scenarios (raw data, before conversion to resources)
-_cached_scenarios: list[dict] | None = None
+_cached_scenarios: dict[str, tuple[float, list[dict[str, Any]]]] = {}
 
 
 async def _generate_scenarios(
-    persona_id: str = "p05", use_cache: bool = True
+    persona_id: str = "p05",
+    mode: str = "live",
+    use_cache: bool = True,
 ) -> list[dict]:
-    global _cached_scenarios, _scenarios_generated_at
+    cache_key = f"{mode}:{persona_id}"
 
     # Return cached if still valid
-    if use_cache and _cached_scenarios is not None:
+    if use_cache and cache_key in _cached_scenarios:
         now = time.monotonic()
-        if now - _scenarios_generated_at < _SCENARIOS_CACHE_TTL:
-            return _cached_scenarios
+        generated_at, cached = _cached_scenarios[cache_key]
+        if now - generated_at < _SCENARIOS_CACHE_TTL:
+            return cached
+
+    if mode == "demo":
+        from pipeline.demo_theo import generate_demo_scenarios
+
+        scenarios = generate_demo_scenarios(persona_id)
+        _cached_scenarios[cache_key] = (time.monotonic(), scenarios)
+        return scenarios
 
     from pipeline.extractor import extract_persona_data
     from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
@@ -86,8 +97,7 @@ async def _generate_scenarios(
         scenarios = generate_scenarios_fallback()
 
     # Cache the result
-    _cached_scenarios = scenarios
-    _scenarios_generated_at = time.monotonic()
+    _cached_scenarios[cache_key] = (time.monotonic(), scenarios)
 
     return scenarios
 
@@ -101,7 +111,8 @@ async def list_scenarios(
     expand: list[str] | None = Query(None, alias="expand[]"),
 ):
     livemode = get_livemode(request.headers.get("Authorization"))
-    scenarios_raw = await _generate_scenarios(persona_id)
+    mode = get_mode(request.headers.get("Authorization"))
+    scenarios_raw = await _generate_scenarios(persona_id, mode=mode)
     resources = [_to_resource(s, livemode=livemode) for s in scenarios_raw]
 
     # Strip internal field from response
@@ -122,6 +133,7 @@ async def get_scenario(
     expand: list[str] | None = Query(None, alias="expand[]"),
 ):
     livemode = get_livemode(request.headers.get("Authorization"))
+    mode = get_mode(request.headers.get("Authorization"))
 
     # Check cache first
     if scenario_id in _scenario_cache:
@@ -129,7 +141,7 @@ async def get_scenario(
         return {k: v for k, v in resource.items() if not k.startswith("_")}
 
     # Cache miss — regenerate and populate cache
-    scenarios_raw = await _generate_scenarios()
+    scenarios_raw = await _generate_scenarios(mode=mode)
     resources = [_to_resource(s, livemode=livemode) for s in scenarios_raw]
     match = next((r for r in resources if r["id"] == scenario_id), None)
     if match is None:

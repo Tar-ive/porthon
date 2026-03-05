@@ -29,6 +29,8 @@ class NotionOpportunityWorker(BaseWorker):
     ACTIONS = {
         "create_workspace": "_create_workspace",
         "add_progress_page": "_add_progress_page",
+        "sync_opportunities": "_create_workspace",
+        "create_opportunity": "_create_workspace",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -59,6 +61,20 @@ class NotionOpportunityWorker(BaseWorker):
 
     async def _create_workspace(self, payload: dict) -> WorkerExecution:
         """Create (or reuse) the root Questline workspace page."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            scenario_title = payload.get("scenario_title", "Questline")
+            root_title = f"Questline: {scenario_title}"
+            return WorkerExecution(
+                ok=True,
+                message=f"Created workspace: {root_title} (demo)",
+                data={
+                    "page_id": "demo_notion_workspace",
+                    "reused": False,
+                    "workspace_title": root_title,
+                    "progress_page": "Progress: Next Actions",
+                },
+            )
+
         kg_context = payload.get("kg_context", {})
         scenario_title = payload.get("scenario_title", "Questline")
         root_title = f"Questline: {scenario_title}"

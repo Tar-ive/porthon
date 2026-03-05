@@ -1,940 +1,187 @@
 {
   "persona_id": "p05",
   "active_scenario": {
-    "scenario_id": "s_approve",
-    "title": "Approval Scenario",
+    "scenario_id": "scen_001",
+    "title": "Conversion-First Freelance Stabilization",
     "horizon": "1yr",
-    "likelihood": "possible",
-    "summary": "summary",
-    "tags": [],
-    "activated_at": "2026-03-04T16:03:43.379907+00:00",
+    "likelihood": "most_likely",
+    "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+    "tags": [
+      "conversion",
+      "revenue",
+      "focus",
+      "freelance"
+    ],
+    "activated_at": "2026-03-05T01:04:14.287722+00:00",
     "created": 0,
     "metadata": {}
   },
   "archived_scenarios": [
     {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T03:39:58.403147+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T03:39:58.416235+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
+      "scenario_id": "scen_001",
+      "title": "Conversion-First Freelance Stabilization",
       "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T03:39:58.416247+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T03:51:35.095282+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
+      "likelihood": "most_likely",
+      "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
       "tags": [
-        "career"
+        "conversion",
+        "revenue",
+        "focus",
+        "freelance"
       ],
-      "activated_at": "2026-03-04T03:51:35.095820+00:00",
+      "activated_at": "2026-03-05T00:33:34.049733+00:00",
       "created": 0,
       "metadata": {},
-      "archived_at": "2026-03-04T03:51:35.105832+00:00"
+      "archived_at": "2026-03-05T00:44:10.697911+00:00"
     },
     {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
+      "scenario_id": "scen_001",
+      "title": "Conversion-First Freelance Stabilization",
       "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T03:51:35.105884+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T04:03:06.008694+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
+      "likelihood": "most_likely",
+      "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
       "tags": [
-        "career"
+        "conversion",
+        "revenue",
+        "focus",
+        "freelance"
       ],
-      "activated_at": "2026-03-04T04:03:06.009037+00:00",
+      "activated_at": "2026-03-05T00:44:10.697951+00:00",
       "created": 0,
       "metadata": {},
-      "archived_at": "2026-03-04T04:03:06.022459+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
-      "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T04:03:06.022472+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T04:45:50.684857+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T04:45:50.685226+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T04:45:50.699062+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
-      "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T04:45:50.699072+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T04:47:03.160604+00:00"
-    },
-    {
-      "scenario_id": "s_002",
-      "title": "Full-Time Shift with Skill Pivot",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "Theo transitions to full-time freelancing by year 2 after overcoming undercharging through targeted social calendar events, building a modest portfolio with motion design and basic 3D skills from consistent learning investments. Debt is cleared by year 3 via higher rates and steady gigs, including Austin mural outreach leads, though ADHD requires productivity hacks. He relocates to Portland after testing cities, blending design identity with emerging relationships from networking.",
-      "tags": [
-        "design",
-        "learning",
-        "social",
-        "identity"
-      ],
-      "activated_at": "2026-03-04T04:47:03.160725+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T05:10:34.521107+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T05:10:34.522201+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T05:10:34.564890+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
-      "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T05:10:34.564916+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T05:11:38.580412+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T05:11:38.580591+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T05:11:42.725907+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
-      "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T05:11:42.725940+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T05:25:27.677951+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T05:25:27.678362+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T05:25:31.888850+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
-      "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T05:25:31.888880+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T14:34:17.700543+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T14:34:17.700718+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T14:35:27.221186+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
-      "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T14:35:27.221205+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T15:58:00.864090+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T15:58:00.864113+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T15:59:13.476737+00:00"
-    },
-    {
-      "scenario_id": "s_approve",
-      "title": "Approval Scenario",
-      "horizon": "1yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [],
-      "activated_at": "2026-03-04T15:59:13.476761+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T16:02:29.577210+00:00"
-    },
-    {
-      "scenario_id": "s_activate",
-      "title": "Activation Scenario",
-      "horizon": "5yr",
-      "likelihood": "possible",
-      "summary": "summary",
-      "tags": [
-        "career"
-      ],
-      "activated_at": "2026-03-04T16:02:29.577314+00:00",
-      "created": 0,
-      "metadata": {},
-      "archived_at": "2026-03-04T16:03:43.379893+00:00"
+      "archived_at": "2026-03-05T01:04:14.287650+00:00"
     }
   ],
   "queue": [
     {
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "action": "publish_post",
-      "priority": 1,
-      "payload": {},
-      "status": "waiting_approval",
-      "retries": 0,
-      "created_at": "2026-03-04T03:39:58.420793+00:00",
-      "updated_at": "2026-03-04T05:25:31.909515+00:00",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "8be9ced9-eff6-4689-a5c6-c32b46d56419",
-      "worker_id": "facebook_worker",
-      "action": "publish_post",
-      "priority": 1,
-      "payload": {},
-      "status": "pending",
-      "retries": 0,
-      "created_at": "2026-03-04T05:25:31.897794+00:00",
-      "updated_at": "2026-03-04T16:04:38.359297+00:00",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "549fbe1c-984a-4d66-bc5e-796500049897",
-      "worker_id": "facebook_worker",
-      "action": "publish_post",
-      "priority": 1,
-      "payload": {},
-      "status": "waiting_approval",
-      "retries": 0,
-      "created_at": "2026-03-04T14:36:42.174565+00:00",
-      "updated_at": "2026-03-04T14:36:42.176153+00:00",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_e6f5ae9d-faa6-4a13-a57f-f1c9bcf73cbd",
+      "task_id": "task_87cddcfd-cac5-4e65-81ae-167a14823440",
       "worker_id": "kg_worker",
-      "action": "refresh_context",
+      "action": "search",
       "priority": 10,
       "payload": {
-        "scenario_id": "s_approve",
-        "scenario_title": "Approval Scenario",
-        "horizon": "1yr"
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": true
       },
-      "status": "pending",
-      "retries": 1,
-      "created_at": "2026-03-04T16:03:43.379918+00:00",
-      "updated_at": "2026-03-04T16:03:43.381525+00:00",
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-05T01:04:14.287791+00:00",
+      "updated_at": "2026-03-05T01:04:14.289436+00:00",
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_2588549b-4b6d-460c-956b-92bac5c091db",
+      "task_id": "task_d8b77ee2-b0b0-435f-944c-e13ba40757be",
       "worker_id": "calendar_worker",
       "action": "sync_schedule",
       "priority": 20,
       "payload": {
-        "scenario_id": "s_approve",
-        "scenario_title": "Approval Scenario",
-        "horizon": "1yr"
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": true
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-04T16:03:43.379918+00:00",
-      "updated_at": "2026-03-04T16:04:38.337061+00:00",
+      "created_at": "2026-03-05T01:04:14.287791+00:00",
+      "updated_at": "2026-03-05T01:04:14.289542+00:00",
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_a9d1b6e1-a1d0-4f95-84c4-82ae18da9ecb",
+      "task_id": "task_1d74f2b5-0c40-4a6f-9f4c-a5efb4da360a",
       "worker_id": "notion_leads_worker",
-      "action": "sync_leads",
+      "action": "create_pipeline",
       "priority": 30,
       "payload": {
-        "scenario_id": "s_approve",
-        "scenario_title": "Approval Scenario",
-        "horizon": "1yr"
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": true
       },
-      "status": "pending",
-      "retries": 1,
-      "created_at": "2026-03-04T16:03:43.379918+00:00",
-      "updated_at": "2026-03-04T16:03:44.168898+00:00",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_b0aaf2b9-bc77-45ce-8f73-ad708646b1ef",
-      "worker_id": "notion_opportunity_worker",
-      "action": "sync_opportunities",
-      "priority": 30,
-      "payload": {
-        "scenario_id": "s_approve",
-        "scenario_title": "Approval Scenario",
-        "horizon": "1yr"
-      },
-      "status": "pending",
-      "retries": 1,
-      "created_at": "2026-03-04T16:03:43.379918+00:00",
-      "updated_at": "2026-03-04T16:03:44.168930+00:00",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_48dafcf5-c3af-4ffc-9371-6aacc2f42b3f",
-      "worker_id": "facebook_worker",
-      "action": "draft_post",
-      "priority": 40,
-      "payload": {
-        "scenario_id": "s_approve",
-        "scenario_title": "Approval Scenario",
-        "horizon": "1yr"
-      },
-      "status": "pending",
-      "retries": 1,
-      "created_at": "2026-03-04T16:03:43.379918+00:00",
-      "updated_at": "2026-03-04T16:03:44.168947+00:00",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_d26682bf-9854-4a48-9ee4-2fdc88d94d4b",
-      "worker_id": "figma_worker",
-      "action": "generate_plan",
-      "priority": 40,
-      "payload": {
-        "scenario_id": "s_approve",
-        "scenario_title": "Approval Scenario",
-        "horizon": "1yr"
-      },
-      "status": "pending",
-      "retries": 1,
-      "created_at": "2026-03-04T16:03:43.379918+00:00",
-      "updated_at": "2026-03-04T16:03:44.168960+00:00",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "task_id": "task_d2cbd77c-dc4b-4963-a768-725db4747786",
-      "worker_id": "facebook_worker",
-      "action": "publish_post",
-      "priority": 1,
-      "payload": {},
-      "status": "pending",
+      "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-04T16:04:38.349771+00:00",
-      "updated_at": "2026-03-04T16:04:38.349773+00:00",
+      "created_at": "2026-03-05T01:04:14.287791+00:00",
+      "updated_at": "2026-03-05T01:04:14.289649+00:00",
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_2dd8f689-9d65-4632-92ea-4aeb1c1cdd09",
+      "worker_id": "notion_opportunity_worker",
+      "action": "create_workspace",
+      "priority": 30,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": true
+      },
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-05T01:04:14.287791+00:00",
+      "updated_at": "2026-03-05T01:04:14.289732+00:00",
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_a124d75d-e108-4672-af41-9846952515ff",
+      "worker_id": "facebook_worker",
+      "action": "draft_posts",
+      "priority": 40,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": true
+      },
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-05T01:04:14.287791+00:00",
+      "updated_at": "2026-03-05T01:04:14.289775+00:00",
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_27f17df5-cf1b-4931-952d-db208288c224",
+      "worker_id": "figma_worker",
+      "action": "generate_challenge",
+      "priority": 40,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": true
+      },
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-05T01:04:14.287791+00:00",
+      "updated_at": "2026-03-05T01:04:14.289794+00:00",
       "created": 0,
       "metadata": {}
     }
   ],
-  "approvals": [
-    {
-      "approval_id": "20cc6303-bd7e-4224-a118-250ef03c4ecb",
-      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T03:15:28.022696+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T03:15:28.029603+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "64bdbef4-e479-4751-a1cf-f89bed842239",
-      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T03:15:28.030646+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T03:39:58.428053+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "71210351-278a-43f3-9a50-33f505ec1d34",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T03:39:58.422226+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T03:51:35.119758+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "d1d68cfc-44f5-49bd-9c5b-29dedff28fe4",
-      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T03:39:58.429188+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:03:06.038134+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "aa241880-79d2-402e-8151-c0e2746557a1",
-      "task_id": "6a015ccf-94bc-4358-a7ba-af51cdb0adcc",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T03:51:35.112753+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:45:50.713666+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "d1145edc-75ca-44b3-9de7-0932914ee880",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T03:51:35.120966+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:14.204625+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "6ff2c5ca-058d-4c09-adec-75a0c4061d80",
-      "task_id": "d79c22b8-9e8f-4657-a90b-9272af877512",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:03:06.030735+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:15.644816+00:00",
-      "decision": "rejected",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "50ab1fc7-0816-4574-a580-bf50dc59d2a8",
-      "task_id": "94e42cdf-fcb0-4ce0-93c5-d5a5ff14c66f",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:03:06.038824+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:16.018144+00:00",
-      "decision": "rejected",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "ab36bdeb-22b1-4fd3-ae99-96b4d29376bb",
-      "task_id": "780368c8-d689-4f5b-ae5a-67acb406d223",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:45:50.707856+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:16.565076+00:00",
-      "decision": "rejected",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "d22bca3f-2c6d-4fc4-9640-dc71d910574c",
-      "task_id": "6a015ccf-94bc-4358-a7ba-af51cdb0adcc",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:45:50.715384+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:19.686304+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "12272181-e367-40b2-947c-6eebe84e992c",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:14.205381+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:23.047599+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "afb12bab-e490-437c-950b-740650e2ab3f",
-      "task_id": "6a015ccf-94bc-4358-a7ba-af51cdb0adcc",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:19.688298+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:21.820520+00:00",
-      "decision": "rejected",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "e675b2a4-aed5-4dc2-bd16-2133865d6d64",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:23.049446+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:23.247284+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "5cdb3022-df59-4eaf-accb-d6ace25aaf33",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:23.249390+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:23.420915+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "b386c120-6602-410a-bcda-2c8a38f62b1d",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:23.423078+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:23.619944+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "82faf3c6-74a2-4146-812d-8c97c2a93e62",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:23.622271+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:23.806226+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "28688e98-4d8b-4d10-ba4e-cdf49728e9ae",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:23.808090+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:24.007743+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "f2fd4078-79dd-4526-963f-2c4e7cac8b3d",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:24.009878+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:24.221927+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "3bb8a714-0560-4f5c-bdb0-da77b5cd7fc2",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:24.222980+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:24.434322+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "4d0b2ecd-cd32-48e9-9855-11a05f98c5e9",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:24.436578+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:24.634619+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "3410b758-a347-4a48-973a-4b1d46ace3e1",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:24.636641+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:24.846825+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "c3397a83-d91d-4477-b392-0f61f213907a",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:24.848579+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:25.021468+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "f22c7e71-95b5-47b9-a536-2467c5ae0eed",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:25.023711+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:25.221323+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "703f400c-8386-4217-95d7-6a82c56f0c86",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:25.223623+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:25.688390+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "e3b8b204-89c0-41cc-87cf-8273964db2e7",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:25.690760+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:27.636022+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "4d348b5c-b344-4a45-8dc2-97cc6d55a8fe",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:27.638155+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:28.049157+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "688a122f-b2ef-48fa-bb4d-4da95c965db6",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:28.051262+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:28.262677+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "67a0271a-3842-402b-bfda-35d7e688b602",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:28.265333+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:28.463371+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "72e14352-b511-4468-b223-1f9649524d20",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:28.465833+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:28.648671+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "e15e47c1-535c-42b8-b757-7e082dbdb93c",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:28.650824+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:29.490003+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "a543c08d-fbfe-468d-ab38-447f6e2b9fde",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:29.492144+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:29.717063+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "f99cc737-8145-4156-a0c0-3795cf2b1e58",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:29.719318+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:47:29.942204+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "eac7898a-d0cf-43e8-96cc-7d64c5657624",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:47:29.944146+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T04:56:17.378050+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "d18bf5d7-c9a9-41ab-9be1-6a7df396ae06",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T04:56:17.386213+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T05:10:34.587636+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "c849300b-32ba-4c04-897e-766235d66edb",
-      "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T05:10:34.577535+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T05:11:42.747726+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "18c6ffac-2540-439b-8890-28ccfbbfe82f",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T05:10:34.588768+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T05:25:31.908570+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "56cf0942-175d-49ce-9906-976d59d0c0df",
-      "task_id": "704f5ad2-6633-4708-bf9d-7aa505e32664",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T05:11:42.740280+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T14:36:42.184831+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "c6ca75c7-f676-48e1-88ba-9dbec4eac42b",
-      "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T05:11:42.750624+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T16:00:27.079520+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "be8a2cd2-8e0f-44cb-a442-2ec62e2d2a6c",
-      "task_id": "8be9ced9-eff6-4689-a5c6-c32b46d56419",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T05:25:31.901195+00:00",
-      "payload": {},
-      "resolved_at": "2026-03-04T16:04:38.359281+00:00",
-      "decision": "approved",
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "75bfaac9-7133-4e47-a0ba-661d60003e4b",
-      "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T05:25:31.909520+00:00",
-      "payload": {},
-      "resolved_at": null,
-      "decision": null,
-      "created": 0,
-      "metadata": {}
-    },
-    {
-      "approval_id": "f963eb2c-b018-433b-9fec-1ca9beed6613",
-      "task_id": "549fbe1c-984a-4d66-bc5e-796500049897",
-      "worker_id": "facebook_worker",
-      "reason": "Action 'publish_post' requires approval",
-      "requested_at": "2026-03-04T14:36:42.176158+00:00",
-      "payload": {},
-      "resolved_at": null,
-      "decision": null,
-      "created": 0,
-      "metadata": {}
-    }
-  ],
+  "approvals": [],
   "workers": [
     {
       "worker_id": "kg_worker",
       "label": "KG Search",
-      "status": "open_circuit",
-      "queue_depth": 1,
-      "last_error": "Unknown KG action: refresh_context"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "calendar_worker",
@@ -946,30 +193,30 @@
     {
       "worker_id": "notion_leads_worker",
       "label": "Notion Leads Tracker",
-      "status": "open_circuit",
-      "queue_depth": 1,
-      "last_error": "Unknown action: sync_leads"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "notion_opportunity_worker",
       "label": "Notion Opportunity Tracker",
-      "status": "open_circuit",
-      "queue_depth": 1,
-      "last_error": "Unknown action: sync_opportunities"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "facebook_worker",
       "label": "Facebook Publisher",
-      "status": "open_circuit",
-      "queue_depth": 5,
-      "last_error": "Unknown action: draft_post"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "figma_worker",
       "label": "Figma Plan Generator",
-      "status": "open_circuit",
-      "queue_depth": 1,
-      "last_error": "Unknown action: generate_plan"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     }
   ],
   "budgets": [
@@ -1013,9 +260,9 @@
   "circuits": [
     {
       "worker_id": "kg_worker",
-      "failure_streak": 5,
-      "open_until": "2026-03-04T16:08:43.381532+00:00",
-      "last_error": "Unknown KG action: refresh_context"
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
     },
     {
       "worker_id": "calendar_worker",
@@ -1025,1480 +272,1262 @@
     },
     {
       "worker_id": "notion_leads_worker",
-      "failure_streak": 5,
-      "open_until": "2026-03-04T16:08:44.168912+00:00",
-      "last_error": "Unknown action: sync_leads"
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
     },
     {
       "worker_id": "notion_opportunity_worker",
-      "failure_streak": 5,
-      "open_until": "2026-03-04T16:08:44.168934+00:00",
-      "last_error": "Unknown action: sync_opportunities"
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
     },
     {
       "worker_id": "facebook_worker",
-      "failure_streak": 5,
-      "open_until": "2026-03-04T16:08:44.168950+00:00",
-      "last_error": "Unknown action: draft_post"
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
     },
     {
       "worker_id": "figma_worker",
-      "failure_streak": 5,
-      "open_until": "2026-03-04T16:08:44.168963+00:00",
-      "last_error": "Unknown action: generate_plan"
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
     }
   ],
   "cycle_history": [
     {
-      "cycle_id": "cycle_4bf5f588-21c8-4377-b7c7-c4594b87b188",
+      "cycle_id": "cycle_9c000fca-3402-474c-a5e4-4d0a5f276525",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:14.205363+00:00",
-      "finished_at": "2026-03-04T04:47:14.205396+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_eb44a6cf-df7d-42c2-9e4d-012f72f8cafc",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:19.688257+00:00",
-      "finished_at": "2026-03-04T04:47:19.688331+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_8a2cffd8-9900-4ede-9744-7c4dbd5085b1",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:23.049409+00:00",
-      "finished_at": "2026-03-04T04:47:23.049477+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_63aa24ba-06d1-4391-8241-3a14b624d6f1",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:23.249351+00:00",
-      "finished_at": "2026-03-04T04:47:23.249419+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_69991ac2-59af-48cb-991c-2e98f2a27cd5",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:23.423038+00:00",
-      "finished_at": "2026-03-04T04:47:23.423109+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_621463f5-0be1-4edb-9739-37c3ba5eb563",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:23.622231+00:00",
-      "finished_at": "2026-03-04T04:47:23.622305+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_c7b8ae9d-26cd-4c85-b7e7-1d986b790d10",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:23.808053+00:00",
-      "finished_at": "2026-03-04T04:47:23.808121+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_bb80c36a-703e-48c1-b268-def71cabc56d",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:24.009839+00:00",
-      "finished_at": "2026-03-04T04:47:24.009910+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_5428b9e7-85fc-4ebb-8bd0-2d8ee40b21f3",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:24.222806+00:00",
-      "finished_at": "2026-03-04T04:47:24.223077+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_d2d9f23c-f250-4679-809c-934bccc986f6",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:24.436536+00:00",
-      "finished_at": "2026-03-04T04:47:24.436611+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_699e8443-4a09-4048-8130-d1c255e9381e",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:24.636588+00:00",
-      "finished_at": "2026-03-04T04:47:24.636673+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_748cd9e5-85b7-4b93-8e72-76804ee04222",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:24.848543+00:00",
-      "finished_at": "2026-03-04T04:47:24.848609+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_799b1dd6-c603-41ca-b2bd-e3670aced88b",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:25.023672+00:00",
-      "finished_at": "2026-03-04T04:47:25.023743+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_92797c12-3b09-4e02-9b34-0bbb0b7b32fe",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:25.223580+00:00",
-      "finished_at": "2026-03-04T04:47:25.223658+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_9f498374-7596-4e8d-898b-4311eab9dacf",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:25.690722+00:00",
-      "finished_at": "2026-03-04T04:47:25.690794+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_c61c107d-b351-45e6-bcef-2f1306243cd0",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:27.638116+00:00",
-      "finished_at": "2026-03-04T04:47:27.638187+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_9f9f2720-3ebb-4b95-9692-4b1e2aca3093",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:28.051222+00:00",
-      "finished_at": "2026-03-04T04:47:28.051294+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_2635e818-fece-480c-b90c-b1df53a14e03",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:28.265294+00:00",
-      "finished_at": "2026-03-04T04:47:28.265363+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_a899315e-0604-4610-8d36-ba8d6921c25e",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:28.465794+00:00",
-      "finished_at": "2026-03-04T04:47:28.465865+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_19485fad-9bc0-4efe-9486-89594f3ad268",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:28.650786+00:00",
-      "finished_at": "2026-03-04T04:47:28.650855+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_a3bb6287-6cc9-44a3-b969-8582478131c5",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:29.492108+00:00",
-      "finished_at": "2026-03-04T04:47:29.492175+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_8a951e6b-9fc5-40c6-8c1d-761d083ffd13",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:29.719280+00:00",
-      "finished_at": "2026-03-04T04:47:29.719349+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_46583f1d-b470-412d-bad5-f6717fbfd9bf",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:47:29.944109+00:00",
-      "finished_at": "2026-03-04T04:47:29.944177+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_73b1f45b-1328-4be9-9c81-d982d80db118",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T04:56:17.386175+00:00",
-      "finished_at": "2026-03-04T04:56:17.386237+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_bbabec5f-6c5b-4299-b2b7-f1e90ef734b5",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T05:01:19.793005+00:00",
-      "finished_at": "2026-03-04T05:01:19.793143+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_c73335d8-cfc2-41e0-9b12-46351468d516",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T05:10:34.525181+00:00",
-      "finished_at": "2026-03-04T05:10:34.526068+00:00",
+      "started_at": "2026-03-05T00:33:34.050582+00:00",
+      "finished_at": "2026-03-05T00:33:34.051140+00:00",
       "executed_tasks": [
-        "c087cc49-8b00-45bf-bfd7-fb777062dffb",
-        "8097ea5a-2d4e-4751-a0b8-fe1d103b3798",
-        "21476bc1-0830-41b2-8c2e-f663dad74e52",
-        "437d34d6-afd0-4af0-b364-f85f919ecf41",
-        "ac0ea945-aa53-4b1a-b6fd-f4d003ce48e8",
-        "6f68a5a8-f1bf-4672-b1bf-57b3e997468c"
+        "task_5a1015ab-bd18-4c88-a728-eb1494da9cf3",
+        "task_14a07ca7-e413-4919-b39a-6995c9f233cc",
+        "task_f534c6ed-d94e-42f8-8da7-8fe01b4a5310",
+        "task_4a47ec2c-7ad9-439c-b78b-5cd76a6b0089",
+        "task_b84f08c2-9aa6-4713-bbb8-d770d33aaade",
+        "task_17861cf8-df93-4e86-acd9-7a3c39a9f574"
       ],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_0d291cc6-f7f6-4c8a-8453-baa06683b920",
+      "cycle_id": "cycle_2c96d895-c528-4fe9-bdc2-c763bab2dc4d",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:10:34.567625+00:00",
-      "finished_at": "2026-03-04T05:10:34.568463+00:00",
+      "started_at": "2026-03-05T00:33:34.057963+00:00",
+      "finished_at": "2026-03-05T00:33:34.057976+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_57f944f7-a557-46b1-b69a-2e074d545547",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T00:33:34.065485+00:00",
+      "finished_at": "2026-03-05T00:33:34.065617+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_1d8ccc7c-bc8a-486d-849c-6ebaca77e217",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T00:33:34.072027+00:00",
+      "finished_at": "2026-03-05T00:33:34.072042+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_f6daef7d-a6a0-47cf-9b83-175407e7d14d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T00:33:34.080857+00:00",
+      "finished_at": "2026-03-05T00:33:34.080871+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_ba65b66a-5070-4363-bcae-45e42aeb67bd",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T00:44:10.724754+00:00",
+      "finished_at": "2026-03-05T00:44:10.725675+00:00",
       "executed_tasks": [
-        "acd7729e-3f6d-4ac5-948a-8baa46a84266",
-        "a4c43647-4c8f-445f-9942-e76c287c85e7",
-        "3c5d692c-2693-4802-b0b4-cd20bab923e5",
-        "60dd32f6-baa7-40ba-8af2-48c1ae610e24",
-        "60ac59cb-6359-4120-8e0e-ef409161f9b1",
-        "921eb993-b393-4e53-b15c-845ef28951e9"
+        "task_335b20d4-2023-411e-b49b-0ad78df22250",
+        "task_727e916a-4bb7-4cf7-a824-bdb946e6e1c1",
+        "task_bf4488fd-ae94-43bd-b3dd-9ef0e5b80e9f",
+        "task_26014a85-f70d-4c52-88ba-b4e9ac144d64",
+        "task_a22b6704-fcf7-4a84-a1bf-2baa66c42ce9",
+        "task_33d2b250-c250-4c92-a0c7-2841f733e3f7"
       ],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_f3712ac6-6ab4-494e-b0bc-80bfa52c279a",
+      "cycle_id": "cycle_1fb3504e-46ce-40ca-a27c-e601d9e6de60",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:10:34.577519+00:00",
-      "finished_at": "2026-03-04T05:10:34.577548+00:00",
+      "started_at": "2026-03-05T00:44:14.174821+00:00",
+      "finished_at": "2026-03-05T00:44:14.174857+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_7db179ee-fc6c-425a-934b-6346629fc7f2",
+      "cycle_id": "cycle_fea06d55-3201-43f6-ac9a-0d3771b49878",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:10:34.588749+00:00",
-      "finished_at": "2026-03-04T05:10:34.588782+00:00",
-      "executed_tasks": [],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_6c0d1dc3-973d-45bb-bdb4-2b677fd77b7a",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T05:11:38.583454+00:00",
-      "finished_at": "2026-03-04T05:11:38.584085+00:00",
+      "started_at": "2026-03-05T00:44:14.190686+00:00",
+      "finished_at": "2026-03-05T00:44:14.193409+00:00",
       "executed_tasks": [
-        "1067750a-0ac5-4d3c-b83f-45ed7cb5843b",
-        "e329a2f7-ed46-46f5-b068-01ff5f72c02d",
-        "2703a080-dd33-49b6-8062-64f3e2a6c652",
-        "79ab32d4-2c43-4876-a8d4-27902dffb7d7",
-        "f21221fe-8d95-4edd-a7d2-8a75e7e87451",
-        "07ae0116-a702-4e4e-867f-43d3e6ac6cf1"
+        "task_4a664891-45fa-45c5-b15c-653446859235",
+        "task_cc73bc52-665a-4115-889f-6de74e03aa2f",
+        "task_9fdb973d-b1f2-40ed-9565-ddd4d68e2960",
+        "task_28967419-d5f0-4b08-b79a-a67293fb33c2",
+        "task_481faf59-c7e5-42f0-b684-6ccf457438ec",
+        "task_ec9bd109-8812-4c56-87f4-b50840551a54"
       ],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_0168eac9-51d2-4e03-be6a-b86758690a88",
+      "cycle_id": "cycle_aa4ed830-1160-4d08-a354-03e52447c90d",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:11:42.728870+00:00",
-      "finished_at": "2026-03-04T05:11:42.729403+00:00",
+      "started_at": "2026-03-05T00:55:25.543923+00:00",
+      "finished_at": "2026-03-05T00:55:25.543975+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_20dab899-75b0-46d1-8dcb-f283f09208b9",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T00:55:35.139917+00:00",
+      "finished_at": "2026-03-05T00:55:35.139958+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_0ddb2c84-a115-46e9-8d17-d9ddf9c9809f",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T00:58:59.461210+00:00",
+      "finished_at": "2026-03-05T00:58:59.461264+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_69cce8bf-5acd-4f28-989c-a2a526204659",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T01:04:14.288927+00:00",
+      "finished_at": "2026-03-05T01:04:14.290017+00:00",
       "executed_tasks": [
-        "eec46ff7-17fe-44db-8aca-b0848c6d9914",
-        "c2e8c1d6-88a8-4ef6-9447-151998449a81",
-        "e95f0b21-d3c8-4128-9cd3-380fe88e64cd",
-        "51246ad2-4b64-44c0-b33f-3b943a826385",
-        "9cd78b96-a749-4124-8d12-9d97bd74e81d",
-        "37091c05-07ce-47b0-9178-eb544c98cf50"
+        "task_87cddcfd-cac5-4e65-81ae-167a14823440",
+        "task_d8b77ee2-b0b0-435f-944c-e13ba40757be",
+        "task_1d74f2b5-0c40-4a6f-9f4c-a5efb4da360a",
+        "task_2dd8f689-9d65-4632-92ea-4aeb1c1cdd09",
+        "task_a124d75d-e108-4672-af41-9846952515ff",
+        "task_27f17df5-cf1b-4931-952d-db208288c224"
       ],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_d214343b-dfe6-4c92-ad04-b988e16bb714",
+      "cycle_id": "cycle_109284d9-a661-4130-a25b-d85c0adda345",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:11:42.740259+00:00",
-      "finished_at": "2026-03-04T05:11:42.740295+00:00",
+      "started_at": "2026-03-05T01:04:25.056987+00:00",
+      "finished_at": "2026-03-05T01:04:25.057062+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_5d5cd899-42ea-4362-aa45-0dc8e4e10e4e",
+      "cycle_id": "cycle_45b2b652-1d8e-4e7c-be1e-45ec7717748b",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:11:42.750433+00:00",
-      "finished_at": "2026-03-04T05:11:42.750693+00:00",
+      "started_at": "2026-03-05T01:05:04.174324+00:00",
+      "finished_at": "2026-03-05T01:05:04.174874+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_a2e35594-66de-4ef7-af10-251c9ab659f8",
+      "cycle_id": "cycle_1ba1e4c7-2877-4aa7-a59f-764ec55e9276",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:16:19.805083+00:00",
-      "finished_at": "2026-03-04T05:16:19.805251+00:00",
+      "started_at": "2026-03-05T01:05:13.699482+00:00",
+      "finished_at": "2026-03-05T01:05:13.699611+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_94297c6a-1160-4feb-802d-bc97c99e836d",
+      "cycle_id": "cycle_634ae5c5-8468-4df2-afdf-f5c2cf329d87",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:25:27.684295+00:00",
-      "finished_at": "2026-03-04T05:25:27.685368+00:00",
-      "executed_tasks": [
-        "ad45ced6-45af-44ef-89c7-0a3a413262a9",
-        "9f243fa5-475a-485e-96a9-4e87c28727a3",
-        "51c93fda-f04c-426a-b57c-4ecb5172ea99",
-        "4d5885eb-d7d2-4c06-b62f-cf88f7573486",
-        "da29107b-3a10-4fbb-9a89-992744295965",
-        "cbd19adf-2c9d-4968-b8dc-3b33854e58e7"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_d155325d-d55f-445c-aac7-3da662553e49",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T05:25:31.891874+00:00",
-      "finished_at": "2026-03-04T05:25:31.892309+00:00",
-      "executed_tasks": [
-        "a3552a3e-a28d-4231-a3a1-7d4b8eac0b14",
-        "e5092a12-eb8e-4116-b5d9-e8c685cfa5a3",
-        "43ce6dad-6aae-4ee5-9012-e8dc7e1bb03b",
-        "656faf6b-600d-4127-8a1e-533d896b9345",
-        "3f530275-efe2-435e-bea2-9cd1debc345a",
-        "8f397270-836b-43f0-8669-4299026a98e4"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_b544dd43-2786-4d08-b262-1bc478716c2c",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T05:25:31.901151+00:00",
-      "finished_at": "2026-03-04T05:25:31.901233+00:00",
+      "started_at": "2026-03-05T01:05:45.237240+00:00",
+      "finished_at": "2026-03-05T01:05:45.237287+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_e7e555df-bbd3-4059-b3e3-f4ab7e42d669",
+      "cycle_id": "cycle_56c9763c-17c4-41a5-801d-6a710fb7ffe1",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T05:25:31.909503+00:00",
-      "finished_at": "2026-03-04T05:25:31.909533+00:00",
+      "started_at": "2026-03-05T01:13:59.480220+00:00",
+      "finished_at": "2026-03-05T01:13:59.480288+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_0f09f5fa-fe64-453b-8c82-ddf829ac3d71",
+      "cycle_id": "cycle_048f4eb0-224f-414a-b34d-56bc47d6bfc5",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T14:34:17.702894+00:00",
-      "finished_at": "2026-03-04T14:35:27.202734+00:00",
-      "executed_tasks": [
-        "17f4dbca-28f5-4c8a-ac64-e1fa4873b886"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_e781c2e5-bfa7-44ac-88e4-d8a6b279073b",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T14:35:27.223487+00:00",
-      "finished_at": "2026-03-04T14:36:42.164428+00:00",
-      "executed_tasks": [
-        "9bfaff76-49f0-45b8-a211-516a36f78fd8"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_f20fe705-d068-418e-8290-ebfe8d2c718b",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T14:36:42.176129+00:00",
-      "finished_at": "2026-03-04T14:36:42.176906+00:00",
+      "started_at": "2026-03-05T01:17:58.181629+00:00",
+      "finished_at": "2026-03-05T01:17:58.181659+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_763cc02b-f753-4062-bcf1-c88d80b4a880",
+      "cycle_id": "cycle_8baa6e4e-ad10-4e18-a01e-d068edc6112a",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T14:36:42.185858+00:00",
-      "finished_at": "2026-03-04T14:36:42.185884+00:00",
+      "started_at": "2026-03-05T01:20:09.174374+00:00",
+      "finished_at": "2026-03-05T01:20:09.174430+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_01ddc27b-9098-4f1f-aec5-79e00fb99a71",
+      "cycle_id": "cycle_bde429c5-137c-4dda-b77f-0be61145b6c6",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T15:58:00.865610+00:00",
-      "finished_at": "2026-03-04T15:59:13.454932+00:00",
-      "executed_tasks": [
-        "task_04288723-8d53-4a42-a5c8-128e4e639060"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_90f2597f-18a5-443e-aa80-988e2abb3ffb",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T15:59:13.479946+00:00",
-      "finished_at": "2026-03-04T16:00:27.054733+00:00",
-      "executed_tasks": [
-        "task_728c22ba-f7c6-41dc-af60-95797b343c54"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_ebbc154f-410d-4105-9d22-2b69c20fe49e",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T16:00:27.070395+00:00",
-      "finished_at": "2026-03-04T16:00:27.070429+00:00",
+      "started_at": "2026-03-05T01:20:22.238585+00:00",
+      "finished_at": "2026-03-05T01:20:22.238627+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_adeb6c67-5313-4412-8549-26c3ab2e2ced",
+      "cycle_id": "cycle_72ce8776-1e1f-430b-bcf6-6f3f3815864e",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T16:00:27.080651+00:00",
-      "finished_at": "2026-03-04T16:00:27.080678+00:00",
+      "started_at": "2026-03-05T01:20:45.624573+00:00",
+      "finished_at": "2026-03-05T01:20:45.624607+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_b9b9eba7-92c6-403a-8edf-933937f8d792",
+      "cycle_id": "cycle_a2d7c9c6-04de-4d20-8881-dc75ee6ae84b",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T16:02:29.580475+00:00",
-      "finished_at": "2026-03-04T16:03:43.349596+00:00",
-      "executed_tasks": [
-        "task_1611bfea-c932-4300-abc0-294c7e90d3bf"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_5718d764-858e-4134-9076-5345f3639c2c",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T16:03:43.381370+00:00",
-      "finished_at": "2026-03-04T16:04:38.337875+00:00",
-      "executed_tasks": [
-        "task_2588549b-4b6d-460c-956b-92bac5c091db"
-      ],
-      "failed_tasks": []
-    },
-    {
-      "cycle_id": "cycle_e92b31c2-dc92-4643-92f1-83dbc30ba8d1",
-      "trigger": "dispatch",
-      "started_at": "2026-03-04T16:04:38.351384+00:00",
-      "finished_at": "2026-03-04T16:04:38.351414+00:00",
+      "started_at": "2026-03-05T01:28:59.498070+00:00",
+      "finished_at": "2026-03-05T01:28:59.498122+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     },
     {
-      "cycle_id": "cycle_a283a6d0-3a30-40e6-819d-425e12bbf26a",
+      "cycle_id": "cycle_f5a507fb-74b4-4b17-bcef-e69d6ac3796b",
       "trigger": "dispatch",
-      "started_at": "2026-03-04T16:04:38.360588+00:00",
-      "finished_at": "2026-03-04T16:04:38.360614+00:00",
+      "started_at": "2026-03-05T01:43:59.520438+00:00",
+      "finished_at": "2026-03-05T01:43:59.520495+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_2c22a925-176f-49c6-bd56-d3179cc09955",
+      "trigger": "dispatch",
+      "started_at": "2026-03-05T01:58:59.494389+00:00",
+      "finished_at": "2026-03-05T01:58:59.494446+00:00",
       "executed_tasks": [],
       "failed_tasks": []
     }
   ],
   "event_history": [
     {
-      "event_id": "3bc6c9dc-5f0d-42a6-ab64-b9b6b2118f50",
-      "type": "approval_resolved",
+      "event_id": "evt_fffe3909-4e7e-4eaa-9630-89f0cb71d606",
+      "type": "scenario_activated",
       "payload": {
-        "approval_id": "4d348b5c-b344-4a45-8dc2-97cc6d55a8fe",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "scenario_id": "scen_001",
+        "title": "Conversion-First Freelance Stabilization"
       },
-      "created_at": "2026-03-04T04:47:28.049201+00:00"
+      "created_at": "2026-03-05T00:33:34.050018+00:00"
     },
     {
-      "event_id": "89c4cc2e-2f9c-4970-a547-0f977d4c89d7",
+      "event_id": "evt_e4a2e572-7e56-4c07-bcf2-647037105d4b",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "scenario_activated"
       },
-      "created_at": "2026-03-04T04:47:28.051201+00:00"
+      "created_at": "2026-03-05T00:33:34.050575+00:00"
     },
     {
-      "event_id": "8f0689c4-32da-4566-99df-cd12efc7f4a1",
+      "event_id": "evt_f87fd5e6-0719-42a1-96e2-f5694cfad5c3",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_9f9f2720-3ebb-4b95-9692-4b1e2aca3093",
-        "executed": 0,
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_9c000fca-3402-474c-a5e4-4d0a5f276525",
+        "executed": 6,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T04:47:28.051314+00:00"
+      "created_at": "2026-03-05T00:33:34.051186+00:00"
     },
     {
-      "event_id": "bdef0594-cc7b-466d-b34a-173bca519024",
-      "type": "approval_resolved",
+      "event_id": "evt_d49193ad-9356-4410-9006-e9924f91196a",
+      "type": "demo.workflow.facebook_watch.start",
       "payload": {
-        "approval_id": "688a122f-b2ef-48fa-bb4d-4da95c965db6",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "page_id": "me",
+        "demo_mode": false,
+        "demo_comments": [
+          {
+            "comment_id": "c_seed_001",
+            "post_id": "p_seed_001",
+            "message": "Seed comment one"
+          },
+          {
+            "comment_id": "c_seed_002",
+            "post_id": "p_seed_001",
+            "message": "Seed comment two"
+          }
+        ]
       },
-      "created_at": "2026-03-04T04:47:28.262728+00:00"
+      "created_at": "2026-03-05T00:33:34.057602+00:00"
     },
     {
-      "event_id": "a0f3dff7-c8b2-4c79-a8d0-c11becfe62e5",
+      "event_id": "evt_e76185a8-ef93-4a1b-a45d-86cf9011b08d",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.start"
       },
-      "created_at": "2026-03-04T04:47:28.265272+00:00"
+      "created_at": "2026-03-05T00:33:34.057959+00:00"
     },
     {
-      "event_id": "00fee226-3366-465d-884d-676eb283fae3",
+      "event_id": "evt_26e26d9f-8e6b-4f9e-aada-df8a44d7399b",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_2635e818-fece-480c-b90c-b1df53a14e03",
+        "trigger": "demo.workflow.facebook_watch.start",
+        "cycle_id": "cycle_2c96d895-c528-4fe9-bdc2-c763bab2dc4d",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T04:47:28.265384+00:00"
+      "created_at": "2026-03-05T00:33:34.057986+00:00"
     },
     {
-      "event_id": "b6e0210c-c24e-4e21-97fe-088a872c9718",
-      "type": "approval_resolved",
+      "event_id": "evt_ffd35258-9c5a-4ae0-87bc-e4ccc240391b",
+      "type": "demo.workflow.facebook_watch.inject",
       "payload": {
-        "approval_id": "67a0271a-3842-402b-bfda-35d7e688b602",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "comments": [
+          {
+            "comment_id": "c_inject_001",
+            "post_id": "p_seed_001",
+            "message": "Injected comment"
+          }
+        ],
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T04:47:28.463422+00:00"
+      "created_at": "2026-03-05T00:33:34.063683+00:00"
     },
     {
-      "event_id": "e10dd714-6265-41ff-a8fb-42757297959e",
+      "event_id": "evt_86c84a38-a5a7-4b45-a644-f83c9977baca",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.inject"
       },
-      "created_at": "2026-03-04T04:47:28.465773+00:00"
+      "created_at": "2026-03-05T00:33:34.065444+00:00"
     },
     {
-      "event_id": "aa960e53-cdb8-4176-9a1c-f46e42f93488",
+      "event_id": "evt_6edf9cb3-7ab2-4463-880c-9b9123e50c4d",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_a899315e-0604-4610-8d36-ba8d6921c25e",
+        "trigger": "demo.workflow.facebook_watch.inject",
+        "cycle_id": "cycle_57f944f7-a557-46b1-b69a-2e074d545547",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T04:47:28.465886+00:00"
+      "created_at": "2026-03-05T00:33:34.065717+00:00"
     },
     {
-      "event_id": "fd1e69b1-49a5-4db0-92d3-3ed7e5795972",
-      "type": "approval_resolved",
+      "event_id": "evt_cbdc0c03-9933-4762-92a3-ab0d7b5f41a1",
+      "type": "demo.workflow.facebook_watch.poll",
       "payload": {
-        "approval_id": "72e14352-b511-4468-b223-1f9649524d20",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T04:47:28.648717+00:00"
+      "created_at": "2026-03-05T00:33:34.071151+00:00"
     },
     {
-      "event_id": "4f79f5ce-917b-4f3b-81c2-007ae834fd2c",
+      "event_id": "evt_f266af77-3160-49c1-ab4d-c4cde563dafb",
+      "type": "facebook_comment_received",
+      "payload": {
+        "comment_id": "c_seed_001",
+        "post_id": "p_seed_001",
+        "message": "Seed comment one"
+      },
+      "created_at": "2026-03-05T00:33:34.071195+00:00"
+    },
+    {
+      "event_id": "evt_d1f538c7-f944-4c7d-91ee-274ede0a9dd1",
+      "type": "facebook_comment_received",
+      "payload": {
+        "comment_id": "c_seed_002",
+        "post_id": "p_seed_001",
+        "message": "Seed comment two"
+      },
+      "created_at": "2026-03-05T00:33:34.071211+00:00"
+    },
+    {
+      "event_id": "evt_2809ea61-0db1-4491-bfdf-591c4a8fb075",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.poll"
       },
-      "created_at": "2026-03-04T04:47:28.650767+00:00"
+      "created_at": "2026-03-05T00:33:34.072023+00:00"
     },
     {
-      "event_id": "a12ea426-8f2d-4e11-b90e-cdcdc6fc2171",
+      "event_id": "evt_3ac06e26-2989-46f9-90b3-326d03e79123",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_19485fad-9bc0-4efe-9486-89594f3ad268",
+        "trigger": "demo.workflow.facebook_watch.poll",
+        "cycle_id": "cycle_1d8ccc7c-bc8a-486d-849c-6ebaca77e217",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T04:47:28.650876+00:00"
+      "created_at": "2026-03-05T00:33:34.072053+00:00"
     },
     {
-      "event_id": "4268a2a2-4a93-4525-8bbf-eccf0581347b",
-      "type": "approval_resolved",
+      "event_id": "evt_6ed7a87f-4a58-479a-a53c-f81647c0082c",
+      "type": "demo.workflow.facebook_watch.poll",
       "payload": {
-        "approval_id": "e15e47c1-535c-42b8-b757-7e082dbdb93c",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T04:47:29.490050+00:00"
+      "created_at": "2026-03-05T00:33:34.079694+00:00"
     },
     {
-      "event_id": "66980d3b-cfe0-4e53-90b4-e93d8b79d461",
+      "event_id": "evt_af84c8eb-422c-4388-9af2-41647e24f2a6",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.poll"
       },
-      "created_at": "2026-03-04T04:47:29.492089+00:00"
+      "created_at": "2026-03-05T00:33:34.080854+00:00"
     },
     {
-      "event_id": "21bba5bb-e11d-480f-8cf7-0084f43c49d2",
+      "event_id": "evt_27c2088c-7abb-46c7-9308-0e0bf2feae9f",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_a3bb6287-6cc9-44a3-b969-8582478131c5",
+        "trigger": "demo.workflow.facebook_watch.poll",
+        "cycle_id": "cycle_f6daef7d-a6a0-47cf-9b83-175407e7d14d",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T04:47:29.492197+00:00"
+      "created_at": "2026-03-05T00:33:34.080880+00:00"
     },
     {
-      "event_id": "d6c2b984-316c-42d4-9b12-dcd017d11b11",
-      "type": "approval_resolved",
+      "event_id": "evt_e5d2ca4c-c2f5-4bb7-965f-f319833eead6",
+      "type": "scenario_activated",
       "payload": {
-        "approval_id": "a543c08d-fbfe-468d-ab38-447f6e2b9fde",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "scenario_id": "scen_001",
+        "title": "Conversion-First Freelance Stabilization"
       },
-      "created_at": "2026-03-04T04:47:29.717111+00:00"
+      "created_at": "2026-03-05T00:44:10.698109+00:00"
     },
     {
-      "event_id": "4aee6f12-266e-457d-b415-a5ef6b2eb1dc",
+      "event_id": "evt_121ec492-88f1-48da-b0af-b2b205e9a3f0",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "scenario_activated"
       },
-      "created_at": "2026-03-04T04:47:29.719259+00:00"
+      "created_at": "2026-03-05T00:44:10.724709+00:00"
     },
     {
-      "event_id": "7fea9cb7-f17f-4da9-a720-fe4376b2fa8d",
+      "event_id": "evt_0d954767-2fb4-4021-a908-86cc905a221c",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_8a951e6b-9fc5-40c6-8c1d-761d083ffd13",
-        "executed": 0,
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_ba65b66a-5070-4363-bcae-45e42aeb67bd",
+        "executed": 6,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T04:47:29.719369+00:00"
+      "created_at": "2026-03-05T00:44:10.725700+00:00"
     },
     {
-      "event_id": "f71aa60b-c5bb-49d8-ac9a-ee0d2a795b62",
-      "type": "approval_resolved",
+      "event_id": "evt_bfa324b4-55d3-4d70-9ca5-6d0d1855f7b3",
+      "type": "demo.workflow.proactive.preview",
       "payload": {
-        "approval_id": "f99cc737-8145-4156-a0c0-3795cf2b1e58",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T04:47:29.942246+00:00"
+      "created_at": "2026-03-05T00:44:14.173594+00:00"
     },
     {
-      "event_id": "1e9a3138-9f57-42f6-832f-117a103abe7a",
+      "event_id": "evt_f29c9d50-b6f3-4379-b89f-d10bead9dbab",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.proactive.preview"
       },
-      "created_at": "2026-03-04T04:47:29.944092+00:00"
+      "created_at": "2026-03-05T00:44:14.174805+00:00"
     },
     {
-      "event_id": "567054e1-d406-41d8-9eb1-a40d894466c3",
+      "event_id": "evt_5b1cf4ff-daf3-453b-a696-b3169b2a70cb",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_46583f1d-b470-412d-bad5-f6717fbfd9bf",
+        "trigger": "demo.workflow.proactive.preview",
+        "cycle_id": "cycle_1fb3504e-46ce-40ca-a27c-e601d9e6de60",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T04:47:29.944197+00:00"
+      "created_at": "2026-03-05T00:44:14.174884+00:00"
     },
     {
-      "event_id": "46123da5-86af-45b4-b01d-3bf8f6e93949",
-      "type": "approval_resolved",
+      "event_id": "evt_d56e0746-e402-4973-842a-fbdbf67bf643",
+      "type": "demo.workflow.proactive.commit",
       "payload": {
-        "approval_id": "eac7898a-d0cf-43e8-96cc-7d64c5657624",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T04:56:17.379021+00:00"
+      "created_at": "2026-03-05T00:44:14.185707+00:00"
     },
     {
-      "event_id": "3594ad30-414e-4462-bd31-9505c61e1519",
+      "event_id": "evt_5533af34-caa2-41c4-b09d-035af5d1af50",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.proactive.commit"
       },
-      "created_at": "2026-03-04T04:56:17.385966+00:00"
+      "created_at": "2026-03-05T00:44:14.190665+00:00"
     },
     {
-      "event_id": "a6a56f26-a9e8-48be-917c-60ffd2f0dec1",
+      "event_id": "evt_a8bf3692-7d17-478b-9300-81e70406583c",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_73b1f45b-1328-4be9-9c81-d982d80db118",
-        "executed": 0,
+        "trigger": "demo.workflow.proactive.commit",
+        "cycle_id": "cycle_fea06d55-3201-43f6-ac9a-0d3771b49878",
+        "executed": 6,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 3
       },
-      "created_at": "2026-03-04T04:56:17.386414+00:00"
+      "created_at": "2026-03-05T00:44:14.193525+00:00"
     },
     {
-      "event_id": "14f4f6f8-8e7f-4484-b6ab-6f4e69ba17b8",
+      "event_id": "evt_7ef12d60-50dc-4ec4-9ce0-b5eb85a3f35d",
+      "type": "demo.workflow.facebook_watch.start",
+      "payload": {
+        "page_id": "me",
+        "demo_mode": false,
+        "demo_comments": [
+          {
+            "comment_id": "ui_seed_001",
+            "post_id": "ui_post_001",
+            "message": "Love your recent update."
+          },
+          {
+            "comment_id": "ui_seed_002",
+            "post_id": "ui_post_001",
+            "message": "Can you share milestones?"
+          }
+        ]
+      },
+      "created_at": "2026-03-05T00:55:25.541746+00:00"
+    },
+    {
+      "event_id": "evt_3e438157-c847-46c8-8485-70bb0c41d7b0",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "demo.workflow.facebook_watch.start"
+      },
+      "created_at": "2026-03-05T00:55:25.543899+00:00"
+    },
+    {
+      "event_id": "evt_9ad26e11-d6e9-43dc-94d9-62140ced552f",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "demo.workflow.facebook_watch.start",
+        "cycle_id": "cycle_aa4ed830-1160-4d08-a354-03e52447c90d",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
+      },
+      "created_at": "2026-03-05T00:55:25.544009+00:00"
+    },
+    {
+      "event_id": "evt_d75101ce-4822-4a5f-b767-b8ff239a10e0",
+      "type": "demo.workflow.facebook_watch.poll",
+      "payload": {
+        "demo_mode": true
+      },
+      "created_at": "2026-03-05T00:55:25.553101+00:00"
+    },
+    {
+      "event_id": "evt_544c08fe-2579-4039-892f-cb82d958cd9b",
+      "type": "facebook_comment_received",
+      "payload": {
+        "comment_id": "ui_seed_001",
+        "post_id": "ui_post_001",
+        "message": "Love your recent update."
+      },
+      "created_at": "2026-03-05T00:55:31.339433+00:00"
+    },
+    {
+      "event_id": "evt_257ceb69-741d-45f3-9d91-859dcce2099f",
+      "type": "facebook_comment_received",
+      "payload": {
+        "comment_id": "ui_seed_002",
+        "post_id": "ui_post_001",
+        "message": "Can you share milestones?"
+      },
+      "created_at": "2026-03-05T00:55:35.138324+00:00"
+    },
+    {
+      "event_id": "evt_fceaead1-8037-4d52-8dcc-726387580c32",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "demo.workflow.facebook_watch.poll"
+      },
+      "created_at": "2026-03-05T00:55:35.139903+00:00"
+    },
+    {
+      "event_id": "evt_c9d96c5c-3295-408f-8763-6f973a2316f3",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "demo.workflow.facebook_watch.poll",
+        "cycle_id": "cycle_20dab899-75b0-46d1-8dcb-f283f09208b9",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
+      },
+      "created_at": "2026-03-05T00:55:35.139986+00:00"
+    },
+    {
+      "event_id": "evt_2c28319b-ab3a-40c6-9872-22a30f04aac3",
       "type": "cycle_start",
       "payload": {
         "trigger": "tick"
       },
-      "created_at": "2026-03-04T05:01:19.792873+00:00"
+      "created_at": "2026-03-05T00:58:59.461185+00:00"
     },
     {
-      "event_id": "4e9c4899-ab2d-46be-80e8-a215d23e156d",
+      "event_id": "evt_d18a14a0-9383-467d-97c5-0033cefaf633",
       "type": "cycle_end",
       "payload": {
         "trigger": "tick",
-        "cycle_id": "cycle_bbabec5f-6c5b-4299-b2b7-f1e90ef734b5",
+        "cycle_id": "cycle_0ddb2c84-a115-46e9-8d17-d9ddf9c9809f",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 0
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T05:01:19.793182+00:00"
+      "created_at": "2026-03-05T00:58:59.461294+00:00"
     },
     {
-      "event_id": "c7aadf4d-38fd-4e9b-9c73-dc1a988d9045",
+      "event_id": "evt_734822d8-b441-4cf4-8186-f80b3392a9dd",
       "type": "scenario_activated",
       "payload": {
-        "scenario_id": "s_activate",
-        "title": "Activation Scenario"
+        "scenario_id": "scen_001",
+        "title": "Conversion-First Freelance Stabilization"
       },
-      "created_at": "2026-03-04T05:10:34.522680+00:00"
+      "created_at": "2026-03-05T01:04:14.287891+00:00"
     },
     {
-      "event_id": "a2f50541-6587-4830-91d9-c421ae9c9275",
+      "event_id": "evt_cc6ce92d-5dc2-4582-a612-bd86e5255e90",
       "type": "cycle_start",
       "payload": {
         "trigger": "scenario_activated"
       },
-      "created_at": "2026-03-04T05:10:34.525116+00:00"
+      "created_at": "2026-03-05T01:04:14.288919+00:00"
     },
     {
-      "event_id": "bef7fad0-6b9f-4d8e-b5f7-d98b6d1a4f1b",
+      "event_id": "evt_ae02a578-5448-4f78-82e8-dba1fa425fac",
       "type": "cycle_end",
       "payload": {
         "trigger": "scenario_activated",
-        "cycle_id": "cycle_c73335d8-cfc2-41e0-9b12-46351468d516",
+        "cycle_id": "cycle_69cce8bf-5acd-4f28-989c-a2a526204659",
         "executed": 6,
         "failed": 0,
-        "approval_waiting": 0
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T05:10:34.526219+00:00"
+      "created_at": "2026-03-05T01:04:14.290050+00:00"
     },
     {
-      "event_id": "790d620f-5fd3-4506-b9da-4ea651d22750",
-      "type": "scenario_activated",
+      "event_id": "evt_5e194166-e01f-4c1e-9613-f0cb8b4dd30a",
+      "type": "demo.workflow.proactive.preview",
       "payload": {
-        "scenario_id": "s_approve",
-        "title": "Approval Scenario"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T05:10:34.564988+00:00"
+      "created_at": "2026-03-05T01:04:25.055537+00:00"
     },
     {
-      "event_id": "fa581a0a-b643-4f68-8588-678be6a35f57",
+      "event_id": "evt_f3fdff4a-4c7b-44de-95c0-feeb69de522b",
       "type": "cycle_start",
       "payload": {
-        "trigger": "scenario_activated"
+        "trigger": "demo.workflow.proactive.preview"
       },
-      "created_at": "2026-03-04T05:10:34.567616+00:00"
+      "created_at": "2026-03-05T01:04:25.056971+00:00"
     },
     {
-      "event_id": "267137b9-2846-436b-829f-14ea1f7515da",
+      "event_id": "evt_ac452dd0-08f5-4832-ad60-cdc4883f9990",
       "type": "cycle_end",
       "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_0d291cc6-f7f6-4c8a-8453-baa06683b920",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T05:10:34.568573+00:00"
-    },
-    {
-      "event_id": "cca77b90-f21c-4477-a4b4-90cc5f948895",
-      "type": "manual_enqueue",
-      "payload": {
-        "enqueue": true,
-        "worker_id": "facebook_worker",
-        "action": "publish_post",
-        "priority": 1
-      },
-      "created_at": "2026-03-04T05:10:34.575334+00:00"
-    },
-    {
-      "event_id": "3f19435b-6bf9-4adc-8958-67d69a2d8cfb",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "manual_enqueue"
-      },
-      "created_at": "2026-03-04T05:10:34.577512+00:00"
-    },
-    {
-      "event_id": "fcad7ada-bed8-4d09-abeb-459fc7bf352f",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "manual_enqueue",
-        "cycle_id": "cycle_f3712ac6-6ab4-494e-b0bc-80bfa52c279a",
+        "trigger": "demo.workflow.proactive.preview",
+        "cycle_id": "cycle_109284d9-a661-4130-a25b-d85c0adda345",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T05:10:34.577559+00:00"
+      "created_at": "2026-03-05T01:04:25.057110+00:00"
     },
     {
-      "event_id": "87b0631f-ab7c-438e-b569-464fc2a53627",
-      "type": "approval_resolved",
+      "event_id": "evt_ac75ac9d-c88b-4482-a6bd-8761be8412cb",
+      "type": "demo.workflow.facebook_watch.start",
       "payload": {
-        "approval_id": "d18bf5d7-c9a9-41ab-9be1-6a7df396ae06",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "page_id": "me",
+        "demo_mode": false,
+        "demo_comments": [
+          {
+            "comment_id": "c_seed_001",
+            "post_id": "p_seed_001",
+            "message": "Seed comment one"
+          },
+          {
+            "comment_id": "c_seed_002",
+            "post_id": "p_seed_001",
+            "message": "Seed comment two"
+          }
+        ]
       },
-      "created_at": "2026-03-04T05:10:34.587683+00:00"
+      "created_at": "2026-03-05T01:05:04.172110+00:00"
     },
     {
-      "event_id": "c04a21f8-6972-48a9-a62d-a153d13cb2c9",
+      "event_id": "evt_db409752-c3df-4e4c-9418-04b49e2a2fb7",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.start"
       },
-      "created_at": "2026-03-04T05:10:34.588740+00:00"
+      "created_at": "2026-03-05T01:05:04.174250+00:00"
     },
     {
-      "event_id": "ce1a93f8-74dd-495c-8530-68233cc3b1dd",
+      "event_id": "evt_47512d30-d6bc-45ee-8fc9-038710a5db96",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_7db179ee-fc6c-425a-934b-6346629fc7f2",
+        "trigger": "demo.workflow.facebook_watch.start",
+        "cycle_id": "cycle_45b2b652-1d8e-4e7c-be1e-45ec7717748b",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T05:10:34.588792+00:00"
+      "created_at": "2026-03-05T01:05:04.174969+00:00"
     },
     {
-      "event_id": "cd1f8ef1-6cec-4b08-a1f2-7bdd29b3bf3e",
-      "type": "scenario_activated",
+      "event_id": "evt_dc0371ea-4dc4-4115-98d7-fe5dd9a18a9d",
+      "type": "demo.workflow.facebook_watch.inject",
       "payload": {
-        "scenario_id": "s_activate",
-        "title": "Activation Scenario"
+        "comments": [
+          {
+            "comment_id": "c_inject_001",
+            "post_id": "p_seed_001",
+            "message": "Injected comment"
+          }
+        ],
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T05:11:38.580859+00:00"
+      "created_at": "2026-03-05T01:05:13.696729+00:00"
     },
     {
-      "event_id": "72797021-83c1-46c6-9a72-dbf16142ffb9",
+      "event_id": "evt_06ac5f53-452d-4be5-b1dd-34288335ee00",
       "type": "cycle_start",
       "payload": {
-        "trigger": "scenario_activated"
+        "trigger": "demo.workflow.facebook_watch.inject"
       },
-      "created_at": "2026-03-04T05:11:38.583396+00:00"
+      "created_at": "2026-03-05T01:05:13.699442+00:00"
     },
     {
-      "event_id": "345b6e39-7e96-4740-8052-59846168ed0b",
+      "event_id": "evt_f00e9cc2-44f1-4861-85df-4054444686ab",
       "type": "cycle_end",
       "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_6c0d1dc3-973d-45bb-bdb4-2b677fd77b7a",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T05:11:38.584132+00:00"
-    },
-    {
-      "event_id": "d4beb58d-5d6b-4102-a4c1-08460075ab5e",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "s_approve",
-        "title": "Approval Scenario"
-      },
-      "created_at": "2026-03-04T05:11:42.726047+00:00"
-    },
-    {
-      "event_id": "72de7622-6409-42ca-95d2-55ea3301f101",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-04T05:11:42.728843+00:00"
-    },
-    {
-      "event_id": "cc9cb26d-16f1-4fd1-8599-70f059a22f48",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_0168eac9-51d2-4e03-be6a-b86758690a88",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T05:11:42.729488+00:00"
-    },
-    {
-      "event_id": "c4ecc283-bba7-4755-b019-f2abf19d06d9",
-      "type": "manual_enqueue",
-      "payload": {
-        "enqueue": true,
-        "worker_id": "facebook_worker",
-        "action": "publish_post",
-        "priority": 1
-      },
-      "created_at": "2026-03-04T05:11:42.739000+00:00"
-    },
-    {
-      "event_id": "e440b13c-8139-497e-985e-d26b92ee3dd7",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "manual_enqueue"
-      },
-      "created_at": "2026-03-04T05:11:42.740250+00:00"
-    },
-    {
-      "event_id": "1edea675-535b-4d68-ae75-5d4dd3b41e94",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "manual_enqueue",
-        "cycle_id": "cycle_d214343b-dfe6-4c92-ad04-b988e16bb714",
+        "trigger": "demo.workflow.facebook_watch.inject",
+        "cycle_id": "cycle_1ba1e4c7-2877-4aa7-a59f-764ec55e9276",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T05:11:42.740361+00:00"
+      "created_at": "2026-03-05T01:05:13.699766+00:00"
     },
     {
-      "event_id": "1bdf856e-8407-4397-9ce8-4ada286b43c8",
-      "type": "approval_resolved",
+      "event_id": "evt_97c96ce1-63bb-4a7f-9e22-9262d29bdd22",
+      "type": "demo.workflow.facebook_watch.poll",
       "payload": {
-        "approval_id": "c849300b-32ba-4c04-897e-766235d66edb",
-        "decision": "approved",
-        "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T05:11:42.747867+00:00"
+      "created_at": "2026-03-05T01:05:23.509992+00:00"
     },
     {
-      "event_id": "cde87d57-28f9-4c95-863a-d452cc4d7b39",
+      "event_id": "evt_23e61919-5899-4b88-8b70-ef96e492494a",
+      "type": "facebook_comment_received",
+      "payload": {
+        "comment_id": "c_seed_001",
+        "post_id": "p_seed_001",
+        "message": "Seed comment one"
+      },
+      "created_at": "2026-03-05T01:05:28.703981+00:00"
+    },
+    {
+      "event_id": "evt_db24245c-0a8e-4a79-b0cd-715ad13cdbae",
+      "type": "facebook_comment_received",
+      "payload": {
+        "comment_id": "c_seed_002",
+        "post_id": "p_seed_001",
+        "message": "Seed comment two"
+      },
+      "created_at": "2026-03-05T01:05:45.234426+00:00"
+    },
+    {
+      "event_id": "evt_f23a0dd3-bb5f-43f5-a0ee-1ab041bb76d9",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.poll"
       },
-      "created_at": "2026-03-04T05:11:42.750347+00:00"
+      "created_at": "2026-03-05T01:05:45.237217+00:00"
     },
     {
-      "event_id": "81154da7-b021-401e-94b5-e04096c58624",
+      "event_id": "evt_40678923-2e81-4062-b3cf-745b77412583",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_5d5cd899-42ea-4362-aa45-0dc8e4e10e4e",
+        "trigger": "demo.workflow.facebook_watch.poll",
+        "cycle_id": "cycle_634ae5c5-8468-4df2-afdf-f5c2cf329d87",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T05:11:42.750715+00:00"
+      "created_at": "2026-03-05T01:05:45.237314+00:00"
     },
     {
-      "event_id": "ceb8dec3-8f90-4779-9ddc-48c9cc6ff5f3",
+      "event_id": "evt_3d6ff635-acd6-4117-9283-ff7eda2e4a65",
       "type": "cycle_start",
       "payload": {
         "trigger": "tick"
       },
-      "created_at": "2026-03-04T05:16:19.804905+00:00"
+      "created_at": "2026-03-05T01:13:59.480184+00:00"
     },
     {
-      "event_id": "5f3837af-5281-4936-87f4-10b1f39e26f7",
+      "event_id": "evt_81b85e93-fd28-4e06-a2c0-bc8bad69fbcc",
       "type": "cycle_end",
       "payload": {
         "trigger": "tick",
-        "cycle_id": "cycle_a2e35594-66de-4ef7-af10-251c9ab659f8",
+        "cycle_id": "cycle_56c9763c-17c4-41a5-801d-6a710fb7ffe1",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 0
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T05:16:19.805298+00:00"
+      "created_at": "2026-03-05T01:13:59.480347+00:00"
     },
     {
-      "event_id": "2643fdaa-0ded-4352-b041-ec9254447842",
-      "type": "scenario_activated",
+      "event_id": "evt_9f3a3a79-e568-4b34-8b69-3f0a575feca4",
+      "type": "demo.workflow.proactive.preview",
       "payload": {
-        "scenario_id": "s_activate",
-        "title": "Activation Scenario"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T05:25:27.678549+00:00"
+      "created_at": "2026-03-05T01:17:58.178999+00:00"
     },
     {
-      "event_id": "c196f250-f47a-4eb5-9370-53d698edc8b1",
+      "event_id": "evt_c0d1de0c-d270-4efb-8083-eb70327f31d6",
       "type": "cycle_start",
       "payload": {
-        "trigger": "scenario_activated"
+        "trigger": "demo.workflow.proactive.preview"
       },
-      "created_at": "2026-03-04T05:25:27.684262+00:00"
+      "created_at": "2026-03-05T01:17:58.181606+00:00"
     },
     {
-      "event_id": "a4eda87c-1f30-4d6a-b228-75805ba2f533",
+      "event_id": "evt_97a93db9-2875-475f-be50-6d100b0244d3",
       "type": "cycle_end",
       "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_94297c6a-1160-4feb-802d-bc97c99e836d",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T05:25:27.685458+00:00"
-    },
-    {
-      "event_id": "63d39225-0f12-4064-bb35-ce0ef2f8e8a0",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "s_approve",
-        "title": "Approval Scenario"
-      },
-      "created_at": "2026-03-04T05:25:31.888987+00:00"
-    },
-    {
-      "event_id": "17084830-b4a0-47a6-95cf-aa65558c0e06",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-04T05:25:31.891852+00:00"
-    },
-    {
-      "event_id": "07de0ec2-b2b1-4488-867c-129734b12818",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_d155325d-d55f-445c-aac7-3da662553e49",
-        "executed": 6,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T05:25:31.892357+00:00"
-    },
-    {
-      "event_id": "df6b7d78-7df1-4395-8a75-f2623d91c767",
-      "type": "manual_enqueue",
-      "payload": {
-        "enqueue": true,
-        "worker_id": "facebook_worker",
-        "action": "publish_post",
-        "priority": 1
-      },
-      "created_at": "2026-03-04T05:25:31.897761+00:00"
-    },
-    {
-      "event_id": "15a4982b-a05e-4e46-9f7b-ab56a53fc46e",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "manual_enqueue"
-      },
-      "created_at": "2026-03-04T05:25:31.901123+00:00"
-    },
-    {
-      "event_id": "1e8f1096-e5cc-4da8-be97-6e57e1182e9b",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "manual_enqueue",
-        "cycle_id": "cycle_b544dd43-2786-4d08-b262-1bc478716c2c",
+        "trigger": "demo.workflow.proactive.preview",
+        "cycle_id": "cycle_048f4eb0-224f-414a-b34d-56bc47d6bfc5",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T05:25:31.901256+00:00"
+      "created_at": "2026-03-05T01:17:58.181683+00:00"
     },
     {
-      "event_id": "2634c183-7642-4136-9174-9e0e3d6277e9",
-      "type": "approval_resolved",
+      "event_id": "evt_e1d4ba9e-cf87-4337-9539-8724e18c4b08",
+      "type": "demo.workflow.facebook_watch.poll",
       "payload": {
-        "approval_id": "18c6ffac-2540-439b-8890-28ccfbbfe82f",
-        "decision": "approved",
-        "task_id": "51de4d81-2780-45aa-a793-cabee8c88b9b"
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T05:25:31.908602+00:00"
+      "created_at": "2026-03-05T01:20:09.171866+00:00"
     },
     {
-      "event_id": "afb8de5c-1a24-4925-aafd-4ba3123c2f34",
+      "event_id": "evt_5259e976-b8eb-4c9d-8000-49be5fb7a849",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.poll"
       },
-      "created_at": "2026-03-04T05:25:31.909497+00:00"
+      "created_at": "2026-03-05T01:20:09.174351+00:00"
     },
     {
-      "event_id": "5b719d20-ad6e-4885-bfde-faebd10ebfa8",
+      "event_id": "evt_c5ece435-96bd-43f7-9dcb-324b9bcbb318",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_e7e555df-bbd3-4059-b3e3-f4ab7e42d669",
+        "trigger": "demo.workflow.facebook_watch.poll",
+        "cycle_id": "cycle_8baa6e4e-ad10-4e18-a01e-d068edc6112a",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T05:25:31.909543+00:00"
+      "created_at": "2026-03-05T01:20:09.174466+00:00"
     },
     {
-      "event_id": "18370092-5393-4802-82a8-dc2c7f4dbf8c",
-      "type": "scenario_activated",
+      "event_id": "evt_a070595c-52f1-4f00-ab50-03bed9e2e92c",
+      "type": "demo.workflow.facebook_watch.inject",
       "payload": {
-        "scenario_id": "s_activate",
-        "title": "Activation Scenario"
+        "comments": [
+          {
+            "comment_id": "c_inject_001",
+            "post_id": "p_seed_001",
+            "message": "Injected comment"
+          }
+        ],
+        "demo_mode": true
       },
-      "created_at": "2026-03-04T14:34:17.701136+00:00"
+      "created_at": "2026-03-05T01:20:22.237124+00:00"
     },
     {
-      "event_id": "8d4a93dc-cea0-4eb7-8cfe-baac777afa2f",
+      "event_id": "evt_5df32369-1637-4731-8487-3d818b4b8951",
       "type": "cycle_start",
       "payload": {
-        "trigger": "scenario_activated"
+        "trigger": "demo.workflow.facebook_watch.inject"
       },
-      "created_at": "2026-03-04T14:34:17.702873+00:00"
+      "created_at": "2026-03-05T01:20:22.238568+00:00"
     },
     {
-      "event_id": "f0dcd86a-89c1-4a95-b969-f84ece98726e",
+      "event_id": "evt_ce36ce46-f85f-4c05-bac9-752a1b98d787",
       "type": "cycle_end",
       "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_0f09f5fa-fe64-453b-8c82-ddf829ac3d71",
-        "executed": 1,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T14:35:27.202899+00:00"
-    },
-    {
-      "event_id": "545f7ff7-7c15-437a-b943-538ab14c1651",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "s_approve",
-        "title": "Approval Scenario"
-      },
-      "created_at": "2026-03-04T14:35:27.221265+00:00"
-    },
-    {
-      "event_id": "007d4a0a-4eed-4292-8bda-c4d93fa8bb4e",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-04T14:35:27.223467+00:00"
-    },
-    {
-      "event_id": "b6e650eb-5f64-4d2a-a22c-223c49d3572d",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_e781c2e5-bfa7-44ac-88e4-d8a6b279073b",
-        "executed": 1,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T14:36:42.164666+00:00"
-    },
-    {
-      "event_id": "41047b51-44df-478b-a86d-69e2669b5a1d",
-      "type": "manual_enqueue",
-      "payload": {
-        "enqueue": true,
-        "worker_id": "facebook_worker",
-        "action": "publish_post",
-        "priority": 1
-      },
-      "created_at": "2026-03-04T14:36:42.174550+00:00"
-    },
-    {
-      "event_id": "0c981dcc-f7da-41b8-93f7-d25306618008",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "manual_enqueue"
-      },
-      "created_at": "2026-03-04T14:36:42.176119+00:00"
-    },
-    {
-      "event_id": "5bd566c6-1eef-4b75-968f-2c45df19cec7",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "manual_enqueue",
-        "cycle_id": "cycle_f20fe705-d068-418e-8290-ebfe8d2c718b",
+        "trigger": "demo.workflow.facebook_watch.inject",
+        "cycle_id": "cycle_bde429c5-137c-4dda-b77f-0be61145b6c6",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 1
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T14:36:42.177010+00:00"
+      "created_at": "2026-03-05T01:20:22.238642+00:00"
     },
     {
-      "event_id": "c79c5950-f1a8-4905-943a-dbce0a6a54a7",
-      "type": "approval_resolved",
+      "event_id": "evt_ae19e667-2231-4b7d-b344-022f0899102b",
+      "type": "demo.workflow.facebook_watch.start",
       "payload": {
-        "approval_id": "56cf0942-175d-49ce-9906-976d59d0c0df",
-        "decision": "approved",
-        "task_id": "704f5ad2-6633-4708-bf9d-7aa505e32664"
+        "page_id": "me",
+        "demo_mode": false,
+        "demo_comments": [
+          {
+            "comment_id": "c_seed_001",
+            "post_id": "p_seed_001",
+            "message": "Seed comment one"
+          },
+          {
+            "comment_id": "c_seed_002",
+            "post_id": "p_seed_001",
+            "message": "Seed comment two"
+          }
+        ]
       },
-      "created_at": "2026-03-04T14:36:42.184940+00:00"
+      "created_at": "2026-03-05T01:20:45.619696+00:00"
     },
     {
-      "event_id": "05329a80-f740-4036-b7cc-6e9fd8ec8fcc",
+      "event_id": "evt_ca2f25f6-89b9-4542-9909-f43843a90ba4",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "demo.workflow.facebook_watch.start"
       },
-      "created_at": "2026-03-04T14:36:42.185852+00:00"
+      "created_at": "2026-03-05T01:20:45.624558+00:00"
     },
     {
-      "event_id": "2c521b71-6caa-48d3-a1f4-53007e1be9bb",
+      "event_id": "evt_c73fcdc4-14d4-40a0-a3a2-06d4d8e72c4f",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_763cc02b-f753-4062-bcf1-c88d80b4a880",
+        "trigger": "demo.workflow.facebook_watch.start",
+        "cycle_id": "cycle_72ce8776-1e1f-430b-bcf6-6f3f3815864e",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 0
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
       },
-      "created_at": "2026-03-04T14:36:42.185896+00:00"
+      "created_at": "2026-03-05T01:20:45.624624+00:00"
     },
     {
-      "event_id": "evt_67b7f293-2c43-46fe-a80d-ab6c90a08fbd",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "s_activate",
-        "title": "Activation Scenario"
-      },
-      "created_at": "2026-03-04T15:58:00.864176+00:00"
-    },
-    {
-      "event_id": "evt_7dc49131-9c55-4aa1-972c-5e066c57eb44",
+      "event_id": "evt_ec22a93d-524b-4e91-a278-3590ced79ae6",
       "type": "cycle_start",
       "payload": {
-        "trigger": "scenario_activated"
+        "trigger": "tick"
       },
-      "created_at": "2026-03-04T15:58:00.865600+00:00"
+      "created_at": "2026-03-05T01:28:59.498030+00:00"
     },
     {
-      "event_id": "evt_0f57927d-b87a-4c8d-adf0-69caeaf3b480",
+      "event_id": "evt_5882872c-0177-4071-b156-26f81d9976ba",
       "type": "cycle_end",
       "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_01ddc27b-9098-4f1f-aec5-79e00fb99a71",
-        "executed": 1,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T15:59:13.455027+00:00"
-    },
-    {
-      "event_id": "evt_7fdfb2de-8958-477e-8961-bfde48b93b18",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "s_approve",
-        "title": "Approval Scenario"
-      },
-      "created_at": "2026-03-04T15:59:13.476988+00:00"
-    },
-    {
-      "event_id": "evt_52a5c4a8-a3ca-4e38-b2a5-7cd5e67649b6",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-04T15:59:13.479920+00:00"
-    },
-    {
-      "event_id": "evt_5d138c32-ad59-4d87-87fa-b1275c96b333",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_90f2597f-18a5-443e-aa80-988e2abb3ffb",
-        "executed": 1,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T16:00:27.055110+00:00"
-    },
-    {
-      "event_id": "evt_87302e14-ca02-4dbd-b88a-7fcbe1b72f2f",
-      "type": "manual_enqueue",
-      "payload": {
-        "enqueue": true,
-        "worker_id": "facebook_worker",
-        "action": "publish_post",
-        "priority": 1
-      },
-      "created_at": "2026-03-04T16:00:27.066480+00:00"
-    },
-    {
-      "event_id": "evt_18c4ebf4-bdd4-48fe-b5af-e9c790df2014",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "manual_enqueue"
-      },
-      "created_at": "2026-03-04T16:00:27.070387+00:00"
-    },
-    {
-      "event_id": "evt_0ec76fdb-e62e-4eeb-a133-e3ba38a50849",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "manual_enqueue",
-        "cycle_id": "cycle_ebbc154f-410d-4105-9d22-2b69c20fe49e",
+        "trigger": "tick",
+        "cycle_id": "cycle_a2d7c9c6-04de-4d20-8881-dc75ee6ae84b",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 0
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
       },
-      "created_at": "2026-03-04T16:00:27.070443+00:00"
+      "created_at": "2026-03-05T01:28:59.498154+00:00"
     },
     {
-      "event_id": "evt_50e2166f-4bd1-4dfe-8a41-27d8d778f282",
-      "type": "approval_resolved",
-      "payload": {
-        "approval_id": "c6ca75c7-f676-48e1-88ba-9dbec4eac42b",
-        "decision": "approved",
-        "task_id": "b8674921-75e2-42c0-ad59-85f5d24f8cd3"
-      },
-      "created_at": "2026-03-04T16:00:27.079550+00:00"
-    },
-    {
-      "event_id": "evt_f0ec8f81-a7b0-4df5-8a88-54911d937b3c",
+      "event_id": "evt_d3818150-d424-44b3-aabd-4b53d2e8ba75",
       "type": "cycle_start",
       "payload": {
-        "trigger": "approval"
+        "trigger": "tick"
       },
-      "created_at": "2026-03-04T16:00:27.080643+00:00"
+      "created_at": "2026-03-05T01:43:59.520405+00:00"
     },
     {
-      "event_id": "evt_11242ac2-1156-418f-b74b-a559ad335345",
+      "event_id": "evt_be3873fd-2a45-4452-86d3-2cd602aee304",
       "type": "cycle_end",
       "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_adeb6c67-5313-4412-8549-26c3ab2e2ced",
+        "trigger": "tick",
+        "cycle_id": "cycle_f5a507fb-74b4-4b17-bcef-e69d6ac3796b",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 0
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
       },
-      "created_at": "2026-03-04T16:00:27.080693+00:00"
+      "created_at": "2026-03-05T01:43:59.520525+00:00"
     },
     {
-      "event_id": "evt_82ad9141-39fb-4dff-88af-3341cff9ae0b",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "s_activate",
-        "title": "Activation Scenario"
-      },
-      "created_at": "2026-03-04T16:02:29.577569+00:00"
-    },
-    {
-      "event_id": "evt_5e6c13e3-05bb-472a-9c08-74d3e2d977a3",
+      "event_id": "evt_01df66a3-4bd5-4d2d-97ab-95f3c22ab8f2",
       "type": "cycle_start",
       "payload": {
-        "trigger": "scenario_activated"
+        "trigger": "tick"
       },
-      "created_at": "2026-03-04T16:02:29.580449+00:00"
+      "created_at": "2026-03-05T01:58:59.494355+00:00"
     },
     {
-      "event_id": "evt_ac83f430-10d3-4b47-b75b-ccd359138a52",
+      "event_id": "evt_cc089e72-8d3a-4381-b872-396446b55e0d",
       "type": "cycle_end",
       "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_b9b9eba7-92c6-403a-8edf-933937f8d792",
-        "executed": 1,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T16:03:43.350298+00:00"
-    },
-    {
-      "event_id": "evt_6c5c3592-63c1-4814-9437-a0d56f81bcf4",
-      "type": "scenario_activated",
-      "payload": {
-        "scenario_id": "s_approve",
-        "title": "Approval Scenario"
-      },
-      "created_at": "2026-03-04T16:03:43.379965+00:00"
-    },
-    {
-      "event_id": "evt_e93768ac-c17d-42ae-b57e-e28d8e52c277",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "scenario_activated"
-      },
-      "created_at": "2026-03-04T16:03:43.381361+00:00"
-    },
-    {
-      "event_id": "evt_a1c7898f-90b5-45ac-a5e6-4267c4085865",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "scenario_activated",
-        "cycle_id": "cycle_5718d764-858e-4134-9076-5345f3639c2c",
-        "executed": 1,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T16:04:38.338208+00:00"
-    },
-    {
-      "event_id": "evt_a4408579-c768-47cc-a314-ea66e9565da2",
-      "type": "manual_enqueue",
-      "payload": {
-        "enqueue": true,
-        "worker_id": "facebook_worker",
-        "action": "publish_post",
-        "priority": 1
-      },
-      "created_at": "2026-03-04T16:04:38.349752+00:00"
-    },
-    {
-      "event_id": "evt_f2e9aa05-34d6-433c-8b55-521c495492d0",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "manual_enqueue"
-      },
-      "created_at": "2026-03-04T16:04:38.351375+00:00"
-    },
-    {
-      "event_id": "evt_a22927cb-71e3-4daa-b461-4c104b8be2bf",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "manual_enqueue",
-        "cycle_id": "cycle_e92b31c2-dc92-4643-92f1-83dbc30ba8d1",
+        "trigger": "tick",
+        "cycle_id": "cycle_2c22a925-176f-49c6-bd56-d3179cc09955",
         "executed": 0,
         "failed": 0,
-        "approval_waiting": 0
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
       },
-      "created_at": "2026-03-04T16:04:38.351426+00:00"
-    },
-    {
-      "event_id": "evt_3c6e1ea9-d589-468e-b886-77d225cd4ac4",
-      "type": "approval_resolved",
-      "payload": {
-        "approval_id": "be8a2cd2-8e0f-44cb-a442-2ec62e2d2a6c",
-        "decision": "approved",
-        "task_id": "8be9ced9-eff6-4689-a5c6-c32b46d56419"
-      },
-      "created_at": "2026-03-04T16:04:38.359315+00:00"
-    },
-    {
-      "event_id": "evt_ac79b5c7-25c5-4365-b67e-89de51420e94",
-      "type": "cycle_start",
-      "payload": {
-        "trigger": "approval"
-      },
-      "created_at": "2026-03-04T16:04:38.360583+00:00"
-    },
-    {
-      "event_id": "evt_7600efc2-735d-44e9-9592-844b8fb768e3",
-      "type": "cycle_end",
-      "payload": {
-        "trigger": "approval",
-        "cycle_id": "cycle_a283a6d0-3a30-40e6-819d-425e12bbf26a",
-        "executed": 0,
-        "failed": 0,
-        "approval_waiting": 0
-      },
-      "created_at": "2026-03-04T16:04:38.360625+00:00"
+      "created_at": "2026-03-05T01:58:59.494494+00:00"
     }
   ],
-  "updated_at": "2026-03-04T16:04:38.360633+00:00"
+  "demo_artifacts": {
+    "proactive_preview": {
+      "calendar": {
+        "events": [
+          {
+            "title": "Deep Work: Portfolio Sprint (UT Library)",
+            "type": "focus_block",
+            "duration_minutes": 180,
+            "location": "UT Library"
+          },
+          {
+            "title": "Deep Work: Client Deliverable Block (UT Library)",
+            "type": "focus_block",
+            "duration_minutes": 180,
+            "location": "UT Library"
+          },
+          {
+            "title": "Admin Sprint: Invoice Follow-up",
+            "type": "admin",
+            "duration_minutes": 45,
+            "location": "Home Desk"
+          },
+          {
+            "title": "Debt-Paydown Review",
+            "type": "review",
+            "duration_minutes": 30,
+            "location": "Home Desk"
+          }
+        ]
+      },
+      "notion_leads": {
+        "database_title": "Client Pipeline",
+        "leads": [
+          {
+            "name": "Referral Lead",
+            "source": "Referral",
+            "status": "Lead"
+          },
+          {
+            "name": "Portfolio Lead",
+            "source": "Portfolio",
+            "status": "Proposal"
+          },
+          {
+            "name": "Direct Lead",
+            "source": "Direct",
+            "status": "Lead"
+          }
+        ]
+      },
+      "notion_opportunity": {
+        "workspace_title": "Questline: Conversion-First Freelance Stabilization",
+        "progress_page": "Progress: Next Actions"
+      },
+      "figma": {
+        "challenge_briefs": [
+          "Challenge 1: Conversion-first landing refresh for a local service brand",
+          "Challenge 2: Brand motion system for an Austin creator collective",
+          "Challenge 3: Portfolio case-study narrative sprint with measurable KPI"
+        ],
+        "weekly_milestones": [
+          "Week 1: Brief + concept frames",
+          "Week 2: Mid-fidelity exploration",
+          "Week 3: Final polish + share-out"
+        ]
+      },
+      "kg_context": {
+        "signals": [
+          "public/private delta",
+          "learning-vs-conversion mismatch",
+          "financial stress triangulation",
+          "ADHD execution constraints"
+        ]
+      }
+    },
+    "facebook_watch": {
+      "pending_replies": [
+        {
+          "comment_id": "c_inject_001",
+          "post_id": "p_seed_001",
+          "from": {},
+          "message": "Injected comment",
+          "draft_reply": "Thanks for the comment, really appreciate you following this. I\u2019m currently focused on 'Conversion-First Freelance Stabilization' and sharing progress transparently. I\u2019ll post an update tied to a measurable milestone shortly.",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T00:33:34.063743+00:00"
+        },
+        {
+          "comment_id": "c_seed_001",
+          "post_id": "p_seed_001",
+          "from": {},
+          "message": "Seed comment one",
+          "draft_reply": "Deterministic offline reply from mocked LLM boundary.",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T00:33:34.071189+00:00"
+        },
+        {
+          "comment_id": "c_seed_002",
+          "post_id": "p_seed_001",
+          "from": {},
+          "message": "Seed comment two",
+          "draft_reply": "Deterministic offline reply from mocked LLM boundary.",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T00:33:34.071207+00:00"
+        },
+        {
+          "comment_id": "ui_seed_001",
+          "post_id": "ui_post_001",
+          "from": {},
+          "message": "Love your recent update.",
+          "draft_reply": "Aw, thanks so much! Thrilled you're digging the update\u2014conversions are finally stabilizing my freelance game with consistent 5-figure months. What's one win you've had lately? \ud83d\ude80",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T00:55:31.339385+00:00"
+        },
+        {
+          "comment_id": "ui_seed_002",
+          "post_id": "ui_post_001",
+          "from": {},
+          "message": "Can you share milestones?",
+          "draft_reply": "Absolutely! We've hit consistent $5k/month revenue, closed 4 high-ticket retainers from webinar leads, and boosted our conversion rate to 25% with optimized funnels\u2014game-changer for stability! What's one milestone you're chasing? \ud83d\ude0a",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T00:55:35.138282+00:00"
+        },
+        {
+          "comment_id": "c_inject_001",
+          "post_id": "p_seed_001",
+          "from": {},
+          "message": "Injected comment",
+          "draft_reply": "Thanks for the comment, really appreciate you following this. I\u2019m currently focused on 'Conversion-First Freelance Stabilization' and sharing progress transparently. I\u2019ll post an update tied to a measurable milestone shortly.",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T01:05:13.696760+00:00"
+        },
+        {
+          "comment_id": "c_seed_001",
+          "post_id": "p_seed_001",
+          "from": {},
+          "message": "Seed comment one",
+          "draft_reply": "Hey, loving that you're already seeing those first steady clients trickle in\u2014that's real progress toward freelance stability! You've got this; keep nurturing those conversions and watch it snowball. \ud83d\ude80",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T01:05:28.703933+00:00"
+        },
+        {
+          "comment_id": "c_seed_002",
+          "post_id": "p_seed_001",
+          "from": {},
+          "message": "Seed comment two",
+          "draft_reply": "That's fantastic progress\u2014seeing you stabilize those freelance gigs with consistent conversions is so inspiring! Keep sharing your wins; you're crushing it! \ud83d\ude80",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T01:05:45.234320+00:00"
+        },
+        {
+          "comment_id": "c_inject_001",
+          "post_id": "p_seed_001",
+          "from": {},
+          "message": "Injected comment",
+          "draft_reply": "Thanks for the comment, really appreciate you following this. I\u2019m currently focused on 'Conversion-First Freelance Stabilization' and sharing progress transparently. I\u2019ll post an update tied to a measurable milestone shortly.",
+          "status": "ready_to_send",
+          "created_at": "2026-03-05T01:20:22.237147+00:00"
+        }
+      ]
+    }
+  },
+  "value_signals": {
+    "public_private_delta": {
+      "signal": "Public confidence is ahead of private certainty.",
+      "evidence_refs": [
+        "c_0001"
+      ]
+    },
+    "learning_vs_conversion_mismatch": {
+      "signal": "Learning intensity outpaces direct revenue conversion loops.",
+      "evidence_refs": [
+        "t_0120",
+        "cal_0078"
+      ]
+    },
+    "financial_stress_triangulation": {
+      "signal": "Debt stress is an execution drag, not just a budgeting issue.",
+      "evidence_refs": [
+        "ll_0142",
+        "t_0120"
+      ]
+    },
+    "adhd_execution_constraints": {
+      "signal": "Execution improves when tasks are chunked and environment-scaffolded.",
+      "evidence_refs": [
+        "cal_0078",
+        "c_0001"
+      ]
+    }
+  },
+  "workflow_state": {
+    "facebook_watch": {
+      "page_id": "me",
+      "post_ids": [],
+      "limit_posts": 5,
+      "limit_comments": 20,
+      "demo_mode": false,
+      "demo_comments": [
+        {
+          "comment_id": "c_seed_001",
+          "post_id": "p_seed_001",
+          "message": "Seed comment one",
+          "from": {},
+          "created_time": null
+        },
+        {
+          "comment_id": "c_seed_002",
+          "post_id": "p_seed_001",
+          "message": "Seed comment two",
+          "from": {},
+          "created_time": null
+        }
+      ],
+      "seen_comment_ids": [],
+      "started_at": "2026-03-05T01:20:45.619783+00:00",
+      "last_polled_at": null
+    }
+  },
+  "updated_at": "2026-03-05T01:58:59.494510+00:00"
 }

@@ -13,9 +13,14 @@ Composio actions:
 from __future__ import annotations
 
 import logging
+import os
 import time
 
 from deepagent.workers.base import BaseWorker, WorkerExecution
+from deepagent.workers.llm_schemas import (
+    FacebookCommentReplyLLM,
+    FacebookDraftPlanLLM,
+)
 from integrations.composio_client import execute_action
 
 logger = logging.getLogger(__name__)
@@ -29,6 +34,10 @@ class FacebookWorker(BaseWorker):
         "draft_posts": "_draft_posts",
         "publish_post": "_publish_post",
         "schedule_post": "_schedule_post",
+        "draft_post": "_draft_posts",
+        "fetch_comments": "_fetch_comments",
+        "draft_comment_reply": "_draft_comment_reply",
+        "reply_comment": "_reply_comment",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -46,6 +55,186 @@ class FacebookWorker(BaseWorker):
             return WorkerExecution(ok=False, message=f"Unknown action: {action}")
         handler = getattr(self, handler_name)
         return await handler(payload)
+
+    def _normalize_comments(self, comments: list[dict]) -> list[dict]:
+        normalized: list[dict] = []
+        for c in comments:
+            if not isinstance(c, dict):
+                continue
+            comment_id = str(c.get("comment_id") or c.get("id") or "").strip()
+            message = str(c.get("message", "")).strip()
+            if not comment_id or not message:
+                continue
+            normalized.append(
+                {
+                    "comment_id": comment_id,
+                    "post_id": str(c.get("post_id", "")),
+                    "message": message,
+                    "from": c.get("from", {}) if isinstance(c.get("from", {}), dict) else {},
+                    "created_time": c.get("created_time"),
+                }
+            )
+        return normalized
+
+    async def _fetch_comments(self, payload: dict) -> WorkerExecution:
+        """Fetch page posts and associated comments for watch workflows."""
+        if isinstance(payload.get("comments"), list):
+            comments = self._normalize_comments(payload.get("comments", []))
+            return WorkerExecution(
+                ok=True,
+                message=f"Fetched {len(comments)} seeded comments",
+                data={"comments": comments},
+            )
+
+        if isinstance(payload.get("demo_comments"), list):
+            comments = self._normalize_comments(payload.get("demo_comments", []))
+            return WorkerExecution(
+                ok=True,
+                message=f"Fetched {len(comments)} demo comments",
+                data={"comments": comments},
+            )
+
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            return WorkerExecution(
+                ok=True,
+                message="Fetched 0 demo comments",
+                data={"comments": []},
+            )
+
+        page_id = payload.get("page_id", "me")
+        fields = payload.get(
+            "post_fields",
+            "id,message,created_time",
+        )
+        limit_posts = int(payload.get("limit_posts", 5))
+        limit_comments = int(payload.get("limit_comments", 20))
+
+        posts_result = await execute_action(
+            "FACEBOOK_GET_PAGE_POSTS",
+            params={"page_id": page_id, "limit": limit_posts, "fields": fields},
+            app_name="facebook",
+        )
+        if posts_result.get("error"):
+            return WorkerExecution(ok=False, message=str(posts_result["error"]), data=posts_result)
+
+        posts_data = posts_result.get("result", {}).get("data", {})
+        posts = posts_data.get("data", []) if isinstance(posts_data, dict) else []
+        post_ids_filter = set(payload.get("post_ids", []))
+
+        comments_out: list[dict] = []
+        for post in posts:
+            post_id = post.get("id")
+            if not post_id:
+                continue
+            if post_ids_filter and post_id not in post_ids_filter:
+                continue
+            comments_result = await execute_action(
+                "FACEBOOK_GET_COMMENTS",
+                params={
+                    "object_id": post_id,
+                    "limit": limit_comments,
+                    "order": "reverse_chronological",
+                    "fields": "id,message,created_time,from,parent",
+                },
+                app_name="facebook",
+            )
+            comments_data = comments_result.get("result", {}).get("data", {})
+            comments = comments_data.get("data", []) if isinstance(comments_data, dict) else []
+            for c in comments:
+                comments_out.append(
+                    {
+                        "comment_id": c.get("id"),
+                        "post_id": post_id,
+                        "message": c.get("message", ""),
+                        "from": c.get("from", {}),
+                        "created_time": c.get("created_time"),
+                    }
+                )
+
+        return WorkerExecution(
+            ok=True,
+            message=f"Fetched {len(comments_out)} comments",
+            data={"comments": comments_out},
+        )
+
+    async def _draft_comment_reply(self, payload: dict) -> WorkerExecution:
+        """Draft a reply for an inbound comment. No posting side effects."""
+        comment_text = payload.get("comment_text", "").strip()
+        scenario_title = payload.get("scenario_title", "")
+        if not comment_text:
+            return WorkerExecution(ok=False, message="comment_text required")
+
+        fallback = (
+            "Thanks for the comment, appreciate you being here. "
+            "I’m sharing progress tied to real milestones and will post an update soon."
+        )
+        if scenario_title:
+            fallback = (
+                f"Thanks for the comment. I’m currently focused on '{scenario_title}' "
+                "and will share a milestone update shortly."
+            )
+
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            return WorkerExecution(
+                ok=True,
+                message="Draft reply generated (demo)",
+                data={"reply_text": fallback},
+            )
+
+        if not os.environ.get("OPENAI_API_KEY"):
+            return WorkerExecution(
+                ok=True,
+                message="Draft reply generated (fallback)",
+                data={"reply_text": fallback},
+            )
+
+        try:
+            result = await self._llm_typed(
+                system=(
+                    "You draft concise, authentic Facebook replies for a creator. "
+                    "Reply in one short paragraph. Return JSON with key 'reply_text'."
+                ),
+                user=(
+                    f"Scenario: {scenario_title}\n"
+                    f"Incoming comment: {comment_text}\n"
+                    "Write a warm, human reply that references real progress."
+                ),
+                schema=FacebookCommentReplyLLM,
+            )
+            reply = result.reply_text or fallback
+        except Exception:
+            reply = fallback
+
+        return WorkerExecution(
+            ok=True,
+            message="Draft reply generated",
+            data={"reply_text": reply},
+        )
+
+    async def _reply_comment(self, payload: dict) -> WorkerExecution:
+        """Post a reply to a comment. Approval should gate this action."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            return WorkerExecution(
+                ok=True,
+                message="Comment reply logged (demo)",
+                data={"demo_mode": True, "comment_id": payload.get("comment_id")},
+            )
+
+        object_id = payload.get("object_id") or payload.get("comment_id")
+        message = payload.get("message", "")
+        if not object_id or not message:
+            return WorkerExecution(ok=False, message="comment_id/object_id and message required")
+
+        result = await execute_action(
+            "FACEBOOK_CREATE_COMMENT",
+            params={"object_id": object_id, "message": message},
+            app_name="facebook",
+        )
+        return WorkerExecution(
+            ok=not result.get("dry_run", True),
+            message="Comment reply posted" if not result.get("dry_run") else "Comment reply logged (dry run)",
+            data=result,
+        )
 
     async def _fetch_recent_posts(self) -> list[dict]:
         """Get existing Facebook posts to calibrate voice."""
@@ -104,27 +293,63 @@ Return JSON:
 
     async def _draft_posts(self, payload: dict) -> WorkerExecution:
         """Generate draft posts using KG context and voice calibration."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            plan = {
+                "posts": [
+                    {
+                        "platform": "facebook",
+                        "content": (
+                            "This week I’m focusing on conversion-first freelance systems: "
+                            "one pricing follow-up, one onboarding slot, one debt check-in."
+                        ),
+                        "scheduled_unix": 1773180000,
+                        "post_type": "learning_in_public",
+                        "hashtags": ["freelance", "design", "buildinpublic"],
+                        "linked_milestone": "Pricing follow-up sent",
+                    },
+                    {
+                        "platform": "facebook",
+                        "content": (
+                            "Small win: I moved a portfolio deliverable from draft to shipped "
+                            "and tied it to a real client pipeline milestone."
+                        ),
+                        "scheduled_unix": 1773439200,
+                        "post_type": "portfolio_piece",
+                        "hashtags": ["portfolio", "creativework", "austin"],
+                        "linked_milestone": "Portfolio challenge shipped",
+                    },
+                ],
+                "posting_cadence": "2x per week",
+                "brand_voice_notes": "Grounded, transparent, milestone-linked updates.",
+                "quest_connection": "Posts bridge narrative to measurable execution.",
+            }
+            return WorkerExecution(
+                ok=True,
+                message="Drafted 2 deterministic demo posts (not published)",
+                data=plan,
+            )
+
         kg_context = payload.get("kg_context", {})
 
         recent_posts = await self._fetch_recent_posts()
         logger.info("Facebook: found %d recent posts for voice calibration", len(recent_posts))
 
         prompt = self._build_content_prompt(recent_posts, kg_context, payload)
-        plan = await self._llm_json(
+        plan_model = await self._llm_typed(
             system=(
                 "You are a personal brand content strategist. Create authentic content "
                 "that bridges public and private personas. Use unix timestamps. "
                 "Return ONLY valid JSON."
             ),
             user=prompt,
+            schema=FacebookDraftPlanLLM,
         )
+        plan = plan_model.model_dump(mode="json")
 
-        logger.info("Facebook: drafted %d posts", len(plan.get("posts", [])))
+        logger.info("Facebook: drafted %d posts", len(plan_model.posts))
 
         return WorkerExecution(
-            ok=True,
-            message=f"Drafted {len(plan.get('posts', []))} posts (not published)",
-            data=plan,
+            ok=True, message=f"Drafted {len(plan_model.posts)} posts (not published)", data=plan
         )
 
     async def _publish_post(self, payload: dict) -> WorkerExecution:

@@ -28,6 +28,12 @@ const INTENT_COLORS: Record<string, string> = {
   emotional: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
 };
 
+const DEMO_TOKEN = 'Bearer sk_demo_default';
+const DEMO_JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  Authorization: DEMO_TOKEN,
+};
+
 export default function Chat({ scenario }: { scenario: Scenario }) {
   const [input, setInput] = useState('');
   const [intent, setIntent] = useState<string | null>(null);
@@ -41,11 +47,13 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [questsPhase, setQuestsPhase] = useState<'loading' | 'ready' | 'error'>('loading');
   const [questsCollapsed, setQuestsCollapsed] = useState(false);
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
+  const [workflowStatus, setWorkflowStatus] = useState<string>('');
+  const [workflowBusy, setWorkflowBusy] = useState<'proactive' | 'facebook' | null>(null);
 
   useEffect(() => {
     fetch('/api/agent/activate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: DEMO_JSON_HEADERS,
       body: JSON.stringify({
         scenario_id: scenario.id,
         scenario_title: scenario.title,
@@ -61,7 +69,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
     setQuestsPhase('loading');
     fetch('/api/actions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: DEMO_JSON_HEADERS,
       body: JSON.stringify({
         scenario_id: scenario.id,
         scenario_title: scenario.title,
@@ -83,8 +91,12 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
       new DefaultChatTransport({
         api: '/api/chat',
         body: { scenario },
-        fetch: async (input, init) => {
-          const res = await fetch(input, init);
+        fetch: async (requestInfo, init) => {
+          const mergedHeaders = {
+            ...(init?.headers as Record<string, string> | undefined),
+            Authorization: DEMO_TOKEN,
+          };
+          const res = await fetch(requestInfo, { ...init, headers: mergedHeaders });
           const intentHeader = res.headers.get('x-porthon-intent');
           if (intentHeader && intentHeader !== 'casual') {
             intentRef.current(intentHeader);
@@ -99,6 +111,56 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const { messages, sendMessage, status, stop } = useChat({ transport });
 
   const isStreaming = status === 'streaming' || status === 'submitted';
+
+  const postDemoEvent = async (type: string, payload: Record<string, unknown>) => {
+    const res = await fetch('/v1/events', {
+      method: 'POST',
+      headers: DEMO_JSON_HEADERS,
+      body: JSON.stringify({ type, payload }),
+    });
+    if (!res.ok) {
+      throw new Error(`Failed: ${type}`);
+    }
+    return res.json();
+  };
+
+  const runProactiveWorkflow = async () => {
+    setWorkflowBusy('proactive');
+    setWorkflowStatus('Running proactive workflow...');
+    try {
+      await postDemoEvent('demo.workflow.proactive.preview', {});
+      const commit = await postDemoEvent('demo.workflow.proactive.commit', {});
+      const duration = commit?.cycle?.cycle_duration_ms;
+      setWorkflowStatus(
+        duration ? `Proactive workflow complete (${duration}ms cycle).` : 'Proactive workflow complete.'
+      );
+    } catch {
+      setWorkflowStatus('Proactive workflow failed. Check /v1/events.');
+    } finally {
+      setWorkflowBusy(null);
+    }
+  };
+
+  const runFacebookWorkflow = async () => {
+    setWorkflowBusy('facebook');
+    setWorkflowStatus('Running facebook watch workflow...');
+    try {
+      await postDemoEvent('demo.workflow.facebook_watch.start', {
+        page_id: 'me',
+        demo_mode: false,
+        demo_comments: [
+          { comment_id: 'ui_seed_001', post_id: 'ui_post_001', message: 'Love your recent update.' },
+          { comment_id: 'ui_seed_002', post_id: 'ui_post_001', message: 'Can you share milestones?' },
+        ],
+      });
+      await postDemoEvent('demo.workflow.facebook_watch.poll', {});
+      setWorkflowStatus('Facebook watch workflow complete. Pending replies updated.');
+    } catch {
+      setWorkflowStatus('Facebook workflow failed. Check /v1/events.');
+    } finally {
+      setWorkflowBusy(null);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,6 +278,29 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
               })}
           </div>
         )}
+      </div>
+
+      <div className="workflow-strip">
+        <div className="workflow-strip-title">Demo Workflows</div>
+        <div className="workflow-strip-actions">
+          <button
+            type="button"
+            className="workflow-btn"
+            onClick={runProactiveWorkflow}
+            disabled={workflowBusy !== null}
+          >
+            {workflowBusy === 'proactive' ? 'Running...' : 'Run Proactive'}
+          </button>
+          <button
+            type="button"
+            className="workflow-btn"
+            onClick={runFacebookWorkflow}
+            disabled={workflowBusy !== null}
+          >
+            {workflowBusy === 'facebook' ? 'Running...' : 'Run Facebook Watch'}
+          </button>
+        </div>
+        {workflowStatus && <div className="workflow-strip-status">{workflowStatus}</div>}
       </div>
 
       <AgentMap />

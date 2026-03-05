@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from app.auth import get_livemode, get_mode
 from app.deps import get_master
 from deepagent.loop import AlwaysOnMaster
 from deepagent.skills.registry import SKILL_REGISTRY
@@ -39,10 +40,9 @@ class ApprovalDecisionRequest(BaseModel):
 @router.get("/state", include_in_schema=False)
 async def get_agent_state(request: Request):
     from app.api.v1.runtime import get_runtime
-    from app.deps import get_master
 
     master = get_master(request)
-    return await get_runtime(master)
+    return await get_runtime(request=request, master=master)
 
 
 @router.get("/map", include_in_schema=False)
@@ -63,30 +63,59 @@ async def get_skills():
 
 @router.post("/activate", include_in_schema=False)
 async def activate_agent(body: ActivateAgentRequest, request: Request):
-    from pipeline.extractor import extract_persona_data
-    from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
-    from pipeline.action_planner import generate_actions
     from app.deps import get_master
 
     master = get_master(request)
+    mode = get_mode(request.headers.get("Authorization"))
+    from integrations.composio_client import set_demo_mode
+
+    set_demo_mode(mode == "demo")
 
     try:
-        extracted = extract_persona_data(
-            body.scenario_id.split("_")[0] if "_" in body.scenario_id else "p05"
+        if mode == "demo":
+            from pipeline.demo_theo import (
+                generate_demo_actions,
+                generate_demo_scenarios,
+                normalize_demo_scenario_id,
+            )
+
+            scenario_id = normalize_demo_scenario_id(body.scenario_id)
+
+            scenarios = generate_demo_scenarios("p05")
+            chosen = next(
+                (s for s in scenarios if s.get("id") == scenario_id),
+                {
+                    "id": scenario_id,
+                    "title": body.scenario_title or "Quest",
+                    "summary": body.scenario_summary,
+                    "horizon": body.scenario_horizon or "1yr",
+                    "likelihood": body.scenario_likelihood or "possible",
+                    "tags": body.scenario_tags or [],
+                },
+            )
+            _ = generate_demo_actions(chosen.get("id", scenario_id), "p05")
+        else:
+            from pipeline.extractor import extract_persona_data
+            from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
+            from pipeline.action_planner import generate_actions
+
+            extracted = extract_persona_data("p05")
+            scenarios = await generate_scenarios_llm(extracted)
+            chosen = next(
+                (s for s in scenarios if s.get("id") == body.scenario_id),
+                {
+                    "id": body.scenario_id,
+                    "title": body.scenario_title or "Quest",
+                    "summary": body.scenario_summary,
+                    "horizon": body.scenario_horizon or "1yr",
+                    "likelihood": body.scenario_likelihood or "possible",
+                    "tags": body.scenario_tags or [],
+                },
+            )
+            await generate_actions(chosen, extracted)
+        result = await master.activate_scenario(
+            scenario=chosen, demo_mode=(mode == "demo")
         )
-        scenarios = await generate_scenarios_llm(extracted)
-        chosen = next(
-            (s for s in scenarios if s.get("id") == body.scenario_id),
-            scenarios[0]
-            if scenarios
-            else {
-                "id": body.scenario_id,
-                "title": body.scenario_title,
-                "summary": body.scenario_summary,
-            },
-        )
-        await generate_actions(chosen, extracted)
-        result = await master.activate_scenario(scenario=chosen)
         return result
     except Exception as e:
         from app.middleware.errors import ApiException
@@ -99,7 +128,19 @@ async def post_agent_event(body: AgentEventRequest, request: Request):
     from app.api.v1.events import CreateEventRequest
     from app.deps import get_master
 
-    event_req = CreateEventRequest(type=body.type, payload=body.payload)
+    mode = get_mode(request.headers.get("Authorization"))
+    from integrations.composio_client import set_demo_mode
+
+    set_demo_mode(mode == "demo")
+    payload = dict(body.payload or {})
+    if mode == "demo":
+        if body.type.startswith("demo.workflow."):
+            payload.setdefault("demo_mode", True)
+        if payload.get("enqueue"):
+            task_payload = dict(payload.get("task_payload") or {})
+            task_payload.setdefault("demo_mode", True)
+            payload["task_payload"] = task_payload
+    event_req = CreateEventRequest(type=body.type, payload=payload)
     master = get_master(request)
     result = await master.ingest_event(event_req.type, event_req.payload)
     event = result.get("event", {})
@@ -112,7 +153,7 @@ async def post_agent_event(body: AgentEventRequest, request: Request):
         "id": evt_id,
         "object": "event",
         "created": event.get("created"),
-        "livemode": True,
+        "livemode": get_livemode(request.headers.get("Authorization")),
         "metadata": {},
         "type": event.get("type", event_req.type),
         "payload": event.get("payload", event_req.payload),

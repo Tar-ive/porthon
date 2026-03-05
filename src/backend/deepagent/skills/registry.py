@@ -32,7 +32,8 @@ SKILL_REGISTRY: list[SkillDef] = [
         display_name="KG Search",
         description="Scenario-aware retrieval over personal memory and graph context.",
         actions=[
-            SkillActionDef(name="retrieve_context", required_params=["intent", "scope", "query"]),
+            SkillActionDef(name="search", required_params=["query"]),
+            SkillActionDef(name="classify", required_params=["query"]),
         ],
     ),
     SkillDef(
@@ -40,10 +41,9 @@ SKILL_REGISTRY: list[SkillDef] = [
         display_name="Calendar Scheduler",
         description="Calendar planning and adjustments for scenario execution.",
         actions=[
+            SkillActionDef(name="sync_schedule"),
             SkillActionDef(name="create_block", risk=SkillRisk.MEDIUM, required_params=["start_time", "end_time", "title"]),
             SkillActionDef(name="move_block", risk=SkillRisk.MEDIUM, required_params=["start_time", "end_time", "title"]),
-            SkillActionDef(name="cancel_block", risk=SkillRisk.HIGH, required_params=["title"]),
-            SkillActionDef(name="check_conflict", required_params=["start_time", "end_time"]),
         ],
     ),
     SkillDef(
@@ -51,10 +51,9 @@ SKILL_REGISTRY: list[SkillDef] = [
         display_name="Notion Leads Tracker",
         description="Lead creation, progression, and follow-up management.",
         actions=[
-            SkillActionDef(name="create_lead", required_params=["lead_name"]),
-            SkillActionDef(name="update_stage", required_params=["lead_name", "stage"]),
-            SkillActionDef(name="log_touchpoint", required_params=["lead_name"]),
-            SkillActionDef(name="set_followup", required_params=["lead_name", "due_date"]),
+            SkillActionDef(name="create_pipeline"),
+            SkillActionDef(name="add_lead", required_params=["name"]),
+            SkillActionDef(name="search_leads"),
         ],
     ),
     SkillDef(
@@ -62,11 +61,8 @@ SKILL_REGISTRY: list[SkillDef] = [
         display_name="Notion Opportunity Tracker",
         description="Opportunity forecasting and closure tracking.",
         actions=[
-            SkillActionDef(name="create_opportunity", required_params=["opportunity_name"]),
-            SkillActionDef(name="update_probability", required_params=["opportunity_name", "probability_bucket"]),
-            SkillActionDef(name="attach_next_action", required_params=["opportunity_name"]),
-            SkillActionDef(name="close_won", risk=SkillRisk.MEDIUM, required_params=["opportunity_name"]),
-            SkillActionDef(name="close_lost", risk=SkillRisk.MEDIUM, required_params=["opportunity_name"]),
+            SkillActionDef(name="create_workspace"),
+            SkillActionDef(name="add_progress_page", required_params=["workspace_id", "title"]),
         ],
     ),
     SkillDef(
@@ -74,10 +70,12 @@ SKILL_REGISTRY: list[SkillDef] = [
         display_name="Facebook Publisher",
         description="Draft/schedule/publish scenario-aligned posts.",
         actions=[
-            SkillActionDef(name="draft_post", required_params=["content"]),
+            SkillActionDef(name="draft_posts"),
+            SkillActionDef(name="fetch_comments", required_params=["page_id"]),
+            SkillActionDef(name="draft_comment_reply", required_params=["comment_text"]),
             SkillActionDef(name="schedule_post", risk=SkillRisk.MEDIUM, required_params=["content", "scheduled_time"]),
             SkillActionDef(name="publish_post", risk=SkillRisk.HIGH, required_params=["content"]),
-            SkillActionDef(name="cancel_post", risk=SkillRisk.MEDIUM),
+            SkillActionDef(name="reply_comment", risk=SkillRisk.HIGH, required_params=["comment_id", "message"]),
         ],
     ),
     SkillDef(
@@ -85,9 +83,9 @@ SKILL_REGISTRY: list[SkillDef] = [
         display_name="Figma Plan Generator",
         description="Design challenge and milestone planning.",
         actions=[
-            SkillActionDef(name="generate_plan", required_params=["scenario_title"]),
-            SkillActionDef(name="derive_milestones", required_params=["scenario_title"]),
-            SkillActionDef(name="sync_to_content", required_params=["scenario_title"]),
+            SkillActionDef(name="generate_challenge", required_params=["scenario_title"]),
+            SkillActionDef(name="verify_connection"),
+            SkillActionDef(name="comment_file", required_params=["file_key", "message"], risk=SkillRisk.MEDIUM),
         ],
     ),
     SkillDef(

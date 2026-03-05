@@ -4,9 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock, AsyncMock
 
 # Set env BEFORE importing app to skip KG initialization
 os.environ["NEO4J_URI"] = ""  # Disable KG
@@ -28,14 +26,14 @@ from main import app
 # Mock scenario generation
 MOCK_SCENARIOS = [
     {
-        "id": "s_test_v1",
+        "id": "scen_test_v1",
         "title": "Test",
         "summary": "Test scenario",
         "horizon": "5yr",
         "likelihood": "possible",
     },
     {
-        "id": "s_compat",
+        "id": "scen_compat",
         "title": "Compat",
         "summary": "Compat scenario",
         "horizon": "1yr",
@@ -213,7 +211,7 @@ def _reset_state():
 
 
 @pytest.fixture()
-def client():
+def client_local():
     _reset_state()
     with TestClient(app) as c:
         yield c
@@ -224,7 +222,7 @@ def _activate_scenario(client: TestClient) -> dict:
     return client.post(
         "/api/agent/activate",
         json={
-            "scenario_id": "s_test_v1",
+            "scenario_id": "scen_test_v1",
             "scenario_title": "V1 Test Scenario",
             "scenario_summary": "scenario for v1 tests",
             "scenario_horizon": "5yr",
@@ -251,7 +249,7 @@ def test_v1_health(client):
 
 @pytest.mark.fast
 def test_v1_health_test_mode(client):
-    r = client.get("/v1/health", headers={"Authorization": "Bearer sk_test_demo"})
+    r = client.get("/v1/health", headers={"Authorization": "Bearer sk_demo_default"})
     assert r.status_code == 200
     assert r.json()["livemode"] is False
 
@@ -384,6 +382,18 @@ def test_v1_quests_stable_id(client):
     assert r1.json()["data"][0]["id"] == r2.json()["data"][0]["id"]
 
 
+@pytest.mark.fast
+def test_v1_quests_activation_duration_ms(client):
+    r = client.post(
+        "/v1/quests",
+        json={"scenario_id": "scen_001", "persona_id": "p05"},
+        headers={"Authorization": "Bearer sk_demo_default"},
+    )
+    assert r.status_code == 200
+    assert "activation_duration_ms" in r.json()
+    assert isinstance(r.json()["activation_duration_ms"], int)
+
+
 # ---------------------------------------------------------------------------
 # Approvals — Bug: list showed approvals but GET/{id} and resolve failed
 # ---------------------------------------------------------------------------
@@ -502,6 +512,57 @@ def test_v1_events_list(client):
     assert len(body["data"]) > 0
     for evt in body["data"]:
         assert evt["id"].startswith("evt_")
+    cycle_ends = [e for e in body["data"] if e["type"] == "cycle_end"]
+    if cycle_ends:
+        assert "cycle_duration_ms" in cycle_ends[0]["payload"]
+
+
+@pytest.mark.fast
+def test_demo_runtime_artifacts_visible_in_demo_mode(client):
+    client.post(
+        "/v1/events",
+        json={"type": "demo.workflow.proactive.preview", "payload": {}},
+        headers={"Authorization": "Bearer sk_demo_default"},
+    )
+    runtime = client.get(
+        "/v1/runtime", headers={"Authorization": "Bearer sk_demo_default"}
+    ).json()
+    assert "demo_artifacts" in runtime
+
+
+@pytest.mark.fast
+def test_demo_facebook_watch_inject_creates_pending_reply(client):
+    client.post(
+        "/v1/events",
+        json={"type": "demo.workflow.facebook_watch.start", "payload": {"page_id": "me"}},
+        headers={"Authorization": "Bearer sk_demo_default"},
+    )
+    client.post(
+        "/v1/events",
+        json={
+            "type": "demo.workflow.facebook_watch.inject",
+            "payload": {
+                "comments": [
+                    {
+                        "comment_id": "c_demo_001",
+                        "post_id": "p_demo_001",
+                        "message": "Love this progress update!",
+                    }
+                ]
+            },
+        },
+        headers={"Authorization": "Bearer sk_demo_default"},
+    )
+    runtime = client.get(
+        "/v1/runtime", headers={"Authorization": "Bearer sk_demo_default"}
+    ).json()
+    pending = (
+        runtime.get("demo_artifacts", {})
+        .get("facebook_watch", {})
+        .get("pending_replies", [])
+    )
+    assert len(pending) >= 1
+    assert pending[0]["comment_id"] == "c_demo_001"
 
 
 # ---------------------------------------------------------------------------
@@ -581,6 +642,15 @@ def test_backward_compat_health(client):
 
 
 @pytest.mark.fast
+def test_backward_compat_api_scenarios(client):
+    r = client.get("/api/scenarios")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["object"] == "list"
+    assert isinstance(body.get("data", []), list)
+
+
+@pytest.mark.fast
 def test_backward_compat_agent_state(client):
     r = client.get("/api/agent/state")
     assert r.status_code == 200
@@ -607,7 +677,7 @@ def test_backward_compat_agent_activate(client):
     r = client.post(
         "/api/agent/activate",
         json={
-            "scenario_id": "s_compat",
+            "scenario_id": "scen_compat",
             "scenario_title": "Compat Test",
             "scenario_summary": "test",
             "scenario_horizon": "1yr",

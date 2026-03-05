@@ -10,6 +10,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from app.auth import get_mode
 from utils import (
     ClientMessage,
     extract_text,
@@ -57,16 +58,29 @@ async def create_message(body: CreateMessageRequest, request: Request):
 
     intent = classify_intent(last_user_text) if last_user_text else "casual"
     context = None
+    mode = get_mode(request.headers.get("Authorization"))
 
     try:
-        from main import _rag
-        if _rag is not None:
-            from deepagent.workers.kg_worker import KgWorker
-            kg = KgWorker()
-            result = await kg._search({"query": last_user_text})
-            if result.ok and result.data.get("raw_context"):
-                context = result.data["raw_context"]
-                intent = result.data.get("intent", intent)
+        import main as main_mod
+
+        rag_instance = main_mod._rag
+        if mode == "live":
+            if rag_instance is None:
+                from deepagent.workers.kg_worker import _create_rag_instance
+
+                rag = _create_rag_instance()
+                if rag is not None:
+                    await rag.initialize_storages()
+                    main_mod._rag = rag
+                    rag_instance = rag
+
+            if rag_instance is not None:
+                from deepagent.workers.kg_worker import KgWorker
+                kg = KgWorker()
+                result = await kg._search({"query": last_user_text})
+                if result.ok and result.data.get("raw_context"):
+                    context = result.data["raw_context"]
+                    intent = result.data.get("intent", intent)
     except Exception as e:
         logger.error(f"KG retrieval error: {e}")
 

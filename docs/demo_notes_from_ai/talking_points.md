@@ -29,11 +29,11 @@ Key points to highlight during the Questline API demo.
 
 ## 4. Test Mode
 
-"We are running in test mode using `sk_test_demo`. The entire API surface works identically, but no external services are called. Switch to a `sk_live_` key and the same quest activation would create real calendar events and Notion entries through Composio."
+"We are running in test mode using `sk_demo_default`. The entire API surface works identically, but no external services are called. Switch to a `sk_live_` key and the same quest activation would create real calendar events and Notion entries through Composio."
 
 - Every response includes `livemode: false`
 - Same code path, same approval flow, stubbed external actions
-- Any `sk_test_*` key activates test mode
+- Any `sk_demo_*` key activates test mode
 
 ## 5. Structured Errors
 

@@ -108,6 +108,9 @@ class AgentRuntimeState(BaseModel):
     circuits: list[WorkerCircuitState] = Field(default_factory=list)
     cycle_history: list[CycleSnapshot] = Field(default_factory=list)
     event_history: list[dict[str, Any]] = Field(default_factory=list)
+    demo_artifacts: dict[str, Any] = Field(default_factory=dict)
+    value_signals: dict[str, Any] = Field(default_factory=dict)
+    workflow_state: dict[str, Any] = Field(default_factory=dict)
     updated_at: str
 
 

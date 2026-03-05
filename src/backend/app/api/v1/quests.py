@@ -5,13 +5,14 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import logging
+import time
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel
 
 from app.api.v1.schemas import ListObject, epoch_now, paginate
-from app.auth import get_livemode
+from app.auth import get_livemode, get_mode
 from app.deps import get_master
 from app.middleware.errors import ApiException
 from deepagent.loop import AlwaysOnMaster
@@ -58,11 +59,12 @@ async def create_quest(
     request: Request,
     master: AlwaysOnMaster = Depends(get_master),
 ):
-    from pipeline.extractor import extract_persona_data
-    from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
-    from pipeline.action_planner import generate_actions
-
     livemode = get_livemode(request.headers.get("Authorization"))
+    mode = get_mode(request.headers.get("Authorization"))
+    from integrations.composio_client import set_demo_mode
+
+    set_demo_mode(mode == "demo")
+    started = time.perf_counter()
 
     # Resolve scen_ prefixed ID back to raw pipeline ID if needed
     scenario_id = body.scenario_id
@@ -75,18 +77,47 @@ async def create_quest(
         pass
 
     try:
-        extracted = extract_persona_data(body.persona_id)
-        scenarios = await asyncio.wait_for(
-            generate_scenarios_llm(extracted), timeout=30.0
+        if mode == "demo":
+            from pipeline.demo_theo import (
+                generate_demo_actions,
+                generate_demo_scenarios,
+                normalize_demo_scenario_id,
+            )
+
+            scenario_id = normalize_demo_scenario_id(scenario_id)
+
+            scenarios = generate_demo_scenarios(body.persona_id)
+            chosen = next(
+                (s for s in scenarios if s.get("id") == scenario_id),
+                {
+                    "id": scenario_id,
+                    "title": "Quest",
+                    "summary": "",
+                    "horizon": "1yr",
+                    "likelihood": "possible",
+                    "tags": [],
+                },
+            )
+            _ = generate_demo_actions(chosen.get("id", scenario_id), body.persona_id)
+        else:
+            from pipeline.extractor import extract_persona_data
+            from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
+            from pipeline.action_planner import generate_actions
+
+            extracted = extract_persona_data(body.persona_id)
+            scenarios = await asyncio.wait_for(
+                generate_scenarios_llm(extracted), timeout=30.0
+            )
+            chosen = next(
+                (s for s in scenarios if s.get("id") == scenario_id),
+                scenarios[0]
+                if scenarios
+                else {"id": scenario_id, "title": "Quest", "summary": ""},
+            )
+            await asyncio.wait_for(generate_actions(chosen, extracted), timeout=30.0)
+        result = await master.activate_scenario(
+            scenario=chosen, demo_mode=(mode == "demo")
         )
-        chosen = next(
-            (s for s in scenarios if s.get("id") == scenario_id),
-            scenarios[0]
-            if scenarios
-            else {"id": scenario_id, "title": "Quest", "summary": ""},
-        )
-        await asyncio.wait_for(generate_actions(chosen, extracted), timeout=30.0)
-        result = await master.activate_scenario(scenario=chosen)
     except asyncio.TimeoutError:
         raise ApiException(
             status_code=504, code="timeout", message="Quest activation timed out."
@@ -99,6 +130,7 @@ async def create_quest(
     quest = _build_quest(state, livemode)
     if quest:
         quest["cycle"] = result.get("cycle")
+        quest["activation_duration_ms"] = int((time.perf_counter() - started) * 1000)
     return quest or {"error": "no active scenario"}
 
 

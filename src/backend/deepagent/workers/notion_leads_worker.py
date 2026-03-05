@@ -30,6 +30,8 @@ class NotionLeadsWorker(BaseWorker):
         "create_pipeline": "_create_pipeline",
         "add_lead": "_add_lead",
         "search_leads": "_search_leads",
+        "sync_leads": "_create_pipeline",
+        "create_lead": "_add_lead",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -68,6 +70,22 @@ class NotionLeadsWorker(BaseWorker):
 
     async def _create_pipeline(self, payload: dict) -> WorkerExecution:
         """Create a client pipeline database in Notion."""
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            return WorkerExecution(
+                ok=True,
+                message="Client pipeline database created (demo)",
+                data={
+                    "database_id": "demo_notion_pipeline",
+                    "reused": False,
+                    "title": "Client Pipeline",
+                    "leads": [
+                        {"name": "Referral Lead", "source": "Referral", "status": "Lead"},
+                        {"name": "Portfolio Lead", "source": "Portfolio", "status": "Proposal"},
+                        {"name": "Direct Lead", "source": "Direct", "status": "Lead"},
+                    ],
+                },
+            )
+
         kg_context = payload.get("kg_context", {})
         parent_id = payload.get("parent_id") or os.environ.get("NOTION_ROOT_PAGE_ID")
 

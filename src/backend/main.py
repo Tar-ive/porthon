@@ -19,22 +19,11 @@ from app.middleware.errors import (
     generic_exception_handler,
 )
 from app.middleware.idempotency import IdempotencyMiddleware
-from deepagent.workers.kg_worker import classify_intent, _create_rag_instance
-from deepagent.persona.prompt_builder import build_system_prompt
 from deepagent.contracts import ProfileScores, QuestContext, QuestMemory, PersonaConfig  # noqa: F401
 from deepagent.factory import create_master
-from pipeline.action_planner import generate_actions
-from pipeline.extractor import extract_persona_data
-from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
-from simulation.scenarios import generate_scenarios as generate_scenarios_fallback
 from utils import (
     ClientMessage,
     ClientMessagePart,  # noqa: F401 — re-exported for Pydantic schema discovery
-    extract_text,
-    iter_ollama_events,
-    iter_openai_events,
-    patch_response_with_headers,
-    wrap_stream,
 )
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
@@ -56,7 +45,7 @@ OPENAI_MODEL = os.environ.get("LLM_MODEL", "gpt-4o-mini")
 
 USE_OPENAI = bool(os.environ.get("OPENAI_API_KEY"))
 
-# RAG instance — initialized at startup only when KG env vars are set
+# RAG instance — initialized lazily when explicitly needed by live routes.
 _rag = None
 
 
@@ -70,19 +59,7 @@ async def lifespan(app: FastAPI):
     await master.start()
     app.state.always_on_master = master
 
-    if os.environ.get("NEO4J_URI"):
-        try:
-            _rag = _create_rag_instance()
-            if _rag is not None:
-                await _rag.initialize_storages()
-                logger.info("LightRAG initialized with Neo4j + Qdrant")
-            else:
-                logger.warning("LightRAG creation returned None — running without KG")
-        except Exception as e:
-            logger.warning(f"LightRAG init failed (running without KG): {e}")
-            _rag = None
-    else:
-        logger.info("NEO4J_URI not set — running without knowledge graph")
+    logger.info("Skipping eager LightRAG startup; KG is lazy-initialized when needed")
     yield
     await master.stop()
     if _rag is not None:
@@ -129,7 +106,24 @@ async def api_health(request: Request):
 async def api_scenarios(request: Request):
     from app.api.v1.scenarios import list_scenarios
 
-    return await list_scenarios(request)
+    qp = request.query_params
+    persona_id = qp.get("persona_id", "p05")
+    starting_after = qp.get("starting_after")
+    expand = qp.getlist("expand[]") if hasattr(qp, "getlist") else None
+
+    try:
+        limit = int(qp.get("limit", "20"))
+    except (TypeError, ValueError):
+        limit = 20
+    limit = max(1, min(100, limit))
+
+    return await list_scenarios(
+        request=request,
+        persona_id=persona_id,
+        limit=limit,
+        starting_after=starting_after,
+        expand=expand,
+    )
 
 
 @app.post("/api/actions", include_in_schema=False)

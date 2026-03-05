@@ -2,14 +2,14 @@
 
 ## What Is Test Mode?
 
-Test mode lets you exercise the full API without triggering real external actions (Composio tool calls, calendar writes, social media posts, Notion updates). Any request authenticated with a `sk_test_*` key runs in test mode.
+Test mode lets you exercise the full API without triggering real external actions (Composio tool calls, calendar writes, social media posts, Notion updates). Any request authenticated with a `sk_demo_*` key runs in test mode.
 
 ## How to Activate
 
 Pass the test key in the Authorization header:
 
 ```
-Authorization: Bearer sk_test_demo
+Authorization: Bearer sk_demo_default
 ```
 
 Every resource returned will include `"livemode": false`.
@@ -18,9 +18,9 @@ Every resource returned will include `"livemode": false`.
 
 | Key | Purpose |
 |-----|---------|
-| `sk_test_demo` | General demo and development use |
+| `sk_demo_default` | General demo and development use |
 
-Any string matching the pattern `sk_test_*` activates test mode. You can use `sk_test_anything` for your own sessions.
+Any string matching the pattern `sk_demo_*` activates test mode. You can use `sk_demo_anything` for your own sessions.
 
 ## What Changes in Test Mode
 
@@ -46,7 +46,7 @@ For live integration tests (`make test-live`), you need real Composio credential
 3. Connect integrations (Google Calendar, Notion, Figma, Facebook) through the Composio dashboard
 4. Run `make test-live` to verify connections
 
-For the Swagger demo, you do NOT need Composio credentials. `sk_test_demo` bypasses external service calls.
+For the Swagger demo, you do NOT need Composio credentials. `sk_demo_default` bypasses external service calls.
 
 ## Environment Variables for Test Mode
 
@@ -74,7 +74,7 @@ LLM_MODEL=anthropic/claude-sonnet-4
 
 ```bash
 curl http://localhost:8000/v1/health \
-  -H "Authorization: Bearer sk_test_demo"
+  -H "Authorization: Bearer sk_demo_default"
 ```
 
 Check that the response includes `"livemode": false`.
@@ -82,6 +82,6 @@ Check that the response includes `"livemode": false`.
 ## Differences from Live Mode for Reviewers
 
 When presenting the demo, clarify:
-- "We are in test mode -- the `sk_test_demo` key means no real calendar events, social posts, or Notion updates are created."
+- "We are in test mode -- the `sk_demo_default` key means no real calendar events, social posts, or Notion updates are created."
 - "The same API calls with a `sk_live_` key would execute real actions through Composio integrations."
 - "The approval flow still works identically -- you still approve or reject, but the downstream effect is stubbed."

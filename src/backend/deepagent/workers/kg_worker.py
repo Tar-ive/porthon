@@ -209,12 +209,22 @@ class KgWorker(BaseWorker):
     ACTIONS = {
         "search": "_search",
         "classify": "_classify",
+        "refresh_context": "_search",
+        "retrieve_context": "_search",
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
         handler_name = self.ACTIONS.get(action)
         if not handler_name:
             return WorkerExecution(ok=False, message=f"Unknown KG action: {action}")
+
+        if action in {"refresh_context", "retrieve_context"} and not payload.get("query"):
+            payload = {
+                **payload,
+                "query": payload.get("scenario_summary")
+                or payload.get("scenario_title")
+                or "refresh scenario context",
+            }
 
         handler = getattr(self, handler_name)
         return await handler(payload)
@@ -238,6 +248,23 @@ class KgWorker(BaseWorker):
             return WorkerExecution(
                 ok=False,
                 message="KG search requires a 'query' in payload",
+            )
+
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            return WorkerExecution(
+                ok=True,
+                message="KG demo context generated",
+                data={
+                    "snippets": [
+                        "Public/private confidence delta is present.",
+                        "Learning time currently outpaces conversion actions.",
+                        "Financial stress is linked to execution drag.",
+                        "ADHD-compatible chunking improves completion rate.",
+                    ],
+                    "confidence": 0.88,
+                    "intent": payload.get("intent") or classify_intent(query),
+                    "refs": ["c_0001", "t_0120", "ll_0142", "cal_0078"],
+                },
             )
 
         # Classify intent

@@ -11,7 +11,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from app.api.v1.schemas import ListObject, generate_id, epoch_now, paginate
-from app.auth import get_livemode
+from app.auth import get_livemode, get_mode
 from app.deps import get_master
 from deepagent.loop import AlwaysOnMaster
 
@@ -26,9 +26,23 @@ class CreateEventRequest(BaseModel):
 @router.post("/events")
 async def create_event(
     body: CreateEventRequest,
+    request: Request,
     master: AlwaysOnMaster = Depends(get_master),
 ):
-    result = await master.ingest_event(body.type, body.payload)
+    mode = get_mode(request.headers.get("Authorization"))
+    from integrations.composio_client import set_demo_mode
+
+    set_demo_mode(mode == "demo")
+    payload = dict(body.payload or {})
+    if mode == "demo":
+        if body.type.startswith("demo.workflow."):
+            payload.setdefault("demo_mode", True)
+        if payload.get("enqueue"):
+            task_payload = dict(payload.get("task_payload") or {})
+            task_payload.setdefault("demo_mode", True)
+            payload["task_payload"] = task_payload
+
+    result = await master.ingest_event(body.type, payload)
     event = result.get("event", {})
     evt_id = event.get("event_id", "")
     if not evt_id.startswith("evt_"):
@@ -38,10 +52,10 @@ async def create_event(
         "id": evt_id,
         "object": "event",
         "created": epoch_now(),
-        "livemode": True,
+        "livemode": get_livemode(request.headers.get("Authorization")),
         "metadata": {},
         "type": event.get("type", body.type),
-        "payload": event.get("payload", body.payload),
+        "payload": event.get("payload", payload),
         "cycle": result.get("cycle"),
     }
 

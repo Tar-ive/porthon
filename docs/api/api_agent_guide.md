@@ -146,4 +146,4 @@ Never use offset-based pagination. Only `starting_after` with a resource ID.
 
 ## Test Mode
 
-Use `Authorization: Bearer sk_test_demo` to enter test mode. All resources will have `livemode: false`. No real external actions (Composio, calendar, social) are executed. Useful for development and demos.
+Use `Authorization: Bearer sk_demo_default` to enter test mode. All resources will have `livemode: false`. No real external actions (Composio, calendar, social) are executed. Useful for development and demos.

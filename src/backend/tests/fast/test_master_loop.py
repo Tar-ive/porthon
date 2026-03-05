@@ -16,7 +16,7 @@ async def test_activate_scenario_seeds_queue(tmp_path: Path):
 
     result = await master.activate_scenario(
         {
-            "id": "s_demo",
+            "id": "scen_demo",
             "title": "Demo Scenario",
             "summary": "test",
             "horizon": "1yr",
@@ -27,7 +27,7 @@ async def test_activate_scenario_seeds_queue(tmp_path: Path):
 
     state = await master.get_state()
     assert result["ok"] is True
-    assert state["active_scenario"]["scenario_id"] == "s_demo"
+    assert state["active_scenario"]["scenario_id"] == "scen_demo"
     assert len(state["queue"]) >= 6
 
     await master.stop()
@@ -41,7 +41,7 @@ async def test_ingest_event_enqueues_and_runs_cycle(tmp_path: Path):
 
     await master.activate_scenario(
         {
-            "id": "s_demo",
+            "id": "scen_demo",
             "title": "Demo Scenario",
             "summary": "test",
             "horizon": "1yr",
@@ -64,6 +64,7 @@ async def test_ingest_event_enqueues_and_runs_cycle(tmp_path: Path):
     assert event_result["ok"] is True
     assert any(t["status"] in {TaskStatus.COMPLETED, TaskStatus.PENDING, TaskStatus.RUNNING, TaskStatus.WAITING_APPROVAL} for t in state["queue"])
     assert len(state["cycle_history"]) >= 1
+    assert "cycle_duration_ms" in event_result["cycle"]
 
     await master.stop()
 
@@ -75,7 +76,7 @@ async def test_facebook_publish_goes_to_approval(tmp_path: Path):
     await master.start()
     await master.activate_scenario(
         {
-            "id": "s_demo",
+            "id": "scen_demo",
             "title": "Demo Scenario",
             "summary": "test",
             "horizon": "1yr",

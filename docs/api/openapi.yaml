@@ -602,7 +602,7 @@ components:
       type: http
       scheme: bearer
       description: |
-        API key prefixed with `sk_test_` (test mode) or `sk_live_` (live mode).
+        API key prefixed with `sk_demo_` (test mode) or `sk_live_` (live mode).
         Authentication is optional for local development.
 
   parameters:

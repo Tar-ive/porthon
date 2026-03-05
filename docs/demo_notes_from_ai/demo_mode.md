@@ -86,7 +86,7 @@ When `Authorization: Bearer sk_demo_p5` is used:
 | Key | Mode | Persona | Temperature |
 |-----|------|---------|-------------|
 | `sk_live_*` | live | p05 | 0.7 |
-| `sk_test_*` | test | p05 | 0.0 |
+| `sk_demo_*` | test | p05 | 0.0 |
 | `sk_demo_p5` | demo | p05 | 0.0 |
 
 ## Files Affected

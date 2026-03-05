@@ -163,7 +163,7 @@ Core resources (`quests`, [scenarios](file:///Users/tarive/porthon/src/backend/m
 
 ## 7. Versioning and Environment Separation
 
-* **Test vs Live Environments:** Every API key dictates the environment. The Master Loop checks the key prefix (`sk_test_...` vs `sk_live_...`). If a test key is used, `livemode: false` is forced on all created resources. The agent will run dry-runs on Composio integrations.
+* **Test vs Live Environments:** Every API key dictates the environment. The Master Loop checks the key prefix (`sk_demo_...` vs `sk_live_...`). If a test key is used, `livemode: false` is forced on all created resources. The agent will run dry-runs on Composio integrations.
 * **API Versioning:** The frontend pins its expected shape via an HTTP header: `X-Api-Version: 2026-03-01`. The backend maintains transformation layers so breaking changes in the Master Loop don't break old UI clients.
 
 ---
