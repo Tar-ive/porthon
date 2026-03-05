@@ -1,0 +1,88 @@
+# Figma API Integration (OpenAPI-First, No Composio)
+
+This implementation uses [`openapi.yaml`](./openapi.yaml) as the source of truth and maps it to internal `/v1/figma/*` endpoints plus `figma_worker` actions.
+
+## Environment
+
+Required for live mode:
+
+- `FIGMA_API_KEY` (personal access token or OAuth token with comments/webhooks scopes)
+- `FIGMA_WEBHOOK_PASSCODE` (optional global default passcode for inbound webhook verification)
+
+Optional:
+
+- `PORTTHON_OFFLINE_MODE=1` or demo auth key (`sk_demo_*`) for deterministic test mode.
+
+## Internal API Surface
+
+Programmatic watcher management:
+
+- `POST /v1/figma/watchers`
+- `GET /v1/figma/watchers`
+- `PATCH /v1/figma/watchers/{watcher_id}`
+- `DELETE /v1/figma/watchers/{watcher_id}`
+- `GET /v1/figma/watchers/{watcher_id}/requests`
+
+Inbound webhook:
+
+- `POST /v1/figma/webhooks`
+
+Comment queue / approval pipeline:
+
+- `GET /v1/figma/comments/pending`
+- `POST /v1/figma/comments/{comment_id}/prepare-send`
+
+Back-compat alias:
+
+- `POST /v1/integrations/composio/webhook` (deprecated; forwards into same ingest path)
+
+## Worker Actions
+
+`figma_worker` now supports:
+
+- `verify_connection` (uses `GET /v1/me`)
+- `comment_file` (uses `POST /v1/files/{file_key}/comments`)
+- `reply_comment` (uses `POST /v1/files/{file_key}/comments` with `comment_id`)
+- `process_webhook_event` (normalizes webhook payload and creates a draft follow-up)
+
+Policy:
+
+- `figma_worker.reply_comment` is irreversible and requires explicit approval before execution.
+
+## Deterministic Webhook Handling
+
+`integrations/figma_webhooks.py` normalizes official `FILE_COMMENT` payloads:
+
+- Supports fragment arrays (`comment: [{text|mention}]`) and renders canonical message text.
+- Generates stable event IDs / dedupe keys.
+- Extracts `comment_id`, `file_key`, actor, timestamps, and passcode.
+- Validates passcode before ingesting into `integration.figma.webhook.received`.
+
+## Real-Time Agent Flow
+
+1. A watcher is created for a Figma file (`/v1/figma/watchers`).
+2. Figma sends `FILE_COMMENT` webhook to `/v1/figma/webhooks`.
+3. Master loop ingests event and runs `figma_worker.process_webhook_event`.
+4. Pending item appears in `/v1/figma/comments/pending` with `draft_reply`.
+5. Client calls `POST /v1/figma/comments/{comment_id}/prepare-send`.
+6. System enqueues `figma_worker.reply_comment` and marks it `awaiting_approval`.
+7. Approval is resolved through existing approvals API:
+   - `POST /v1/approvals/{approval_id}/resolve` with `decision="approved"` to send.
+8. Pending status resolves to `sent` or `failed` based on task execution.
+
+## Programmatic Setup Example
+
+```bash
+curl -X POST http://localhost:8000/v1/figma/watchers \
+  -H "Authorization: Bearer sk_live_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "file_key": "AbCdEf123",
+    "endpoint": "https://your.api/v1/figma/webhooks",
+    "event_type": "FILE_COMMENT",
+    "passcode": "replace-me",
+    "context": "file"
+  }'
+```
+
+Then configure the same endpoint/passcode in Figma webhook settings (or let the live endpoint create the webhook via Figma API automatically).

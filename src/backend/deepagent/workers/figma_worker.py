@@ -1,15 +1,4 @@
-"""Figma Plan Generator Worker — design challenges + learning paths.
-
-Absorbs agents/figma_learning.py:
-  - Figma connection verification via Composio
-  - Design challenge generation calibrated to skill level
-  - Portfolio-worthy project scaffolding
-
-Composio actions:
-  FIGMA_GET_CURRENT_USER       — verify connection
-  FIGMA_GET_FILE_JSON          — analyze existing files
-  FIGMA_EXTRACT_DESIGN_TOKENS  — extract color/typography
-"""
+"""Figma Plan Generator Worker — direct Figma API + collaboration workflows."""
 
 from __future__ import annotations
 
@@ -22,7 +11,8 @@ from deepagent.workers.llm_schemas import (
     FigmaFollowupDraftLLM,
     FigmaPlanLLM,
 )
-from integrations.composio_client import execute_action
+from integrations.figma_api import FigmaApiError, get_figma_api
+from integrations.figma_webhooks import normalize_figma_webhook_payload
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +26,7 @@ class FigmaWorker(BaseWorker):
         "verify_connection": "_verify_connection",
         "generate_plan": "_generate_challenge",
         "comment_file": "_comment_file",
+        "reply_comment": "_reply_comment",
         "process_webhook_event": "_process_webhook_event",
         "summarize_collab_delta": "_process_webhook_event",
     }
@@ -48,19 +39,24 @@ class FigmaWorker(BaseWorker):
         return await handler(payload)
 
     async def _fetch_figma_context(self) -> dict:
-        """Pull Figma context: user info + file analysis if available."""
+        """Pull Figma context: current authenticated user."""
         ctx: dict = {}
+        api = get_figma_api()
+        if not api.is_configured():
+            return ctx
 
-        user_result = await execute_action(
-            "FIGMA_GET_CURRENT_USER", params={}, app_name="figma",
-        )
-        if not user_result.get("dry_run"):
-            data = user_result.get("result", {}).get("data", {})
-            ctx["figma_user"] = {
-                "handle": data.get("handle"),
-                "email": data.get("email"),
-            }
-            logger.info("Figma: connected as %s", data.get("handle"))
+        try:
+            user = await api.get_me()
+        except Exception:  # noqa: BLE001
+            return ctx
+
+        handle = user.get("handle") or user.get("email") or user.get("id")
+        ctx["figma_user"] = {
+            "id": user.get("id"),
+            "handle": handle,
+            "email": user.get("email"),
+        }
+        logger.info("Figma: connected as %s", handle)
 
         return ctx
 
@@ -184,7 +180,7 @@ Return JSON:
         )
 
     async def _verify_connection(self, payload: dict) -> WorkerExecution:
-        """Verify the Figma Composio connection is alive."""
+        """Verify the direct Figma connection is alive."""
         ctx = await self._fetch_figma_context()
         connected = bool(ctx.get("figma_user"))
         return WorkerExecution(
@@ -194,7 +190,7 @@ Return JSON:
         )
 
     async def _comment_file(self, payload: dict) -> WorkerExecution:
-        """Add a comment on a Figma file for demo milestone tracking."""
+        """Add a root comment on a Figma file."""
         if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
             file_key = payload.get("file_key", "")
             message = payload.get("message", "")
@@ -216,53 +212,81 @@ Return JSON:
         if not file_key or not message:
             return WorkerExecution(ok=False, message="file_key and message are required")
 
-        result = await execute_action(
-            "FIGMA_ADD_A_COMMENT_TO_A_FILE",
-            params={"file_key": file_key, "message": message},
-            app_name="figma",
-        )
+        api = get_figma_api()
+        if not api.is_configured():
+            return WorkerExecution(ok=False, message="FIGMA_API_KEY is not configured")
+
+        try:
+            result = await api.post_comment(file_key=file_key, message=message)
+        except FigmaApiError as exc:
+            return WorkerExecution(ok=False, message=f"Figma API error ({exc.status_code})")
+        except Exception as exc:  # noqa: BLE001
+            return WorkerExecution(ok=False, message=f"Figma API error: {exc}")
+
         return WorkerExecution(
-            ok=not result.get("dry_run", True),
-            message="Figma comment added" if not result.get("dry_run") else "Figma comment logged (dry run)",
+            ok=True,
+            message="Figma comment added",
             data={
                 **result,
                 "external_links": {"figma_file": f"https://www.figma.com/file/{file_key}"},
             },
         )
 
+    async def _reply_comment(self, payload: dict) -> WorkerExecution:
+        """Reply to a root comment on a Figma file."""
+        file_key = str(payload.get("file_key", "")).strip()
+        comment_id = str(payload.get("comment_id", "")).strip()
+        message = str(payload.get("message", "")).strip()
+        if not file_key or not comment_id or not message:
+            return WorkerExecution(ok=False, message="file_key, comment_id, and message are required")
+
+        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
+            return WorkerExecution(
+                ok=True,
+                message="Figma reply logged (demo)",
+                data={
+                    "comment_id": comment_id,
+                    "file_key": file_key,
+                    "message": message,
+                    "external_links": {"figma_file": f"https://www.figma.com/file/{file_key}"},
+                },
+            )
+
+        api = get_figma_api()
+        if not api.is_configured():
+            return WorkerExecution(ok=False, message="FIGMA_API_KEY is not configured")
+
+        try:
+            result = await api.post_comment(
+                file_key=file_key,
+                comment_id=comment_id,
+                message=message,
+            )
+        except FigmaApiError as exc:
+            return WorkerExecution(ok=False, message=f"Figma API error ({exc.status_code})")
+        except Exception as exc:  # noqa: BLE001
+            return WorkerExecution(ok=False, message=f"Figma API error: {exc}")
+
+        return WorkerExecution(
+            ok=True,
+            message="Figma reply posted",
+            data={
+                **result,
+                "comment_id": comment_id,
+                "file_key": file_key,
+                "message": message,
+                "external_links": {"figma_file": f"https://www.figma.com/file/{file_key}"},
+            },
+        )
+
     def _extract_comment_event(self, payload: dict) -> dict:
-        event = payload.get("event", payload) if isinstance(payload, dict) else {}
-        data = event.get("data", {}) if isinstance(event.get("data", {}), dict) else {}
-        resource = event.get("resource", {}) if isinstance(event.get("resource", {}), dict) else {}
-        comment = data.get("comment", {}) if isinstance(data.get("comment", {}), dict) else {}
-
-        comment_id = (
-            str(payload.get("comment_id", "")).strip()
-            or str(event.get("comment_id", "")).strip()
-            or str(comment.get("id", "")).strip()
-            or str(event.get("id", "")).strip()
-        )
-        file_key = (
-            str(payload.get("file_key", "")).strip()
-            or str(event.get("file_key", "")).strip()
-            or str(resource.get("file_key", "")).strip()
-            or str(comment.get("file_key", "")).strip()
-        )
-        message = (
-            str(payload.get("message", "")).strip()
-            or str(event.get("message", "")).strip()
-            or str(comment.get("message", "")).strip()
-        )
-        actor = payload.get("from") or event.get("from") or comment.get("from") or {}
-        if not isinstance(actor, dict):
-            actor = {}
-
+        normalized = normalize_figma_webhook_payload(payload if isinstance(payload, dict) else {})
         return {
-            "event_id": str(payload.get("event_id", "")).strip() or str(event.get("event_id", "")).strip() or comment_id,
-            "comment_id": comment_id,
-            "file_key": file_key,
-            "message": message,
-            "from": actor,
+            "event_id": str(normalized.get("event_id", "")).strip(),
+            "comment_id": str(normalized.get("comment_id", "")).strip(),
+            "file_key": str(normalized.get("file_key", "")).strip(),
+            "message": str(normalized.get("message", "")).strip(),
+            "from": normalized.get("from", {}) if isinstance(normalized.get("from", {}), dict) else {},
         }
 
     async def _process_webhook_event(self, payload: dict) -> WorkerExecution:

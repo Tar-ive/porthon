@@ -92,6 +92,8 @@ SKILL_REGISTRY: list[SkillDef] = [
             SkillActionDef(name="generate_challenge", required_params=["scenario_title"]),
             SkillActionDef(name="verify_connection"),
             SkillActionDef(name="comment_file", required_params=["file_key", "message"], risk=SkillRisk.MEDIUM),
+            SkillActionDef(name="process_webhook_event", required_params=["event_type", "comment_id", "file_key", "message"]),
+            SkillActionDef(name="reply_comment", required_params=["file_key", "comment_id", "message"], risk=SkillRisk.HIGH),
         ],
     ),
     SkillDef(

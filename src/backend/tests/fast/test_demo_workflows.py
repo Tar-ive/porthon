@@ -91,13 +91,7 @@ def mock_offline_llm_and_tools(monkeypatch):
 
         return {}
 
-    async def _fake_execute_action(*args, **kwargs):
-        return {"dry_run": True, "result": {"data": {}}}
-
-    import deepagent.workers.figma_worker as fig_mod
-
     monkeypatch.setattr(BaseWorker, "_llm_json", _fake_llm_json, raising=True)
-    monkeypatch.setattr(fig_mod, "execute_action", _fake_execute_action, raising=True)
 
     return llm_calls
 

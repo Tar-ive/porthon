@@ -1,91 +1,169 @@
-"""Figma REST API integration for creating actual content."""
+"""Figma REST API client aligned to docs/api/figma_api/openapi.yaml."""
+
+from __future__ import annotations
 
 import os
+from typing import Any
+
 import httpx
-import logging
-
-logger = logging.getLogger(__name__)
-
-# Hardcoded path for reliability
-ENV_PATH = "/home/sadhikari/.openclaw/workspace-rewind-cleanup/porthon/.env"
 
 
-def _get_api_key():
-    """Lazy load API key."""
-    from dotenv import load_dotenv
-    load_dotenv(ENV_PATH)
-    return os.environ.get("FIGMA_API_KEY")
+class FigmaApiError(RuntimeError):
+    """Raised for Figma REST API failures."""
+
+    def __init__(self, status_code: int, message: str, body: Any | None = None) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+        self.body = body
+
+
+def _env_api_key() -> str | None:
+    api_key = os.environ.get("FIGMA_API_KEY", "").strip()
+    return api_key or None
 
 
 class FigmaAPI:
-    """Direct Figma REST API client."""
-    
-    def __init__(self, api_key: str = None):
-        self.api_key = api_key or _get_api_key()
+    """Direct Figma REST API client (token auth via X-Figma-Token)."""
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        *,
+        base_url: str = "https://api.figma.com",
+        timeout_seconds: float = 20.0,
+    ) -> None:
+        self.api_key = (api_key or _env_api_key() or "").strip()
+        self.base_url = base_url.rstrip("/")
+        self.timeout_seconds = timeout_seconds
+
+    def is_configured(self) -> bool:
+        return bool(self.api_key)
+
+    async def _request(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        json_body: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         if not self.api_key:
-            raise ValueError("FIGMA_API_KEY not found")
-        self.headers = {"X-Figma-Token": self.api_key}
-    
-    async def add_comment(self, file_key: str, message: str, client_meta: dict = None) -> dict:
-        """Add a comment to a file."""
-        async with httpx.AsyncClient() as client:
-            payload = {"message": message}
-            if client_meta:
-                payload["client_meta"] = client_meta
-            
-            resp = await client.post(
-                f"https://api.figma.com/v1/files/{file_key}/comments",
-                headers=self.headers,
-                json=payload
+            raise FigmaApiError(
+                status_code=400,
+                message="FIGMA_API_KEY is not configured.",
             )
-            resp.raise_for_status()
+
+        headers = {
+            "X-Figma-Token": self.api_key,
+            "Content-Type": "application/json",
+        }
+
+        async with httpx.AsyncClient(
+            base_url=self.base_url,
+            timeout=self.timeout_seconds,
+        ) as client:
+            resp = await client.request(
+                method=method.upper(),
+                url=path,
+                headers=headers,
+                params=params,
+                json=json_body,
+            )
+
+        if resp.status_code >= 400:
+            payload: Any
+            try:
+                payload = resp.json()
+            except ValueError:
+                payload = resp.text
+            message = f"Figma API request failed ({resp.status_code})"
+            raise FigmaApiError(status_code=resp.status_code, message=message, body=payload)
+
+        if resp.status_code == 204:
+            return {}
+        try:
             return resp.json()
-    
-    async def create_design_challenge_board(self, file_key: str, challenges: list, 
-                                           scenario_title: str, milestones: list = None) -> dict:
-        """Create a structured challenge board in Figma."""
-        
-        board = f"""# 🎯 {scenario_title}
+        except ValueError:
+            return {"raw": resp.text}
 
-## Weekly Roadmap
+    async def get_me(self) -> dict[str, Any]:
+        return await self._request("GET", "/v1/me")
 
-"""
-        
-        for i, challenge in enumerate(challenges, 1):
-            board += f"""
-### Week {i}: {challenge.get('title', 'Untitled')}
+    async def get_comments(self, file_key: str) -> dict[str, Any]:
+        return await self._request("GET", f"/v1/files/{file_key}/comments")
 
-**Brief:** {challenge.get('brief', 'N/A')}
+    async def post_comment(
+        self,
+        file_key: str,
+        message: str,
+        *,
+        comment_id: str | None = None,
+        client_meta: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {"message": message}
+        if comment_id:
+            payload["comment_id"] = comment_id
+        if isinstance(client_meta, dict) and client_meta:
+            payload["client_meta"] = client_meta
+        return await self._request("POST", f"/v1/files/{file_key}/comments", json_body=payload)
 
-**Skills:** {', '.join(challenge.get('skill_focus', []))}
+    async def delete_comment(self, file_key: str, comment_id: str) -> dict[str, Any]:
+        return await self._request("DELETE", f"/v1/files/{file_key}/comments/{comment_id}")
 
-**Duration:** {challenge.get('estimated_hours', '?')} hours
+    async def list_webhooks(
+        self,
+        *,
+        context: str | None = None,
+        context_id: str | None = None,
+        plan_api_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if context:
+            params["context"] = context
+        if context_id:
+            params["context_id"] = context_id
+        if plan_api_id:
+            params["plan_api_id"] = plan_api_id
+        return await self._request("GET", "/v2/webhooks", params=params or None)
 
-**Portfolio Worthy:** {'✅' if challenge.get('portfolio_worthy') else '❌'}
+    async def create_webhook(
+        self,
+        *,
+        event_type: str,
+        endpoint: str,
+        passcode: str,
+        context: str,
+        context_id: str,
+        status: str | None = None,
+        description: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "event_type": event_type,
+            "endpoint": endpoint,
+            "passcode": passcode,
+            "context": context,
+            "context_id": context_id,
+        }
+        if status:
+            payload["status"] = status
+        if description:
+            payload["description"] = description
+        return await self._request("POST", "/v2/webhooks", json_body=payload)
 
----
+    async def get_webhook(self, webhook_id: str) -> dict[str, Any]:
+        return await self._request("GET", f"/v2/webhooks/{webhook_id}")
 
-"""
-        
-        if milestones:
-            board += """## Milestones
+    async def update_webhook(self, webhook_id: str, **updates: Any) -> dict[str, Any]:
+        payload = {k: v for k, v in updates.items() if v is not None}
+        if not payload:
+            return await self.get_webhook(webhook_id)
+        return await self._request("PUT", f"/v2/webhooks/{webhook_id}", json_body=payload)
 
-"""
-            for m in milestones:
-                board += f"- **{m.get('title', 'TBD')}:** {m.get('target', 'N/A')}\n"
-            board += "\n"
-        
-        board += """## 🎯 How to Use This Board
+    async def delete_webhook(self, webhook_id: str) -> dict[str, Any]:
+        return await self._request("DELETE", f"/v2/webhooks/{webhook_id}")
 
-1. **Week 1:** Complete Brief → Share for feedback
-2. **Week 2:** Iterate based on feedback
-3. **Week 3:** Final polish → Add to portfolio!
-
----
-*Generated by Questline AI 🤖*
-"""
-        
-        return await self.add_comment(file_key, board)
+    async def get_webhook_requests(self, webhook_id: str) -> dict[str, Any]:
+        return await self._request("GET", f"/v2/webhooks/{webhook_id}/requests")
 
 
 def get_figma_api() -> FigmaAPI:

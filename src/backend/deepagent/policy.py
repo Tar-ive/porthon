@@ -9,6 +9,7 @@ ActionRisk = Literal["read", "write_reversible", "write_irreversible"]
 IRREVERSIBLE_ACTIONS: dict[str, set[str]] = {
     "facebook_worker": {"publish_post", "schedule_post", "reply_comment"},
     "calendar_worker": {"reschedule_week", "delete_block"},
+    "figma_worker": {"reply_comment"},
 }
 
 WRITE_ACTION_PREFIXES: dict[str, tuple[str, ...]] = {
@@ -16,7 +17,7 @@ WRITE_ACTION_PREFIXES: dict[str, tuple[str, ...]] = {
     "notion_leads_worker": ("create_", "add_", "sync_", "upsert_", "patch_"),
     "notion_opportunity_worker": ("create_", "add_", "sync_"),
     "facebook_worker": ("draft_", "publish_", "schedule_", "reply_"),
-    "figma_worker": ("generate_", "comment_", "process_"),
+    "figma_worker": ("generate_", "comment_", "reply_", "process_"),
 }
 
 
