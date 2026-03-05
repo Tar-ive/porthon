@@ -80,6 +80,8 @@ Lead procurement extension:
 
 ## Programmatic Setup Example
 
+Using Questline API (recommended for unified runtime + approvals):
+
 ```bash
 curl -X POST http://localhost:8000/v1/figma/watchers \
   -H "Authorization: Bearer sk_live_xxx" \
@@ -94,3 +96,21 @@ curl -X POST http://localhost:8000/v1/figma/watchers \
 ```
 
 Then configure the same endpoint/passcode in Figma webhook settings (or let the live endpoint create the webhook via Figma API automatically).
+
+Direct Figma API setup (v2 webhook create):
+
+```bash
+curl -X POST "https://api.figma.com/v2/webhooks" \
+  -H "X-Figma-Token: <YOUR_PERSONAL_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "file_key": "<FILE_KEY>",
+    "endpoint": "https://your-domain.com/figma-webhook",
+    "event_type": "FILE_COMMENT",
+    "passcode": "<YOUR_RANDOM_SECRET>",
+    "description": "Notify on file comments",
+    "context": "file",
+    "context_id": "<FILE_KEY>",
+    "status": "ACTIVE"
+  }'
+```
