@@ -65,7 +65,7 @@ class WorkerTask(BaseModel):
     updated_at: str
     finished_at: str | None = None
     result_summary: str | None = None
-    external_links: dict[str, str] = Field(default_factory=dict)
+    external_links: dict[str, Any] = Field(default_factory=dict)
     error_code: str | None = None
     created: int = 0
     metadata: dict[str, str] = Field(default_factory=dict)

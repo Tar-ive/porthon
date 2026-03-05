@@ -28,6 +28,13 @@ START
   |     -> GET /v1/workers  or  GET /v1/workers/map
   |     -> GET /v1/workers/skills  (all skills)
   |
+  +-- Need to manage Theo's Notion leads CRM deterministically?
+  |     -> POST /v1/notion/leads/setup
+  |     -> POST /v1/notion/leads/sync
+  |     -> GET /v1/notion/leads?view=today_followups
+  |     -> PATCH /v1/notion/leads/{lead_key}
+  |     -> POST /v1/notion/leads/realtime
+  |
   +-- Need to send an external event into the loop?
   |     -> POST /v1/events  {type, payload}
   |
@@ -142,6 +149,16 @@ Never use offset-based pagination. Only `starting_after` with a resource ID.
 6. POST /v1/approvals/{id}/resolve {decision}  # resolve each gate
 7. GET /v1/events?quest={quest_id}&limit=20    # monitor progress
 8. POST /v1/messages {messages, scenario}      # chat about the quest
+```
+
+## Notion Leads CRM Workflow
+
+```
+1. POST /v1/notion/leads/setup
+2. POST /v1/notion/leads/sync {leads, strict_reconcile:true}
+3. GET /v1/notion/leads?view=today_followups
+4. PATCH /v1/notion/leads/{lead_key} {status,next_follow_up_date,...}
+5. POST /v1/notion/leads/realtime {action,task_payload} for async edits
 ```
 
 ## Test Mode

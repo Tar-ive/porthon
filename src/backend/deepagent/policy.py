@@ -13,7 +13,7 @@ IRREVERSIBLE_ACTIONS: dict[str, set[str]] = {
 
 WRITE_ACTION_PREFIXES: dict[str, tuple[str, ...]] = {
     "calendar_worker": ("create_", "move_", "sync_"),
-    "notion_leads_worker": ("create_", "add_", "sync_"),
+    "notion_leads_worker": ("create_", "add_", "sync_", "upsert_", "patch_"),
     "notion_opportunity_worker": ("create_", "add_", "sync_"),
     "facebook_worker": ("draft_", "publish_", "schedule_", "reply_"),
     "figma_worker": ("generate_", "comment_", "process_"),

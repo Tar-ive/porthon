@@ -52,6 +52,11 @@ SKILL_REGISTRY: list[SkillDef] = [
         display_name="Notion Leads Tracker",
         description="Lead creation, progression, and follow-up management.",
         actions=[
+            SkillActionDef(name="ensure_pipeline"),
+            SkillActionDef(name="sync_leads"),
+            SkillActionDef(name="upsert_lead", required_params=["name"]),
+            SkillActionDef(name="patch_lead", required_params=["lead_key"]),
+            SkillActionDef(name="list_leads"),
             SkillActionDef(name="create_pipeline"),
             SkillActionDef(name="add_lead", required_params=["name"]),
             SkillActionDef(name="search_leads"),

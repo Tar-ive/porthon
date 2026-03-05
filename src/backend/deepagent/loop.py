@@ -77,10 +77,11 @@ class AlwaysOnMaster:
         scenario: ActiveScenarioState,
         demo_mode: bool = False,
     ) -> None:
+        notion_action = "sync_leads" if demo_mode else "ensure_pipeline"
         seeded = [
             ("kg_worker", "search", 10),
             ("calendar_worker", "sync_schedule", 20),
-            ("notion_leads_worker", "create_pipeline", 30),
+            ("notion_leads_worker", notion_action, 30),
             ("notion_opportunity_worker", "create_workspace", 30),
             ("facebook_worker", "draft_posts", 40),
             ("figma_worker", "generate_challenge", 40),
@@ -93,19 +94,31 @@ class AlwaysOnMaster:
         ]
 
         for worker_id, action, priority in seeded:
+            task_payload = {
+                "scenario_id": scenario.scenario_id,
+                "scenario_title": scenario.title,
+                "scenario_summary": scenario.summary,
+                "horizon": scenario.horizon,
+                "query": f"Scenario context for {scenario.title}: {scenario.summary}",
+                "demo_mode": demo_mode,
+            }
+            if demo_mode and worker_id == "notion_leads_worker" and action == "sync_leads":
+                demo_leads = (
+                    state.demo_artifacts
+                    .get("proactive_preview", {})
+                    .get("notion_leads", {})
+                    .get("leads", [])
+                )
+                if isinstance(demo_leads, list) and demo_leads:
+                    task_payload["leads"] = demo_leads[:20]
+                task_payload["strict_reconcile"] = True
+
             task = WorkerTask(
                 task_id=_prefixed_id("task_"),
                 worker_id=worker_id,
                 action=action,
                 priority=priority,
-                payload={
-                    "scenario_id": scenario.scenario_id,
-                    "scenario_title": scenario.title,
-                    "scenario_summary": scenario.summary,
-                    "horizon": scenario.horizon,
-                    "query": f"Scenario context for {scenario.title}: {scenario.summary}",
-                    "demo_mode": demo_mode,
-                },
+                payload=task_payload,
                 created_at=created,
                 updated_at=created,
             )
@@ -314,32 +327,17 @@ class AlwaysOnMaster:
             WorkerTask(
                 task_id=_prefixed_id("task_"),
                 worker_id="notion_leads_worker",
-                action="create_pipeline",
+                action="sync_leads",
                 priority=20,
-                payload={"demo_mode": True},
+                payload={
+                    "demo_mode": True,
+                    "leads": preview.get("notion_leads", {}).get("leads", [])[:20],
+                    "strict_reconcile": True,
+                },
                 created_at=created,
                 updated_at=created,
             )
         )
-        seeded_leads = preview.get("notion_leads", {}).get("leads", [])[:3]
-        for lead in seeded_leads:
-            state.queue.append(
-                WorkerTask(
-                    task_id=_prefixed_id("task_"),
-                    worker_id="notion_leads_worker",
-                    action="add_lead",
-                    priority=22,
-                    payload={
-                        "database_id": "demo_notion_pipeline",
-                        "name": lead.get("name", "Lead"),
-                        "status": lead.get("status", "Lead"),
-                        "value": lead.get("value", 0),
-                        "demo_mode": True,
-                    },
-                    created_at=created,
-                    updated_at=created,
-                )
-            )
         state.queue.append(
             WorkerTask(
                 task_id=_prefixed_id("task_"),
@@ -572,6 +570,30 @@ class AlwaysOnMaster:
     async def get_state(self) -> dict[str, Any]:
         state = self.store.load()
         return state.model_dump(mode="json")
+
+    async def get_workflow_key(self, key: str) -> dict[str, Any]:
+        async with self._lock:
+            state = self.store.load()
+            value = state.workflow_state.get(key, {})
+            return value if isinstance(value, dict) else {}
+
+    async def update_workflow_key(
+        self,
+        key: str,
+        payload: dict[str, Any],
+        merge: bool = True,
+    ) -> dict[str, Any]:
+        async with self._lock:
+            state = self.store.load()
+            current = state.workflow_state.get(key, {})
+            if merge and isinstance(current, dict):
+                merged = dict(current)
+                merged.update(payload)
+            else:
+                merged = dict(payload)
+            state.workflow_state[key] = merged
+            self.store.save(state)
+            return merged
 
     async def get_map(self) -> dict[str, Any]:
         state = self.store.load()

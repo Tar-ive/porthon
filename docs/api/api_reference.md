@@ -482,6 +482,58 @@ Retrieve a single worker. Supports `expand[]=skills`.
 
 ---
 
+### Notion Leads CRM
+
+#### POST /v1/notion/leads/setup
+
+Create or reuse Theo's deterministic Notion Leads workspace and enforce schema.
+
+| Body Field | Type | Required | Description |
+|------------|------|----------|-------------|
+| `parent_page_id` | string | no | Root page to host the `Leads` database |
+| `database_title` | string | no | Default `Leads` |
+| `data_source_title` | string | no | Default `Theo Leads` |
+| `database_id` | string | no | Force existing DB reuse |
+| `data_source_id` | string | no | Force existing data source reuse |
+
+#### POST /v1/notion/leads/sync
+
+Deterministic snapshot sync: create/update rows and archive stale rows.
+
+| Body Field | Type | Required | Description |
+|------------|------|----------|-------------|
+| `leads` | array | yes | Lead payload list |
+| `strict_reconcile` | boolean | no | Default `true`; archives rows not in snapshot |
+
+#### GET /v1/notion/leads
+
+List current leads with optional CRM view filters.
+
+| Query Field | Type | Description |
+|-------------|------|-------------|
+| `view` | string | `today_followups`, `high_value_focus`, `warm_inbound`, `prospecting` |
+| `status` | string | Filter by lead status |
+| `source` | string | Filter by source |
+| `lead_type` | string | Filter by lead type |
+| `min_deal_size` | number | Used by `high_value_focus` |
+| `q` | string | Case-insensitive search |
+
+#### PATCH /v1/notion/leads/{lead_key}
+
+Patch one lead by deterministic key (`name::source`).
+
+#### POST /v1/notion/leads/realtime
+
+Queue a real-time notion leads task through the runtime loop.
+
+| Body Field | Type | Required | Description |
+|------------|------|----------|-------------|
+| `action` | string | yes | `sync_leads`, `upsert_lead`, `patch_lead` |
+| `task_payload` | object | no | Worker payload |
+| `priority` | int | no | Queue priority (lower runs first) |
+
+---
+
 ### Messages
 
 #### POST /v1/messages

@@ -1,23 +1,16 @@
-"""Notion Leads Tracker Worker — client pipeline management.
-
-Absorbs the client pipeline portion of agents/notion_organizer.py:
-  - Database creation for client tracking
-  - Row insertion with extracted transaction data
-  - Duplicate detection via search
-
-Composio actions:
-  NOTION_SEARCH_NOTION_PAGE   — find existing pages
-  NOTION_CREATE_DATABASE      — create client pipeline DB
-  NOTION_INSERT_ROW_DATABASE  — add client rows
-"""
+"""Notion Leads Tracker Worker — deterministic Notion CRM operations."""
 
 from __future__ import annotations
 
 import logging
 import os
+from typing import Any
 
 from deepagent.workers.base import BaseWorker, WorkerExecution
-from integrations.composio_client import execute_action
+from integrations.notion_leads_service import (
+    default_demo_leads,
+    get_notion_leads_service,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +20,15 @@ class NotionLeadsWorker(BaseWorker):
     label = "Notion Leads Tracker"
 
     ACTIONS = {
-        "create_pipeline": "_create_pipeline",
-        "add_lead": "_add_lead",
-        "search_leads": "_search_leads",
-        "sync_leads": "_create_pipeline",
-        "create_lead": "_add_lead",
+        "ensure_pipeline": "_ensure_pipeline",
+        "create_pipeline": "_ensure_pipeline",  # backward compatibility
+        "sync_leads": "_sync_leads",
+        "add_lead": "_upsert_lead",  # backward compatibility
+        "create_lead": "_upsert_lead",  # backward compatibility
+        "upsert_lead": "_upsert_lead",
+        "patch_lead": "_patch_lead",
+        "list_leads": "_list_leads",
+        "search_leads": "_list_leads",  # backward compatibility
     }
 
     async def execute(self, action: str, payload: dict) -> WorkerExecution:
@@ -41,169 +38,237 @@ class NotionLeadsWorker(BaseWorker):
         handler = getattr(self, handler_name)
         return await handler(payload)
 
-    def _default_db_properties(self) -> list[dict]:
-        return [
-            {"name": "Name", "type": "title"},
-            {"name": "Status", "type": "select", "options": ["Lead", "Proposal", "Active", "Completed"]},
-            {"name": "Value", "type": "number"},
-            {"name": "Source", "type": "select", "options": ["Referral", "Direct", "Portfolio", "Social"]},
-        ]
+    def _is_demo(self, payload: dict[str, Any]) -> bool:
+        return bool(payload.get("demo_mode")) or os.environ.get("PORTTHON_OFFLINE_MODE") == "1"
 
-    async def _find_existing_page(self, title: str) -> str | None:
-        """Search for an existing page to avoid duplicates."""
-        result = await execute_action(
-            "NOTION_SEARCH_NOTION_PAGE",
-            params={"search_term": title},
-            app_name="notion",
+    def _default_parent_page_id(self, payload: dict[str, Any]) -> str:
+        return str(
+            payload.get("parent_page_id")
+            or payload.get("parent_id")
+            or os.environ.get("NOTION_ROOT_PAGE_ID")
+            or os.environ.get("NOTION_PARENT_PAGE_ID")
+            or ""
+        ).strip()
+
+    async def _ensure_workspace(self, payload: dict[str, Any]) -> dict[str, Any]:
+        service = get_notion_leads_service()
+        if not service.is_configured():
+            raise ValueError("NOTION_INTEGRATION_SECRET is not configured")
+        return await service.ensure_workspace(
+            parent_page_id=self._default_parent_page_id(payload) or None,
+            database_title=str(payload.get("database_title") or "Leads"),
+            data_source_title=str(payload.get("data_source_title") or "Theo Leads"),
+            database_id=str(payload.get("database_id", "")).strip() or None,
+            data_source_id=str(payload.get("data_source_id", "")).strip() or None,
         )
-        if result.get("dry_run"):
-            return None
-        results = result.get("result", {}).get("data", {}).get("results", [])
-        for r in results:
-            props = r.get("properties", {})
-            for prop in props.values():
-                if prop.get("type") == "title":
-                    texts = prop.get("title", [])
-                    if texts and title.lower() in (texts[0].get("plain_text", "")).lower():
-                        return r.get("id")
-        return None
 
-    async def _create_pipeline(self, payload: dict) -> WorkerExecution:
-        """Create a client pipeline database in Notion."""
+    async def _ensure_pipeline(self, payload: dict) -> WorkerExecution:
+        """Ensure deterministic leads database + data source exist and schema is enforced."""
         if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
             return WorkerExecution(
                 ok=True,
-                message="Client pipeline database created (demo)",
+                message="Leads database ready (demo)",
                 data={
                     "database_id": "demo_notion_pipeline",
-                    "reused": False,
-                    "title": "Client Pipeline",
-                    "leads": [
-                        {"name": "Referral Lead", "source": "Referral", "status": "Lead"},
-                        {"name": "Portfolio Lead", "source": "Portfolio", "status": "Proposal"},
-                        {"name": "Direct Lead", "source": "Direct", "status": "Lead"},
-                    ],
+                    "data_source_id": "demo_notion_leads",
+                    "database_title": "Leads",
+                    "data_source_title": "Theo Leads",
+                    "reused": True,
+                    "leads": default_demo_leads(),
                     "external_links": {
                         "notion_database": "https://www.notion.so/demo_notion_pipeline"
                     },
                 },
             )
 
-        kg_context = payload.get("kg_context", {})
-        parent_id = payload.get("parent_id") or os.environ.get("NOTION_ROOT_PAGE_ID")
-
-        if not parent_id:
-            # Try to discover a parent page
-            result = await execute_action(
-                "NOTION_SEARCH_NOTION_PAGE",
-                params={"search_term": ""},
-                app_name="notion",
-            )
-            if not result.get("dry_run"):
-                pages = result.get("result", {}).get("data", {}).get("results", [])
-                if pages:
-                    parent_id = pages[0].get("id")
-
-        if not parent_id:
-            return WorkerExecution(ok=False, message="No parent page found for pipeline DB")
-
-        # Check for existing pipeline
-        existing = await self._find_existing_page("Client Pipeline")
-        if existing:
-            logger.info("Notion Leads: reusing existing pipeline DB %s", existing)
+        try:
+            setup = await self._ensure_workspace(payload)
             return WorkerExecution(
                 ok=True,
-                message="Client pipeline already exists",
-                data={"database_id": existing, "reused": True},
-            )
-
-        # Create the database
-        result = await execute_action(
-            "NOTION_CREATE_DATABASE",
-            params={
-                "parent_id": parent_id,
-                "title": "Client Pipeline",
-                "properties": self._default_db_properties(),
-            },
-            app_name="notion",
-        )
-
-        if result.get("dry_run") or result.get("error"):
-            return WorkerExecution(
-                ok=False,
-                message=f"Failed to create pipeline: {result.get('error', 'dry run')}",
-                data=result,
-            )
-
-        db_id = result.get("result", {}).get("data", {}).get("id")
-        logger.info("Notion Leads: created pipeline DB %s", db_id)
-
-        return WorkerExecution(
-            ok=True,
-            message="Client pipeline database created",
-            data={
-                "database_id": db_id,
-                "reused": False,
-                "external_links": {
-                    "notion_database": f"https://www.notion.so/{str(db_id).replace('-', '')}"
-                },
-            },
-        )
-
-    async def _add_lead(self, payload: dict) -> WorkerExecution:
-        """Add a lead to the pipeline database."""
-        database_id = payload.get("database_id", "")
-        if not database_id:
-            return WorkerExecution(ok=False, message="database_id required")
-
-        if payload.get("demo_mode") or os.environ.get("PORTTHON_OFFLINE_MODE") == "1":
-            name = payload.get("name", "New Lead")
-            return WorkerExecution(
-                ok=True,
-                message=f"Added lead: {name} (demo)",
+                message="Leads database ready",
                 data={
-                    "database_id": database_id,
-                    "lead_id": f"demo_lead_{name.lower().replace(' ', '_')}",
-                    "name": name,
-                    "status": payload.get("status", "Lead"),
+                    **setup,
+                    "external_links": {"notion_database": setup.get("database_url", "")},
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.error("Notion leads ensure pipeline failed: %s", exc)
+            return WorkerExecution(ok=False, message=str(exc))
+
+    async def _sync_leads(self, payload: dict) -> WorkerExecution:
+        if self._is_demo(payload):
+            leads = payload.get("leads") or default_demo_leads()
+            return WorkerExecution(
+                ok=True,
+                message="Leads synced (demo)",
+                data={
+                    "database_id": "demo_notion_pipeline",
+                    "data_source_id": "demo_notion_leads",
+                    "counts": {
+                        "desired": len(leads),
+                        "created": 0,
+                        "updated": 0,
+                        "noop": len(leads),
+                        "archived": 0,
+                    },
+                    "leads": leads,
                     "external_links": {
-                        "notion_database": f"https://www.notion.so/{str(database_id)}"
+                        "notion_database": "https://www.notion.so/demo_notion_pipeline"
                     },
                 },
             )
 
-        props = [
-            {"name": "Name", "value": payload.get("name", "New Lead")},
-            {"name": "Status", "value": payload.get("status", "Lead")},
-            {"name": "Value", "value": payload.get("value", 0)},
-        ]
-
-        result = await execute_action(
-            "NOTION_INSERT_ROW_DATABASE",
-            params={"database_id": database_id, "properties": props},
-            app_name="notion",
-        )
-
-        return WorkerExecution(
-            ok=not result.get("dry_run", True),
-            message=f"Added lead: {payload.get('name', 'New Lead')}",
-            data={
-                **result,
-                "external_links": {
-                    "notion_database": f"https://www.notion.so/{str(database_id).replace('-', '')}"
+        try:
+            service = get_notion_leads_service()
+            setup = await self._ensure_workspace(payload)
+            leads = payload.get("leads") or []
+            strict_reconcile = bool(payload.get("strict_reconcile", True))
+            sync = await service.sync_leads(
+                data_source_id=str(setup["data_source_id"]),
+                leads=leads if isinstance(leads, list) else [],
+                strict_reconcile=strict_reconcile,
+            )
+            return WorkerExecution(
+                ok=True,
+                message="Leads synced",
+                data={
+                    **setup,
+                    **sync,
+                    "external_links": {"notion_database": setup.get("database_url", "")},
                 },
-            },
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.error("Notion leads sync failed: %s", exc)
+            return WorkerExecution(ok=False, message=str(exc))
+
+    async def _upsert_lead(self, payload: dict) -> WorkerExecution:
+        lead = {
+            "name": payload.get("name", "New Lead"),
+            "status": payload.get("status", "Lead"),
+            "lead_type": payload.get("lead_type", payload.get("source", "Inbound")),
+            "priority": payload.get("priority", "Medium"),
+            "deal_size": payload.get("deal_size", payload.get("value", 0)),
+            "last_contact": payload.get("last_contact"),
+            "next_action": payload.get("next_action", ""),
+            "next_follow_up_date": payload.get("next_follow_up_date"),
+            "email_handle": payload.get("email_handle", ""),
+            "source": payload.get("source", "Unknown"),
+            "notes": payload.get("notes", ""),
+            "lead_key": payload.get("lead_key", ""),
+        }
+        merged_payload = dict(payload)
+        merged_payload["leads"] = [lead]
+        merged_payload["strict_reconcile"] = False
+        result = await self._sync_leads(merged_payload)
+        if not result.ok:
+            return result
+        return WorkerExecution(
+            ok=True,
+            message=f"Upserted lead: {lead['name']}",
+            data=result.data,
         )
 
-    async def _search_leads(self, payload: dict) -> WorkerExecution:
-        """Search existing leads in Notion."""
-        search_term = payload.get("search_term", "")
-        result = await execute_action(
-            "NOTION_SEARCH_NOTION_PAGE",
-            params={"search_term": search_term},
-            app_name="notion",
-        )
-        pages = result.get("result", {}).get("data", {}).get("results", []) if not result.get("dry_run") else []
+    async def _patch_lead(self, payload: dict) -> WorkerExecution:
+        if self._is_demo(payload):
+            lead_key = str(payload.get("lead_key", "demo::lead")).strip()
+            return WorkerExecution(
+                ok=True,
+                message="Lead patched (demo)",
+                data={
+                    "lead_key": lead_key,
+                    "external_links": {
+                        "notion_database": "https://www.notion.so/demo_notion_pipeline"
+                    },
+                },
+            )
+
+        lead_key = str(payload.get("lead_key", "")).strip()
+        if not lead_key:
+            name = str(payload.get("name", "")).strip()
+            source = str(payload.get("source", "")).strip()
+            if name and source:
+                lead_key = f"{name.lower()}::{source.lower()}"
+        if not lead_key:
+            return WorkerExecution(ok=False, message="lead_key required")
+
+        try:
+            service = get_notion_leads_service()
+            setup = await self._ensure_workspace(payload)
+            patch = {
+                "name": payload.get("name"),
+                "status": payload.get("status"),
+                "lead_type": payload.get("lead_type"),
+                "priority": payload.get("priority"),
+                "deal_size": payload.get("deal_size", payload.get("value")),
+                "last_contact": payload.get("last_contact"),
+                "next_action": payload.get("next_action"),
+                "next_follow_up_date": payload.get("next_follow_up_date"),
+                "email_handle": payload.get("email_handle"),
+                "source": payload.get("source"),
+                "notes": payload.get("notes"),
+            }
+            patch = {k: v for k, v in patch.items() if v is not None}
+            result = await service.patch_lead(
+                data_source_id=str(setup["data_source_id"]),
+                lead_key=lead_key,
+                patch=patch,
+            )
+            return WorkerExecution(
+                ok=True,
+                message=f"Patched lead: {lead_key}",
+                data={
+                    **setup,
+                    **result,
+                    "external_links": {"notion_database": setup.get("database_url", "")},
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.error("Notion leads patch failed: %s", exc)
+            return WorkerExecution(ok=False, message=str(exc))
+
+    async def _list_leads(self, payload: dict) -> WorkerExecution:
+        if self._is_demo(payload):
+            search_term = str(payload.get("search_term", "")).strip().lower()
+            leads = default_demo_leads()
+            if search_term:
+                leads = [
+                    l
+                    for l in leads
+                    if search_term in str(l.get("name", "")).lower()
+                    or search_term in str(l.get("source", "")).lower()
+                ]
+            return WorkerExecution(
+                ok=True,
+                message=f"Found {len(leads)} leads (demo)",
+                data={"leads": leads, "results": leads},
+            )
+
+        try:
+            service = get_notion_leads_service()
+            setup = await self._ensure_workspace(payload)
+            leads = await service.list_leads(str(setup["data_source_id"]))
+            search_term = str(payload.get("search_term", "")).strip().lower()
+            if search_term:
+                leads = [
+                    l
+                    for l in leads
+                    if search_term in str(l.get("name", "")).lower()
+                    or search_term in str(l.get("source", "")).lower()
+                    or search_term in str(l.get("status", "")).lower()
+                ]
+            return WorkerExecution(
+                ok=True,
+                message=f"Found {len(leads)} leads",
+                data={
+                    **setup,
+                    "leads": leads,
+                    "results": leads,
+                    "external_links": {"notion_database": setup.get("database_url", "")},
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.error("Notion leads list failed: %s", exc)
+            return WorkerExecution(ok=False, message=str(exc))
         return WorkerExecution(
             ok=True,
             message=f"Found {len(pages)} results",
