@@ -690,6 +690,47 @@ paths:
                   comment_id:
                     type: string
 
+  /v1/figma/comments/poll:
+    post:
+      operationId: pollFigmaComments
+      summary: Poll Figma comments for a file and ingest as pending items
+      tags: [Figma]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [file_key]
+              properties:
+                file_key:
+                  type: string
+                include_resolved:
+                  type: boolean
+                  default: false
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 200
+                  default: 20
+      responses:
+        "200":
+          description: Poll ingestion result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    const: figma_comment_poll
+                  fetched:
+                    type: integer
+                  ingested:
+                    type: integer
+
   # ---------- Messages ----------
   /v1/messages:
     post:

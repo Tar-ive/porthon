@@ -1,6 +1,7 @@
 """V1 API — Stripe-like conventions."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from app.auth import swagger_auth
 
 from .health import router as health_router
 from .scenarios import router as scenarios_router
@@ -16,7 +17,7 @@ from .figma import router as figma_router
 from .notion_leads import router as notion_leads_router
 from .knowledge_graph import router as knowledge_graph_router
 
-router = APIRouter(prefix="/v1", tags=["v1"])
+router = APIRouter(prefix="/v1", tags=["v1"], dependencies=[Depends(swagger_auth)])
 router.include_router(health_router)
 router.include_router(scenarios_router)
 router.include_router(quests_router)

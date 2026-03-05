@@ -159,6 +159,52 @@ curl -sS "https://api.notion.com/v1/pages/$PAGE_ID" \
   -d '{"in_trash": true}'
 ```
 
+### Production Upload Example (Theo)
+
+Use this `POST /v1/notion/leads/sync` body as a known-good ingestion example:
+
+```json
+{
+  "parent_page_id": "Leads-Tracking-25c74e49e5de8035a901cdd614cb3bf7",
+  "database_title": "Theo Client Pipeline",
+  "data_source_title": "Theo Leads",
+  "database_id": "29b3ec6c4bce42ca9e4628a79466dd53",
+  "data_source_id": "5d472424-826f-4719-8ac6-06f0f127e068",
+  "strict_reconcile": true,
+  "leads": [
+    {
+      "name": "Austin SaaS Founder - Referral",
+      "status": "Contacted",
+      "lead_type": "Referral",
+      "priority": "High",
+      "deal_size": 3200,
+      "last_contact": "2026-03-05",
+      "next_action": "Send scope options and pricing anchors",
+      "next_follow_up_date": "2026-03-07",
+      "email_handle": "founder@example.com",
+      "source": "Referral",
+      "notes": "Warm intro from design meetup. Strong fit for brand + motion."
+    },
+    {
+      "name": "Local Coffee Roaster Website Refresh",
+      "status": "Lead",
+      "lead_type": "Inbound",
+      "priority": "Medium",
+      "deal_size": 1800,
+      "next_action": "Send first-touch portfolio samples and discovery call link",
+      "next_follow_up_date": "2026-03-08",
+      "email_handle": "@localroaster",
+      "source": "Portfolio",
+      "notes": "Inbound from Instagram portfolio post."
+    }
+  ]
+}
+```
+
+Important schema compatibility note:
+- `Status` must be a Notion `select` property in this integration version.
+- If `Status` is a Notion `status` property, sync will fail with: `Status is expected to be status.`
+
 ## Pipeline Views (as API Query Modes)
 
 Notion UI views are represented in API as server-side filters:

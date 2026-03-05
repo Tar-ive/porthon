@@ -6,6 +6,7 @@ import os
 
 from fastapi import APIRouter, Depends, Header, Request, Response
 
+from app.auth import get_mode
 from app.auth import get_livemode
 from app.deps import get_master
 from app.middleware.errors import ApiException
@@ -34,7 +35,8 @@ async def composio_webhook(
     payload = await request.json()
     normalized = normalize_figma_webhook_payload(payload if isinstance(payload, dict) else {})
 
-    expected_passcode = os.environ.get("FIGMA_WEBHOOK_PASSCODE", "").strip()
+    mode = get_mode(request.headers.get("Authorization"))
+    expected_passcode = "" if mode == "demo" else os.environ.get("FIGMA_WEBHOOK_PASSCODE", "").strip()
     if not passcode_matches(normalized, expected_passcode):
         raise ApiException(
             status_code=401,

@@ -559,6 +559,10 @@ Enqueue top Lead OS actions into runtime queue (`notion_leads_worker`).
 
 Promote a pending Figma collaboration comment into a deterministic Notion lead and persist comment/actor linkage.
 
+#### POST /v1/figma/comments/poll
+
+Poll Figma comments directly (`GET /v1/files/{file_key}/comments`) and ingest them into the same pending-comment flow used by webhooks.
+
 ---
 
 ### Messages

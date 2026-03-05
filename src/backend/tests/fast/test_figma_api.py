@@ -194,3 +194,35 @@ def test_figma_promote_comment_to_lead_and_reuse_mapping(client):
     runtime = client.get("/v1/runtime", headers=DEMO_HEADERS).json()
     lead_os = runtime.get("workflow_state", {}).get("lead_os", {})
     assert lead_os.get("figma_comment_links", {}).get("fig_c_301") == first_lead_key
+
+
+@pytest.mark.fast
+def test_figma_comments_poll_demo_ingests_and_dedupes(client):
+    poll_body = {
+        "file_key": "demo_file_123",
+        "include_resolved": False,
+        "limit": 20,
+        "comments": [
+            {
+                "id": "fig_c_poll_1",
+                "message": "Please tighten spacing around the CTA",
+                "created_at": "2026-03-09T11:00:00Z",
+                "resolved_at": None,
+                "user": {"id": "user_1", "handle": "design-peer"},
+            }
+        ],
+    }
+    first = client.post("/v1/figma/comments/poll", json=poll_body, headers=DEMO_HEADERS)
+    assert first.status_code == 200
+    first_body = first.json()
+    assert first_body["object"] == "figma_comment_poll"
+    assert first_body["fetched"] == 1
+
+    pending_first = client.get("/v1/figma/comments/pending", headers=DEMO_HEADERS).json()["data"]
+    assert len(pending_first) == 1
+    assert pending_first[0]["comment_id"] == "fig_c_poll_1"
+
+    second = client.post("/v1/figma/comments/poll", json=poll_body, headers=DEMO_HEADERS)
+    assert second.status_code == 200
+    pending_second = client.get("/v1/figma/comments/pending", headers=DEMO_HEADERS).json()["data"]
+    assert len(pending_second) == 1

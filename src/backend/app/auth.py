@@ -1,6 +1,12 @@
 import os
 from dataclasses import dataclass
 
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+
+_swagger_bearer = HTTPBearer(auto_error=False)
+
 
 @dataclass
 class AuthContext:
@@ -50,3 +56,12 @@ def get_mode(auth_header: str | None) -> str:
 
 def is_demo_mode(auth_header: str | None) -> bool:
     return parse_auth(auth_header).demo
+
+
+def swagger_auth(
+    creds: HTTPAuthorizationCredentials | None = Depends(_swagger_bearer),
+) -> str | None:
+    """OpenAPI-visible bearer dependency for Swagger Authorize button."""
+    if creds is None:
+        return None
+    return f"Bearer {creds.credentials}"

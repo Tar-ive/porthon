@@ -29,6 +29,7 @@ Inbound webhook:
 
 Comment queue / approval pipeline:
 
+- `POST /v1/figma/comments/poll` (poll mode, webhook-free ingestion)
 - `GET /v1/figma/comments/pending`
 - `POST /v1/figma/comments/{comment_id}/prepare-send`
 - `POST /v1/figma/comments/{comment_id}/promote-to-lead`
@@ -77,6 +78,12 @@ Lead procurement extension:
 10. Persist mapping:
    - `comment_id -> lead_key`
    - `file_key + actor_handle -> lead_key` for continuity on future comments.
+
+Webhook-free polling flow:
+1. Call `POST /v1/figma/comments/poll` with `file_key`.
+2. Endpoint fetches `/v1/files/{file_key}/comments` from Figma in live mode.
+3. New comments are normalized and ingested into `integration.figma.webhook.received`.
+4. Processed items appear in `GET /v1/figma/comments/pending`.
 
 ## Programmatic Setup Example
 

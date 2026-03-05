@@ -80,3 +80,52 @@ def test_notion_leads_patch_and_realtime_demo(client):
     body = r_rt.json()
     assert body["object"] == "event"
     assert body["type"] == "manual_enqueue"
+
+
+@pytest.mark.fast
+def test_notion_leads_sync_with_theo_realistic_payload_demo(client):
+    payload = {
+        "parent_page_id": "Leads-Tracking-25c74e49e5de8035a901cdd614cb3bf7",
+        "database_title": "Theo Client Pipeline",
+        "data_source_title": "Theo Leads",
+        "database_id": "29b3ec6c4bce42ca9e4628a79466dd53",
+        "data_source_id": "5d472424-826f-4719-8ac6-06f0f127e068",
+        "strict_reconcile": True,
+        "leads": [
+            {
+                "name": "Austin SaaS Founder - Referral",
+                "status": "Contacted",
+                "lead_type": "Referral",
+                "priority": "High",
+                "deal_size": 3200,
+                "last_contact": "2026-03-05",
+                "next_action": "Send scope options and pricing anchors",
+                "next_follow_up_date": "2026-03-07",
+                "email_handle": "founder@example.com",
+                "source": "Referral",
+                "notes": "Warm intro from design meetup. Strong fit for brand + motion.",
+            },
+            {
+                "name": "Local Coffee Roaster Website Refresh",
+                "status": "Lead",
+                "lead_type": "Inbound",
+                "priority": "Medium",
+                "deal_size": 1800,
+                "last_contact": None,
+                "next_action": "Send first-touch portfolio samples and discovery call link",
+                "next_follow_up_date": "2026-03-08",
+                "email_handle": "@localroaster",
+                "source": "Portfolio",
+                "notes": "Inbound from Instagram portfolio post.",
+            },
+        ],
+    }
+    r_sync = client.post("/v1/notion/leads/sync", json=payload, headers=DEMO_HEADERS)
+    assert r_sync.status_code == 200
+    body = r_sync.json()
+    assert body["object"] == "notion_leads_sync"
+    assert body["strict_reconcile"] is True
+    assert body["counts"]["desired"] == 2
+    assert len(body["leads"]) == 2
+    assert body["leads"][0]["status"] == "Contacted"
+    assert body["leads"][0]["lead_type"] == "Referral"

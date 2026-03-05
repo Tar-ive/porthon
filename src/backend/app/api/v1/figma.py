@@ -61,6 +61,21 @@ def _save_watchers_patch(watchers: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _polled_comments(
+    raw_comments: list[dict[str, Any]],
+    *,
+    include_resolved: bool,
+    limit: int,
+) -> list[dict[str, Any]]:
+    comments = [c for c in raw_comments if isinstance(c, dict)]
+    if not include_resolved:
+        comments = [c for c in comments if c.get("resolved_at") is None]
+    comments.sort(key=lambda x: str(x.get("created_at", "")))
+    if limit > 0:
+        comments = comments[-limit:]
+    return comments
+
+
 def _resolve_comment_send_status(item: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     out = dict(item)
     queue = state.get("queue", [])
@@ -134,6 +149,13 @@ class PromoteFigmaCommentRequest(BaseModel):
     next_action: str | None = None
     next_follow_up_date: str | None = None
     dispatch_now: bool = True
+
+
+class PollFigmaCommentsRequest(BaseModel):
+    file_key: str = Field(..., min_length=1)
+    include_resolved: bool = False
+    limit: int = Field(default=20, ge=1, le=200)
+    comments: list[dict[str, Any]] = Field(default_factory=list)
 
 
 @router.post("/figma/watchers")
@@ -397,15 +419,20 @@ async def receive_figma_webhook(
 ):
     payload = await request.json()
     normalized = normalize_figma_webhook_payload(payload if isinstance(payload, dict) else {})
+    mode = get_mode(request.headers.get("Authorization"))
     cfg = await master.get_workflow_key("figma_watch")
     watchers = _load_watchers(cfg)
     webhook_id = str(normalized.get("webhook_id", "")).strip()
     watcher = next((w for w in watchers if str(w.get("webhook_id", "")) == webhook_id), None)
 
-    expected_passcode = (
-        str((watcher or {}).get("passcode", "")).strip()
-        or os.environ.get("FIGMA_WEBHOOK_PASSCODE", "").strip()
-    )
+    # Demo mode allows passcode-free local replay unless a watcher explicitly carries one.
+    if mode == "demo":
+        expected_passcode = str((watcher or {}).get("passcode", "")).strip()
+    else:
+        expected_passcode = (
+            str((watcher or {}).get("passcode", "")).strip()
+            or os.environ.get("FIGMA_WEBHOOK_PASSCODE", "").strip()
+        )
     if not passcode_matches(normalized, expected_passcode):
         raise ApiException(
             status_code=401,
@@ -429,7 +456,6 @@ async def receive_figma_webhook(
     if watcher:
         normalized["watcher_id"] = str(watcher.get("watcher_id", ""))
 
-    mode = get_mode(request.headers.get("Authorization"))
     normalized.setdefault("demo_mode", mode == "demo")
 
     result = await master.ingest_event("integration.figma.webhook.received", normalized)
@@ -443,6 +469,126 @@ async def receive_figma_webhook(
         "type": event.get("type", "integration.figma.webhook.received"),
         "payload": event.get("payload", normalized),
         "cycle": result.get("cycle"),
+    }
+
+
+@router.post("/figma/comments/poll")
+async def poll_figma_comments(
+    body: PollFigmaCommentsRequest,
+    request: Request,
+    master: AlwaysOnMaster = Depends(get_master),
+):
+    mode = get_mode(request.headers.get("Authorization"))
+    livemode = get_livemode(request.headers.get("Authorization"))
+    cfg = await master.get_workflow_key("figma_watch")
+    watchers = _load_watchers(cfg)
+    watcher = next(
+        (
+            w
+            for w in watchers
+            if str(w.get("file_key", "")).strip() == body.file_key
+            and bool(w.get("enabled", True))
+        ),
+        None,
+    )
+
+    if mode == "demo":
+        raw_comments = [c for c in body.comments if isinstance(c, dict)]
+    else:
+        api = get_figma_api()
+        if not api.is_configured():
+            raise ApiException(
+                status_code=400,
+                code="invalid_request",
+                message="FIGMA_API_KEY is not configured.",
+                param="FIGMA_API_KEY",
+            )
+        try:
+            payload = await api.get_comments(body.file_key)
+        except FigmaApiError as exc:
+            raise ApiException(
+                status_code=502,
+                code="upstream_error",
+                message=f"Figma comments poll failed ({exc.status_code}).",
+            )
+        raw_comments = payload.get("comments", payload if isinstance(payload, list) else [])
+        if not isinstance(raw_comments, list):
+            raw_comments = []
+
+    comments = _polled_comments(
+        raw_comments,
+        include_resolved=body.include_resolved,
+        limit=body.limit,
+    )
+    now_iso = _now_iso()
+    await master.update_workflow_key(
+        "figma_watch",
+        {
+            "enabled": True,
+            "file_key": body.file_key,
+            "demo_mode": mode == "demo",
+            "last_polled_at": now_iso,
+            "seen_event_ids": cfg.get("seen_event_ids", []),
+        },
+        merge=True,
+    )
+
+    ingested = 0
+    submitted_comment_ids: list[str] = []
+    cycles: list[dict[str, Any]] = []
+    for comment in comments:
+        comment_id = str(comment.get("id") or comment.get("comment_id") or "").strip()
+        message = str(comment.get("message", "")).strip()
+        if not comment_id or not message:
+            continue
+
+        actor = comment.get("user", {}) if isinstance(comment.get("user", {}), dict) else {}
+        synthesized = normalize_figma_webhook_payload(
+            {
+                "event_id": f"figma_poll_{body.file_key}_{comment_id}",
+                "event_type": "FILE_COMMENT",
+                "webhook_id": str((watcher or {}).get("webhook_id", "")) or f"poll::{body.file_key}",
+                "file_key": body.file_key,
+                "comment_id": comment_id,
+                "created_at": comment.get("created_at", ""),
+                "message": message,
+                "triggered_by": actor,
+                "from": actor,
+                "passcode": str((watcher or {}).get("passcode", "")) or os.environ.get("FIGMA_WEBHOOK_PASSCODE", ""),
+            }
+        )
+        synthesized["demo_mode"] = mode == "demo"
+        if watcher:
+            synthesized["watcher_id"] = str(watcher.get("watcher_id", ""))
+
+        result = await master.ingest_event("integration.figma.webhook.received", synthesized)
+        ingested += 1
+        submitted_comment_ids.append(comment_id)
+        cycle = result.get("cycle", {})
+        if isinstance(cycle, dict):
+            cycles.append(cycle)
+
+    state_after = await master.get_state()
+    pending = (
+        state_after.get("demo_artifacts", {})
+        .get("figma_watch", {})
+        .get("pending_items", [])
+    )
+    pending_count = len(pending) if isinstance(pending, list) else 0
+    return {
+        "id": generate_id("figpoll_"),
+        "object": "figma_comment_poll",
+        "created": epoch_now(),
+        "livemode": livemode,
+        "metadata": {},
+        "mode": mode,
+        "file_key": body.file_key,
+        "include_resolved": body.include_resolved,
+        "fetched": len(comments),
+        "ingested": ingested,
+        "submitted_comment_ids": submitted_comment_ids,
+        "pending_count": pending_count,
+        "cycles": cycles,
     }
 
 
