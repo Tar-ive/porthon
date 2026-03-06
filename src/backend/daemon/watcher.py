@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import time
+import os
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
 
-# Map filename → domain label used in SSE events
+# Map filename → domain label used in SSE events and AnalysisCache
 _DOMAIN_MAP: dict[str, str] = {
     "transactions.jsonl": "finance",
     "calendar.jsonl": "calendar",
@@ -151,65 +151,23 @@ class DataWatcher:
             self._reanalyze(domain), name="data-watcher-reanalysis"
         )
 
-    def _invalidate_scenario_cache(self) -> None:
+    def _invalidate_legacy_cache(self) -> None:
+        """Also bust the route-level cache so HTTP /api/scenarios reflects fresh data."""
         try:
             from app.api.v1.scenarios import _cached_scenarios
             _cached_scenarios.clear()
-            logger.debug("DataWatcher: scenario cache invalidated")
         except Exception:
-            logger.debug("DataWatcher: could not clear scenario cache", exc_info=True)
+            pass
 
     async def _reanalyze(self, domain: str) -> None:
-        """Run extract → scenario_gen in the background and publish result events."""
-        await self._master.stream.publish({
-            "event_id": _evt_id(),
-            "type": "analysis_running",
-            "payload": {
-                "stage": "scenarios",
-                "domain": domain,
-                "message": f"New {domain} data detected — re-analyzing trajectories…",
-            },
-            "created_at": _now_iso(),
-        })
+        """Re-analyze via AnalysisCache — only re-extracts the changed domain
+        and only calls the LLM if the prompt inputs actually changed."""
+        from daemon.analysis_cache import get_analysis_cache
 
-        try:
-            scenarios = await asyncio.wait_for(
-                self._run_scenario_pipeline(), timeout=35.0
-            )
-            await self._master.stream.publish({
-                "event_id": _evt_id(),
-                "type": "scenarios_updated",
-                "payload": {
-                    "count": len(scenarios),
-                    "persona_id": self._persona_id,
-                    "triggered_by": domain,
-                },
-                "created_at": _now_iso(),
-            })
-            logger.info("DataWatcher: re-analysis complete, %d scenarios", len(scenarios))
-
-        except asyncio.CancelledError:
-            raise
-        except asyncio.TimeoutError:
-            logger.warning("DataWatcher: re-analysis timed out")
-            await self._master.stream.publish({
-                "event_id": _evt_id(),
-                "type": "analysis_error",
-                "payload": {"message": "Re-analysis timed out — using cached trajectories"},
-                "created_at": _now_iso(),
-            })
-        except Exception as exc:
-            logger.warning("DataWatcher: re-analysis failed: %s", exc)
-            await self._master.stream.publish({
-                "event_id": _evt_id(),
-                "type": "analysis_error",
-                "payload": {"message": "Re-analysis failed — using cached trajectories"},
-                "created_at": _now_iso(),
-            })
-
-    async def _run_scenario_pipeline(self) -> list[dict]:
-        """Extract data and generate scenarios. Falls back to demo scenarios on any error."""
-        import os
+        cache = get_analysis_cache()
+        if cache is None:
+            logger.warning("DataWatcher: AnalysisCache not initialized, skipping re-analysis")
+            return
 
         has_llm = bool(
             os.environ.get("ANTHROPIC_API_KEY")
@@ -217,26 +175,66 @@ class DataWatcher:
             or os.environ.get("LLM_BINDING_API_KEY")
         )
 
-        if not has_llm:
-            # Demo / offline mode: return hardcoded scenarios
-            from pipeline.demo_theo import generate_demo_scenarios
-            scenarios = generate_demo_scenarios(self._persona_id)
-            mode = "demo"
-        else:
-            from pipeline.extractor import extract_persona_data
-            from pipeline.scenario_gen import generate_scenarios as gen_scenarios
+        await self._master.stream.publish({
+            "event_id": _evt_id(),
+            "type": "analysis_running",
+            "payload": {
+                "stage": "scenarios",
+                "domain": domain,
+                "message": f"New {domain} data detected — checking trajectories…",
+            },
+            "created_at": _now_iso(),
+        })
 
-            extracted = await asyncio.get_event_loop().run_in_executor(
-                None, extract_persona_data, self._persona_id
-            )
-            scenarios = await gen_scenarios(extracted)
-            mode = "live"
-
-        # Warm the scenario cache with fresh results
         try:
-            from app.api.v1.scenarios import _cached_scenarios
-            _cached_scenarios[f"{mode}:{self._persona_id}"] = (time.monotonic(), scenarios)
-        except Exception:
-            pass
+            scenarios, regenerated = await asyncio.wait_for(
+                cache.get_scenarios(changed_domains={domain}, has_llm=has_llm),
+                timeout=35.0,
+            )
 
-        return scenarios
+            # Also bust the route-level TTL cache so next HTTP call is fresh
+            self._invalidate_legacy_cache()
+
+            if regenerated:
+                await self._master.stream.publish({
+                    "event_id": _evt_id(),
+                    "type": "scenarios_updated",
+                    "payload": {
+                        "count": len(scenarios),
+                        "persona_id": self._persona_id,
+                        "triggered_by": domain,
+                    },
+                    "created_at": _now_iso(),
+                })
+                logger.info("DataWatcher: trajectories updated (%d) after %s change", len(scenarios), domain)
+            else:
+                # Inputs unchanged — no LLM call needed, just let frontend know it's stable
+                await self._master.stream.publish({
+                    "event_id": _evt_id(),
+                    "type": "analysis_stable",
+                    "payload": {
+                        "domain": domain,
+                        "message": f"{domain} data updated — trajectories unchanged",
+                    },
+                    "created_at": _now_iso(),
+                })
+                logger.info("DataWatcher: %s changed but trajectory inputs unchanged, LLM skipped", domain)
+
+        except asyncio.CancelledError:
+            raise
+        except asyncio.TimeoutError:
+            logger.warning("DataWatcher: re-analysis timed out for domain=%s", domain)
+            await self._master.stream.publish({
+                "event_id": _evt_id(),
+                "type": "analysis_error",
+                "payload": {"message": "Re-analysis timed out — using cached trajectories"},
+                "created_at": _now_iso(),
+            })
+        except Exception as exc:
+            logger.warning("DataWatcher: re-analysis failed for domain=%s: %s", domain, exc)
+            await self._master.stream.publish({
+                "event_id": _evt_id(),
+                "type": "analysis_error",
+                "payload": {"message": "Re-analysis failed — using cached trajectories"},
+                "created_at": _now_iso(),
+            })

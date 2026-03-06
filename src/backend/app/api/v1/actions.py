@@ -61,29 +61,70 @@ async def create_actions(
                 persona_id=persona_id,
             )
         else:
-            from pipeline.extractor import extract_persona_data
-            from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
-            from pipeline.action_planner import generate_actions
+            import os
 
-            extracted = extract_persona_data(persona_id)
-            scenarios = await asyncio.wait_for(
-                generate_scenarios_llm(extracted), timeout=30.0
+            has_llm = bool(
+                os.environ.get("ANTHROPIC_API_KEY")
+                or os.environ.get("OPENAI_API_KEY")
+                or os.environ.get("LLM_BINDING_API_KEY")
             )
-            chosen = next(
-                (s for s in scenarios if s.get("id") == scenario_id),
-                scenarios[0] if scenarios else None,
-            )
-            if chosen is None:
-                raise ApiException(
-                    status_code=404,
-                    code="resource_missing",
-                    message="Scenario not found.",
-                    param="scenario_id",
+
+            # Use AnalysisCache — avoids redundant scenario re-generation and
+            # skips action LLM if data_refs / scenario inputs haven't changed.
+            try:
+                from daemon.analysis_cache import get_analysis_cache
+                analysis_cache = get_analysis_cache()
+            except Exception:
+                analysis_cache = None
+
+            if analysis_cache is not None:
+                # Get (possibly cached) scenarios to resolve chosen scenario
+                scenarios, _ = await asyncio.wait_for(
+                    analysis_cache.get_scenarios(changed_domains=None, has_llm=has_llm),
+                    timeout=30.0,
                 )
+                chosen = next(
+                    (s for s in scenarios if s.get("id") == scenario_id),
+                    scenarios[0] if scenarios else None,
+                )
+                if chosen is None:
+                    raise ApiException(
+                        status_code=404,
+                        code="resource_missing",
+                        message="Scenario not found.",
+                        param="scenario_id",
+                    )
+                actions_list, _ = await asyncio.wait_for(
+                    analysis_cache.get_actions(
+                        chosen, changed_domains=None, has_llm=has_llm
+                    ),
+                    timeout=30.0,
+                )
+                result = {"scenario_id": chosen.get("id", scenario_id), "actions": actions_list}
+            else:
+                # Fallback: direct pipeline (no cache)
+                from pipeline.extractor import extract_persona_data
+                from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
+                from pipeline.action_planner import generate_actions
 
-            result = await asyncio.wait_for(
-                generate_actions(chosen, extracted), timeout=30.0
-            )
+                extracted = extract_persona_data(persona_id)
+                scenarios = await asyncio.wait_for(
+                    generate_scenarios_llm(extracted), timeout=30.0
+                )
+                chosen = next(
+                    (s for s in scenarios if s.get("id") == scenario_id),
+                    scenarios[0] if scenarios else None,
+                )
+                if chosen is None:
+                    raise ApiException(
+                        status_code=404,
+                        code="resource_missing",
+                        message="Scenario not found.",
+                        param="scenario_id",
+                    )
+                result = await asyncio.wait_for(
+                    generate_actions(chosen, extracted), timeout=30.0
+                )
 
         if chosen is None:
             raise ApiException(

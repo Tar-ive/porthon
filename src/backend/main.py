@@ -70,9 +70,13 @@ async def lifespan(app: FastAPI):
     await master.start()
     app.state.always_on_master = master
 
+    # Init AnalysisCache (shared singleton — used by both DataWatcher and HTTP routes)
+    from daemon.analysis_cache import init_analysis_cache
+    _data_dir = Path(__file__).parent.parent.parent / "data" / "all_personas" / "persona_p05"
+    init_analysis_cache(data_dir=_data_dir, persona_id="p05")
+
     # Start DataWatcher — polls Theo's JSONL files and publishes SSE events on change
     from daemon.watcher import DataWatcher
-    _data_dir = Path(__file__).parent.parent.parent / "data" / "all_personas" / "persona_p05"
     data_watcher = DataWatcher(
         master=master,
         data_dir=_data_dir,

@@ -65,9 +65,32 @@ async def _generate_scenarios(
     mode: str = "live",
     use_cache: bool = True,
 ) -> list[dict]:
+    import os
+
     cache_key = f"{mode}:{persona_id}"
 
-    # Return cached if still valid
+    # --- AnalysisCache path (incremental, skips LLM when inputs unchanged) ---
+    try:
+        from daemon.analysis_cache import get_analysis_cache
+        analysis_cache = get_analysis_cache()
+        if analysis_cache is not None:
+            has_llm = bool(
+                os.environ.get("ANTHROPIC_API_KEY")
+                or os.environ.get("OPENAI_API_KEY")
+                or os.environ.get("LLM_BINDING_API_KEY")
+            )
+            # Full mtime freshness check (no specific changed_domains — HTTP path)
+            scenarios, _ = await analysis_cache.get_scenarios(
+                changed_domains=None,
+                has_llm=has_llm if mode != "demo" else False,
+            )
+            # Keep legacy cache in sync so get_scenario(id) lookups still work
+            _cached_scenarios[cache_key] = (time.monotonic(), scenarios)
+            return scenarios
+    except Exception as e:
+        logger.warning("AnalysisCache unavailable, falling back to direct pipeline: %s", e)
+
+    # --- Legacy path (fallback if cache not initialized) ---
     if use_cache and cache_key in _cached_scenarios:
         now = time.monotonic()
         generated_at, cached = _cached_scenarios[cache_key]
@@ -96,9 +119,7 @@ async def _generate_scenarios(
         logger.error(f"Scenario generation failed: {e}")
         scenarios = generate_scenarios_fallback()
 
-    # Cache the result
     _cached_scenarios[cache_key] = (time.monotonic(), scenarios)
-
     return scenarios
 
 

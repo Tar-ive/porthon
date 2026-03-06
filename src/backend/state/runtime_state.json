@@ -124,192 +124,205 @@
       "last_error": null
     }
   ],
-  "cycle_history": [],
-  "event_history": [],
-  "demo_artifacts": {},
-  "value_signals": {},
-  "workflow_state": {
-    "lead_os": {
-      "version": "v3",
-      "persona_id": "p05",
-      "objective": {
-        "title": "Profile-driven freelance stability",
-        "persona_name": "Theo Nakamura",
-        "primary_goal": "Increase conversion and cash reliability without forcing high-anxiety outreach patterns.",
-        "constraints": {
-          "trust_first": true,
-          "ad_hoc_spam_forbidden": true,
-          "customer_approval_required_for_irreversible_sends": true,
-          "avg_monthly_revenue": 1820.0,
-          "debt": 6000.0
-        }
-      },
-      "lead_pcb": {
-        "direct lead::direct": {
-          "lead_key": "direct lead::direct",
-          "name": "Direct Lead",
-          "status": "Contacted",
-          "priority": "Medium",
-          "source": "Direct",
-          "lane": "Outbound",
-          "owner_pod": "nurture_pod",
-          "deal_size": 3000.0,
-          "next_action": "Book discovery call",
-          "next_follow_up_date": "2026-03-11",
-          "last_contact": "",
-          "overdue_days": 0,
-          "conversion_confidence": 0.26,
-          "trust_risk": 0.38,
-          "effort_est_minutes": 25,
-          "acquisition_cost_est": 36.0,
-          "response_sla_due_at": "2026-03-11",
-          "updated_at": "2026-03-05T09:34:51.814628+00:00"
-        },
-        "portfolio lead::portfolio": {
-          "lead_key": "portfolio lead::portfolio",
-          "name": "Portfolio Lead",
-          "status": "Proposal sent",
-          "priority": "High",
-          "source": "Portfolio",
-          "lane": "Inbound",
-          "owner_pod": "close_pod",
-          "deal_size": 2500.0,
-          "next_action": "Follow up on proposal feedback",
-          "next_follow_up_date": "2026-03-10",
-          "last_contact": "",
-          "overdue_days": 0,
-          "conversion_confidence": 0.8799999999999999,
-          "trust_risk": 0.2,
-          "effort_est_minutes": 35,
-          "acquisition_cost_est": 12.0,
-          "response_sla_due_at": "2026-03-10",
-          "updated_at": "2026-03-05T09:34:51.814628+00:00"
-        },
-        "referral lead::referral": {
-          "lead_key": "referral lead::referral",
-          "name": "Referral Lead",
-          "status": "Lead",
-          "priority": "High",
-          "source": "Referral",
-          "lane": "Referral",
-          "owner_pod": "intake_pod",
-          "deal_size": 1500.0,
-          "next_action": "Send intro scope and availability",
-          "next_follow_up_date": "2026-03-09",
-          "last_contact": "",
-          "overdue_days": 0,
-          "conversion_confidence": 0.37000000000000005,
-          "trust_risk": 0.12,
-          "effort_est_minutes": 20,
-          "acquisition_cost_est": 8.0,
-          "response_sla_due_at": "2026-03-09",
-          "updated_at": "2026-03-05T09:34:51.814628+00:00"
-        }
-      },
-      "recommended_actions": [
-        {
-          "lead_key": "portfolio lead::portfolio",
-          "name": "Portfolio Lead",
-          "owner_pod": "close_pod",
-          "status": "Proposal sent",
-          "source": "Portfolio",
-          "lane": "Inbound",
-          "priority": "High",
-          "deal_size": 2500.0,
-          "conversion_confidence": 0.8799999999999999,
-          "score": 2.7563,
-          "next_step": "Follow up on proposal feedback",
-          "next_touch_date": "2026-03-10"
-        },
-        {
-          "lead_key": "referral lead::referral",
-          "name": "Referral Lead",
-          "owner_pod": "intake_pod",
-          "status": "Lead",
-          "source": "Referral",
-          "lane": "Referral",
-          "priority": "High",
-          "deal_size": 1500.0,
-          "conversion_confidence": 0.37000000000000005,
-          "score": 2.1073,
-          "next_step": "Send intro scope and availability",
-          "next_touch_date": "2026-03-09"
-        },
-        {
-          "lead_key": "direct lead::direct",
-          "name": "Direct Lead",
-          "owner_pod": "nurture_pod",
-          "status": "Contacted",
-          "source": "Direct",
-          "lane": "Outbound",
-          "priority": "Medium",
-          "deal_size": 3000.0,
-          "conversion_confidence": 0.26,
-          "score": 0.8457,
-          "next_step": "Book discovery call",
-          "next_touch_date": "2026-03-11"
-        }
-      ],
-      "dispatch_log": [
-        {
-          "dispatched_at": "2026-03-05T09:34:51.814628+00:00",
-          "count": 2,
-          "dry_run": true,
-          "lead_keys": [
-            "portfolio lead::portfolio",
-            "referral lead::referral"
-          ]
-        }
-      ],
-      "figma_comment_links": {},
-      "figma_actor_file_links": {},
-      "pods": {
-        "intake_pod": {
-          "status": "active",
-          "queue_depth": 1,
-          "worker_queue_depth": 0,
-          "focus": "ingest and classify"
-        },
-        "nurture_pod": {
-          "status": "active",
-          "queue_depth": 1,
-          "worker_queue_depth": 0,
-          "focus": "follow-up cadence"
-        },
-        "close_pod": {
-          "status": "active",
-          "queue_depth": 1,
-          "worker_queue_depth": 0,
-          "focus": "proposal progression"
-        },
-        "finance_pod": {
-          "status": "ready",
-          "queue_depth": 0,
-          "worker_queue_depth": 0,
-          "focus": "sustainability guardrails"
-        }
-      },
-      "updated_at": "2026-03-05T09:34:51.814628+00:00",
-      "sustainability": {
-        "open_leads": 3,
-        "expected_pipeline_value": 7000.0,
-        "weighted_pipeline_value": 3535.0,
-        "estimated_acquisition_cost": 56.0,
-        "followup_overdue_count": 0,
-        "lane_distribution": {
-          "Referral": 1,
-          "Inbound": 1,
-          "Previous client": 0,
-          "Outbound": 1
-        },
-        "outbound_share": 0.333,
-        "trust_first_share": 0.667,
-        "efficiency_ratio": 63.125,
-        "sustainability_status": "stable"
-      },
-      "last_tick_at": "2026-03-05T09:34:51.807757+00:00",
-      "last_dispatch_at": "2026-03-05T09:34:51.814628+00:00"
+  "cycle_history": [
+    {
+      "cycle_id": "cycle_87704cff-852a-471c-a3c7-e57db9a9e3bc",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T21:54:56.867563+00:00",
+      "finished_at": "2026-03-06T21:54:56.867577+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_61175c84-285b-4992-9286-a86b43b100d6",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:09:56.870006+00:00",
+      "finished_at": "2026-03-06T22:09:56.870023+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_f327a9e3-1ecf-404a-ba57-b78a150f8de2",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:24:56.873029+00:00",
+      "finished_at": "2026-03-06T22:24:56.873043+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_c8cc551b-e718-4f18-ad62-b9245eb52e1c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:39:56.876716+00:00",
+      "finished_at": "2026-03-06T22:39:56.876735+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_aef93c68-b7d2-4751-a5da-22cefac97b7c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:54:56.881730+00:00",
+      "finished_at": "2026-03-06T22:54:56.881753+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_b8806fde-70cf-4631-ae80-6ede9220d5b2",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:09:56.884765+00:00",
+      "finished_at": "2026-03-06T23:09:56.884790+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e275a2c9-3d89-40ee-b899-74add7ddff2d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:24:56.888231+00:00",
+      "finished_at": "2026-03-06T23:24:56.888258+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
     }
-  },
-  "updated_at": "2026-03-05T09:34:51.815703+00:00"
+  ],
+  "event_history": [
+    {
+      "event_id": "evt_1dce1606-4212-4d0f-b974-18b3932dbdff",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T21:54:56.867548+00:00"
+    },
+    {
+      "event_id": "evt_699e4047-2f14-4791-9987-1139e6210a59",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_87704cff-852a-471c-a3c7-e57db9a9e3bc",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T21:54:56.867590+00:00"
+    },
+    {
+      "event_id": "evt_6eb51cd5-4727-4ec4-9518-9306d10496c1",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:09:56.869993+00:00"
+    },
+    {
+      "event_id": "evt_d3b08658-956b-4b85-8bd8-7a3eb8cb1c04",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_61175c84-285b-4992-9286-a86b43b100d6",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:09:56.870045+00:00"
+    },
+    {
+      "event_id": "evt_efb9111e-57bb-4d9e-a0f9-591b250adfc6",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:24:56.873016+00:00"
+    },
+    {
+      "event_id": "evt_16e232ad-7392-4f2c-9ded-20eb2a4cf16c",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_f327a9e3-1ecf-404a-ba57-b78a150f8de2",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:24:56.873067+00:00"
+    },
+    {
+      "event_id": "evt_743647e4-b3c1-4f88-9aa2-805899d3f973",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:39:56.876702+00:00"
+    },
+    {
+      "event_id": "evt_d92ba2c6-719a-4717-ac45-4bad1a45e9d0",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_c8cc551b-e718-4f18-ad62-b9245eb52e1c",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:39:56.876751+00:00"
+    },
+    {
+      "event_id": "evt_edf3f047-65d0-4a63-a55f-aed058f9d5df",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:54:56.881699+00:00"
+    },
+    {
+      "event_id": "evt_ebfb8969-27ac-4746-9d93-ebf040750331",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_aef93c68-b7d2-4751-a5da-22cefac97b7c",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:54:56.881768+00:00"
+    },
+    {
+      "event_id": "evt_1acab237-6e7d-4dda-823b-0f3f8374849c",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:09:56.884740+00:00"
+    },
+    {
+      "event_id": "evt_bf246022-e7f8-43f8-8a39-dc04fc5a0926",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_b8806fde-70cf-4631-ae80-6ede9220d5b2",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:09:56.884805+00:00"
+    },
+    {
+      "event_id": "evt_5687213e-dba1-41c3-bb44-3662d1ae1eab",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:24:56.888218+00:00"
+    },
+    {
+      "event_id": "evt_fca7fd58-afbd-4ca9-a916-c4bd8cac5852",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_e275a2c9-3d89-40ee-b899-74add7ddff2d",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:24:56.888271+00:00"
+    }
+  ],
+  "updated_at": "2026-03-06T23:24:56.888274+00:00"
 }
