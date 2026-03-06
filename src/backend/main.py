@@ -70,8 +70,21 @@ async def lifespan(app: FastAPI):
     await master.start()
     app.state.always_on_master = master
 
+    # Start DataWatcher — polls Theo's JSONL files and publishes SSE events on change
+    from daemon.watcher import DataWatcher
+    _data_dir = Path(__file__).parent.parent.parent / "data" / "all_personas" / "persona_p05"
+    data_watcher = DataWatcher(
+        master=master,
+        data_dir=_data_dir,
+        persona_id="p05",
+        poll_interval=float(os.environ.get("DATA_WATCHER_INTERVAL", "3.0")),
+    )
+    await data_watcher.start()
+    app.state.data_watcher = data_watcher
+
     logger.info("Skipping eager LightRAG startup; KG is lazy-initialized when needed")
     yield
+    await data_watcher.stop()
     await master.stop()
     if _rag is not None:
         try:

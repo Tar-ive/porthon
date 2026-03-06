@@ -12,3 +12,8 @@ def get_master(request: Request) -> AlwaysOnMaster:
     if master is None:
         raise HTTPException(status_code=503, detail="Always-on master not initialized")
     return master
+
+
+def get_watcher(request: Request):
+    """Return the DataWatcher instance (may be None if not started)."""
+    return getattr(request.app.state, "data_watcher", None)
