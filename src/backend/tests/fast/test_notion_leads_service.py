@@ -109,3 +109,71 @@ def test_lead_to_properties_supports_status_type():
 
     props_select = service._lead_to_properties(lead, status_kind="select")
     assert props_select["Status"] == {"select": {"name": "Proposal sent"}}
+
+
+@pytest.mark.fast
+@pytest.mark.asyncio
+async def test_find_database_by_title_uses_data_source_search_filter():
+    service = NotionLeadsService(token="test_token")
+    seen_payloads: list[dict] = []
+
+    async def _fake_request(method: str, path: str, payload=None, **kwargs):  # noqa: ANN001
+        assert method == "POST"
+        assert path == "/search"
+        seen_payloads.append(payload or {})
+        return {
+            "results": [
+                {
+                    "id": "ds_123",
+                    "object": "data_source",
+                    "name": "Leads",
+                    "database_id": "db_123",
+                }
+            ]
+        }
+
+    service._request = _fake_request  # type: ignore[method-assign]
+
+    result = await service.find_database_by_title("Leads")
+
+    assert result is not None
+    assert result["id"] == "ds_123"
+    assert seen_payloads[0]["filter"]["value"] == "data_source"
+
+
+@pytest.mark.fast
+@pytest.mark.asyncio
+async def test_ensure_workspace_reuses_database_id_from_data_source_search_item():
+    service = NotionLeadsService(token="test_token")
+    calls: list[tuple[str, str, dict | None]] = []
+
+    async def _fake_request(method: str, path: str, payload=None, **kwargs):  # noqa: ANN001
+        calls.append((method, path, payload))
+        if method == "POST" and path == "/search":
+            return {
+                "results": [
+                    {
+                        "id": "ds_live_123",
+                        "object": "data_source",
+                        "name": "Leads",
+                        "database_id": "db_live_456",
+                    }
+                ]
+            }
+        if method == "GET" and path == "/databases/db_live_456":
+            return {
+                "id": "db_live_456",
+                "data_sources": [{"id": "ds_live_123", "name": "Theo Leads"}],
+            }
+        if method == "PATCH" and path == "/data_sources/ds_live_123":
+            return {"id": "ds_live_123"}
+        raise AssertionError(f"Unexpected request: {method} {path}")
+
+    service._request = _fake_request  # type: ignore[method-assign]
+
+    setup = await service.ensure_workspace(parent_page_id=None, database_title="Leads", data_source_title="Theo Leads")
+
+    assert setup["database_id"] == "db_live_456"
+    assert setup["data_source_id"] == "ds_live_123"
+    assert setup["reused"] is True
+    assert ("GET", "/databases/db_live_456", None) in calls

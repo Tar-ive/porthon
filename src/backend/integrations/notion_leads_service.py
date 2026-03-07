@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from typing import Any
@@ -151,6 +152,17 @@ def _title_plain(value: Any) -> str:
             content = str(text_obj.get("content", "")).strip()
             if content:
                 return content
+    return ""
+
+
+def _search_result_title(item: dict[str, Any]) -> str:
+    title = _title_plain(item.get("title", []))
+    if title:
+        return title
+    for key in ("name", "display_name"):
+        text = str(item.get(key, "")).strip()
+        if text:
+            return text
     return ""
 
 
@@ -308,6 +320,8 @@ class NotionLeadsService:
     ) -> dict[str, Any]:
         url = f"{NOTION_API_BASE}{path}"
         timeout = aiohttp.ClientTimeout(total=30)
+        started = time.perf_counter()
+        logger.info("NOTION HTTP START method=%s path=%s", method.upper(), path)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.request(
                 method=method.upper(),
@@ -329,7 +343,22 @@ class NotionLeadsService:
 
                 if response.status >= 400:
                     message = str(body.get("message", body.get("raw", "request failed")))
+                    logger.warning(
+                        "NOTION HTTP ERROR method=%s path=%s status=%s elapsed_ms=%s message=%s",
+                        method.upper(),
+                        path,
+                        response.status,
+                        int((time.perf_counter() - started) * 1000),
+                        message,
+                    )
                     raise NotionApiError(status=response.status, message=message, payload=body)
+                logger.info(
+                    "NOTION HTTP OK method=%s path=%s status=%s elapsed_ms=%s",
+                    method.upper(),
+                    path,
+                    response.status,
+                    int((time.perf_counter() - started) * 1000),
+                )
                 return body
 
     async def discover_parent_page(self) -> str | None:
@@ -355,17 +384,31 @@ class NotionLeadsService:
             "/search",
             payload={
                 "query": database_title,
-                "filter": {"property": "object", "value": "database"},
+                "filter": {"property": "object", "value": "data_source"},
                 "page_size": 20,
             },
         )
         for item in result.get("results", []):
             if not isinstance(item, dict):
                 continue
-            title = _title_plain(item.get("title", []))
+            title = _search_result_title(item)
             if title.strip().lower() == database_title.strip().lower():
                 return item
         return None
+
+    @staticmethod
+    def _extract_database_id_from_search_item(item: dict[str, Any]) -> str:
+        for key in ("database_id", "parent_database_id"):
+            value = str(item.get(key, "")).strip()
+            if value:
+                return value
+        parent = item.get("parent", {})
+        if isinstance(parent, dict):
+            for key in ("database_id", "data_source_id", "id"):
+                value = str(parent.get(key, "")).strip()
+                if value:
+                    return value
+        return ""
 
     async def ensure_workspace(
         self,
@@ -378,11 +421,13 @@ class NotionLeadsService:
     ) -> dict[str, Any]:
         reused = False
         db_id = (database_id or "").strip()
+        ds_id = (data_source_id or "").strip()
 
         if not db_id:
             existing = await self.find_database_by_title(database_title)
             if existing:
-                db_id = str(existing.get("id", "")).strip()
+                ds_id = ds_id or str(existing.get("id", "")).strip()
+                db_id = self._extract_database_id_from_search_item(existing)
                 reused = True
 
         if not db_id:
@@ -405,7 +450,6 @@ class NotionLeadsService:
         if not isinstance(data_sources, list) or not data_sources:
             raise ValueError("Database has no data sources; cannot continue")
 
-        ds_id = (data_source_id or "").strip()
         if not ds_id:
             for ds in data_sources:
                 if not isinstance(ds, dict):
@@ -470,6 +514,7 @@ class NotionLeadsService:
         }
 
     async def query_all_rows(self, data_source_id: str) -> list[dict[str, Any]]:
+        logger.info("NOTION QUERY ROWS START data_source_id=%s", data_source_id)
         rows: list[dict[str, Any]] = []
         cursor: str | None = None
         while True:
@@ -485,6 +530,7 @@ class NotionLeadsService:
             cursor = str(result.get("next_cursor", "")).strip() or None
             if not cursor:
                 break
+        logger.info("NOTION QUERY ROWS OK data_source_id=%s rows=%s", data_source_id, len(rows))
         return rows
 
     def row_to_lead(self, row: dict[str, Any]) -> dict[str, Any]:
@@ -583,6 +629,12 @@ class NotionLeadsService:
         }
 
     async def create_row(self, data_source_id: str, lead: dict[str, Any], status_kind: str = "select") -> dict[str, Any]:
+        logger.info(
+            "NOTION CREATE ROW data_source_id=%s lead_key=%s name=%s",
+            data_source_id,
+            lead.get("lead_key", ""),
+            lead.get("name", ""),
+        )
         row = await self._request(
             "POST",
             "/pages",
@@ -594,9 +646,11 @@ class NotionLeadsService:
         return row
 
     async def update_row(self, page_id: str, properties: dict[str, Any]) -> dict[str, Any]:
+        logger.info("NOTION UPDATE ROW page_id=%s", page_id)
         return await self._request("PATCH", f"/pages/{page_id}", payload={"properties": properties})
 
     async def archive_row(self, page_id: str) -> dict[str, Any]:
+        logger.info("NOTION ARCHIVE ROW page_id=%s", page_id)
         return await self._request("PATCH", f"/pages/{page_id}", payload={"in_trash": True})
 
     async def list_leads(self, data_source_id: str) -> list[dict[str, Any]]:
@@ -655,6 +709,12 @@ class NotionLeadsService:
             normalized = normalize_lead_payload(raw)
             desired_by_key[normalized["lead_key"]] = normalized
 
+        logger.info(
+            "NOTION SYNC LEADS START data_source_id=%s desired=%s strict_reconcile=%s",
+            data_source_id,
+            len(desired_by_key),
+            strict_reconcile,
+        )
         existing_rows = await self.query_all_rows(data_source_id)
         status_kind = "select"
         if existing_rows:
@@ -715,6 +775,14 @@ class NotionLeadsService:
                 await self.archive_row(page_id)
                 archived_keys.append(key)
 
+        logger.info(
+            "NOTION SYNC LEADS OK data_source_id=%s created=%s updated=%s noop=%s archived=%s",
+            data_source_id,
+            len(created_keys),
+            len(updated_keys),
+            len(noop_keys),
+            len(archived_keys),
+        )
         return {
             "counts": {
                 "desired": len(desired_by_key),

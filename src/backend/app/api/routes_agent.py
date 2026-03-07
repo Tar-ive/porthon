@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -15,8 +16,10 @@ from app.auth import get_livemode, get_mode
 from app.deps import get_master
 from deepagent.loop import AlwaysOnMaster
 from deepagent.skills.registry import SKILL_REGISTRY
+from integrations.notion_leads_service import get_notion_leads_service
 
 router = APIRouter(prefix="/api/agent", tags=["agent"])
+logger = logging.getLogger(__name__)
 
 
 class AgentEventRequest(BaseModel):
@@ -233,6 +236,122 @@ def _load_demo_events() -> list[dict]:
     return events
 
 
+def _demo_event_to_notion_leads(slug: str, descriptor: dict[str, Any]) -> list[dict[str, Any]]:
+    record = descriptor.get("record", {})
+    record_text = str(record.get("text", "")).strip()
+    record_ts = str(record.get("ts", "")).strip()
+    default_follow_up = record_ts[:10] if len(record_ts) >= 10 else "2026-03-09"
+
+    mappings: dict[str, list[dict[str, Any]]] = {
+        "01_high_value_client": [
+            {
+                "name": "NovaBit",
+                "status": "Meeting booked",
+                "lead_type": "Inbound",
+                "priority": "High",
+                "deal_size": 2700,
+                "source": "Direct",
+                "next_action": "Send discovery recap and scope options within 48 hours",
+                "next_follow_up_date": default_follow_up,
+                "notes": f"Questline demo push 01_high_value_client. {record_text}",
+                "lead_key": "novabit::direct",
+            }
+        ],
+        "02_debt_milestone": [
+            {
+                "name": "Freed Capacity Sprint",
+                "status": "Lead",
+                "lead_type": "Outbound",
+                "priority": "High",
+                "deal_size": 1000,
+                "source": "Direct",
+                "next_action": "Convert the freed debt capacity into 3 warm outreach follow-ups this week",
+                "next_follow_up_date": default_follow_up,
+                "notes": f"Questline demo push 02_debt_milestone. Derived internal revenue sprint from: {record_text}",
+                "lead_key": "freed capacity sprint::direct",
+            }
+        ],
+        "03_motion_reel_viral": [
+            {
+                "name": "Motion Reel Inbound",
+                "status": "Lead",
+                "lead_type": "Inbound",
+                "priority": "High",
+                "deal_size": 1800,
+                "source": "Social",
+                "next_action": "Reply to the 12 inbound DMs with one qualifying message and a portfolio link",
+                "next_follow_up_date": default_follow_up,
+                "notes": f"Questline demo push 03_motion_reel_viral. {record_text}",
+                "lead_key": "motion reel inbound::social",
+            }
+        ],
+        "04_agency_partnership": [
+            {
+                "name": "ATX Creative Co",
+                "status": "Proposal sent",
+                "lead_type": "Referral",
+                "priority": "High",
+                "deal_size": 3000,
+                "source": "Referral",
+                "next_action": "Model retainer economics and reply with a decision window",
+                "next_follow_up_date": default_follow_up,
+                "notes": f"Questline demo push 04_agency_partnership. {record_text}",
+                "lead_key": "atx creative co::referral",
+            }
+        ],
+    }
+    return mappings.get(slug, [])
+
+
+async def _resolve_demo_notion_workspace(master: AlwaysOnMaster) -> dict[str, Any]:
+    from app.api.v1.notion_leads import _resolve_workspace
+
+    return await _resolve_workspace(master=master, payload={}, allow_setup=True)
+
+
+async def _sync_demo_event_to_notion(master: AlwaysOnMaster, slug: str, descriptor: dict[str, Any]) -> dict[str, Any]:
+    leads = _demo_event_to_notion_leads(slug, descriptor)
+    if not leads:
+        return {"status": "skipped", "reason": "no_mapping", "lead_count": 0}
+
+    service = get_notion_leads_service()
+    if not service.is_configured():
+        return {"status": "skipped", "reason": "notion_unconfigured", "lead_count": len(leads)}
+
+    try:
+        workspace = await _resolve_demo_notion_workspace(master)
+        sync = await service.sync_leads(
+            data_source_id=str(workspace["data_source_id"]),
+            leads=leads,
+            strict_reconcile=False,
+        )
+        await master.update_workflow_key(
+            "notion_leads",
+            {
+                **workspace,
+                "last_demo_push_sync_at": descriptor.get("record", {}).get("ts", ""),
+            },
+        )
+        logger.info(
+            "DEMO PUSH NOTION SYNC OK slug=%s data_source_id=%s created=%s updated=%s noop=%s",
+            slug,
+            workspace.get("data_source_id", ""),
+            sync.get("counts", {}).get("created", 0),
+            sync.get("counts", {}).get("updated", 0),
+            sync.get("counts", {}).get("noop", 0),
+        )
+        return {
+            "status": "completed",
+            "lead_count": len(leads),
+            "database_id": workspace.get("database_id", ""),
+            "data_source_id": workspace.get("data_source_id", ""),
+            "counts": sync.get("counts", {}),
+        }
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("DEMO PUSH NOTION SYNC FAILED slug=%s error=%s", slug, exc)
+        return {"status": "failed", "reason": str(exc), "lead_count": len(leads)}
+
+
 @router.get("/demo/events", include_in_schema=False)
 async def list_demo_events():
     """List available scripted demo feed events."""
@@ -255,6 +374,7 @@ async def push_demo_event(slug: str, request: Request):
     """Append a scripted record to Theo's data files and trigger immediate re-analysis."""
     import json as _json
 
+    master = get_master(request)
     event_file = _DEMO_FEED_DIR / f"{slug}.json"
     if not event_file.exists():
         from app.middleware.errors import ApiException
@@ -280,6 +400,8 @@ async def push_demo_event(slug: str, request: Request):
     if watcher is not None:
         asyncio.create_task(watcher.force_check(demo_mode=True))
 
+    notion_sync = await _sync_demo_event_to_notion(master, slug, descriptor)
+
     return {
         "ok": True,
         "slug": slug,
@@ -287,4 +409,5 @@ async def push_demo_event(slug: str, request: Request):
         "domain": descriptor["domain"],
         "record_id": record["id"],
         "file": descriptor["file"],
+        "notion_sync": notion_sync,
     }

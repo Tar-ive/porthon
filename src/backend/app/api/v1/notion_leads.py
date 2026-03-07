@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import logging
 from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
@@ -28,6 +29,7 @@ from integrations.notion_leads_service import (
 )
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class LeadsSetupRequest(BaseModel):
@@ -332,12 +334,34 @@ async def sync_notion_leads(
         }
 
     try:
+        logger.info(
+            "NOTION API SYNC START mode=%s desired=%s strict_reconcile=%s data_source_id=%s database_title=%s",
+            mode,
+            len(body.leads),
+            body.strict_reconcile,
+            body.data_source_id or "",
+            body.database_title,
+        )
         workspace = await _resolve_workspace(master=master, payload=body.model_dump(mode="json"), allow_setup=True)
+        logger.info(
+            "NOTION API SYNC WORKSPACE RESOLVED database_id=%s data_source_id=%s",
+            workspace.get("database_id", ""),
+            workspace.get("data_source_id", ""),
+        )
         service = get_notion_leads_service()
         sync = await service.sync_leads(
             data_source_id=str(workspace["data_source_id"]),
             leads=[l for l in body.leads if isinstance(l, dict)],
             strict_reconcile=body.strict_reconcile,
+        )
+        logger.info(
+            "NOTION API SYNC OK database_id=%s data_source_id=%s created=%s updated=%s noop=%s archived=%s",
+            workspace.get("database_id", ""),
+            workspace.get("data_source_id", ""),
+            sync.get("counts", {}).get("created", 0),
+            sync.get("counts", {}).get("updated", 0),
+            sync.get("counts", {}).get("noop", 0),
+            sync.get("counts", {}).get("archived", 0),
         )
         await master.update_workflow_key(
             "notion_leads",
@@ -359,6 +383,7 @@ async def sync_notion_leads(
     except ApiException:
         raise
     except Exception as exc:  # noqa: BLE001
+        logger.exception("NOTION API SYNC FAILED: %s", exc)
         raise ApiException(status_code=500, code="internal_error", message=str(exc))
 
 
