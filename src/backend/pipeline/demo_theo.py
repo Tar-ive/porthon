@@ -2,7 +2,115 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any
+
+# Record IDs injected by the 4 scripted demo push events
+_DEMO_RECORD_IDS = {
+    "cal_0081",  # 01_high_value_client  — NovaBit $150/hr calendar event
+    "t_0121",    # 02_debt_milestone     — $1k debt payoff transaction
+    "s_0051",    # 03_motion_reel_viral  — 50k-view social post
+    "ll_0151",   # 04_agency_partnership — ATX Creative Co retainer lifelog
+}
+
+# New actions injected per demo record (scenario-agnostic; prepended to baseline list)
+_DEMO_RECORD_ACTIONS: dict[str, dict[str, str]] = {
+    "cal_0081": {
+        "action": (
+            "Follow up on the NovaBit discovery call and anchor the proposal at the "
+            "$150/hr rate discussed — send a written scope summary within 48 hours."
+        ),
+        "rationale": (
+            "cal_0081 captures a high-intent startup inquiry at $150/hr. Immediate "
+            "follow-up prevents lead cooling and sets the pricing anchor before "
+            "any budget conversation starts."
+        ),
+        "data_ref": "cal_0081",
+        "pattern_id": "learning_vs_conversion_mismatch",
+        "compound_summary": "Converting high-rate leads closes the learning-to-revenue gap faster.",
+    },
+    "t_0121": {
+        "action": (
+            "Redirect the freed $1,000 debt payment capacity into a one-week client "
+            "acquisition sprint — outreach to 3 warm leads before the next billing cycle."
+        ),
+        "rationale": (
+            "t_0121 shows the debt balance dropped to $2,640. The mental bandwidth "
+            "freed by visible debt progress should be channelled into revenue activity "
+            "immediately, not absorbed by lifestyle drift."
+        ),
+        "data_ref": "t_0121",
+        "pattern_id": "financial_stress_triangulation",
+        "compound_summary": "Reducing debt unlocks execution bandwidth that converts into pipeline.",
+    },
+    "s_0051": {
+        "action": (
+            "Reply to all 12 inbound DMs from the viral motion reel within 24 hours — "
+            "use a single qualifying message with a portfolio link and one open question."
+        ),
+        "rationale": (
+            "s_0051 records 50k views and 12 DMs. This is a rare inbound spike; "
+            "response latency is the only variable Theo controls. A template reply "
+            "converts attention into discoverable pipeline without extra creative work."
+        ),
+        "data_ref": "s_0051",
+        "pattern_id": "social_signal_alignment",
+        "compound_summary": "Capturing viral momentum builds a warm pipeline with zero ad spend.",
+    },
+    "ll_0151": {
+        "action": (
+            "Model the ATX Creative Co $3k/month retainer against current freelance "
+            "income for the next 6 months — calculate the break-even client count "
+            "before deciding."
+        ),
+        "rationale": (
+            "ll_0151 records the partnership offer. A retainer trades rate ceiling for "
+            "stability; the decision requires a concrete revenue comparison, not a "
+            "gut-feel response."
+        ),
+        "data_ref": "ll_0151",
+        "pattern_id": "conversion_follow_through",
+        "compound_summary": "Structured retainer evaluation prevents under- or over-committing.",
+    },
+}
+
+
+def _detect_pushed_demo_records(persona_id: str = "p05") -> set[str]:
+    """Check which demo push record IDs are present in the persona data files."""
+    import json as _json
+
+    data_dir = (
+        Path(os.path.dirname(__file__)).parent.parent.parent
+        / "data" / "all_personas" / f"persona_{persona_id}"
+    )
+    files = [
+        ("calendar.jsonl", "cal_"),
+        ("transactions.jsonl", "t_"),
+        ("social_posts.jsonl", "s_"),
+        ("lifelog.jsonl", "ll_"),
+    ]
+    found: set[str] = set()
+    for filename, _ in files:
+        path = data_dir / filename
+        if not path.exists():
+            continue
+        try:
+            with path.open() as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        rec = _json.loads(line)
+                        rid = rec.get("id", "")
+                        if rid in _DEMO_RECORD_IDS:
+                            found.add(rid)
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+    return found
 
 
 def normalize_demo_scenario_id(scenario_id: str) -> str:
@@ -174,10 +282,21 @@ def _actions_by_scenario() -> dict[str, list[dict[str, Any]]]:
 
 
 def generate_demo_actions(scenario_id: str, persona_id: str = "p05") -> dict[str, Any]:
+    """Return demo actions, injecting context-aware actions for any pushed demo records."""
     if persona_id != "p05":
         return {"scenario_id": scenario_id, "actions": []}
     scenario_id = normalize_demo_scenario_id(scenario_id)
-    actions = _actions_by_scenario().get(scenario_id, [])
+    baseline = list(_actions_by_scenario().get(scenario_id, []))
+
+    # Detect which demo records have been pushed and prepend their actions
+    pushed = _detect_pushed_demo_records(persona_id)
+    injected = [
+        _DEMO_RECORD_ACTIONS[rid]
+        for rid in ("cal_0081", "t_0121", "s_0051", "ll_0151")
+        if rid in pushed
+    ]
+    # Injected actions go first so the audience sees what changed
+    actions = injected + baseline
     return {"scenario_id": scenario_id, "actions": actions}
 
 

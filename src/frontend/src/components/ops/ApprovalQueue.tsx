@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useAgentStream } from '../../hooks/useAgentStream';
 
 interface Approval {
     id?: string;
@@ -15,6 +16,7 @@ const DEMO_TOKEN = 'Bearer sk_demo_default';
 export default function ApprovalQueue() {
     const [approvals, setApprovals] = useState<Approval[]>([]);
     const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading');
+    const { lastEvent } = useAgentStream();
 
     const load = useCallback(async () => {
         try {
@@ -30,20 +32,17 @@ export default function ApprovalQueue() {
         }
     }, []);
 
+    // Initial load + periodic poll
     useEffect(() => {
         load();
         const poll = setInterval(load, 10000);
-
-        // Refresh on SSE events
-        const source = new EventSource('/v1/events/stream');
-        source.onmessage = () => load();
-        source.onerror = () => source.close();
-
-        return () => {
-            clearInterval(poll);
-            source.close();
-        };
+        return () => clearInterval(poll);
     }, [load]);
+
+    // Refresh on any SSE event (shared connection via context, no extra SSE)
+    useEffect(() => {
+        if (lastEvent) load();
+    }, [lastEvent, load]);
 
     const resolve = async (approvalId: string, decision: 'approved' | 'rejected') => {
         try {

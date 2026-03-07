@@ -3,6 +3,8 @@ import AnimatedKnowledgeGraph from '../components/ops/AnimatedKnowledgeGraph';
 import WorkerFleet from '../components/ops/WorkerFleet';
 import TelemetryFeed from '../components/ops/TelemetryFeed';
 import ApprovalQueue from '../components/ops/ApprovalQueue';
+import DaemonBar from '../components/ops/DaemonBar';
+import DemoFeed from '../components/ops/DemoFeed';
 
 interface Scenario {
     id: string;
@@ -28,7 +30,10 @@ export default function MissionControl({
                 <span className="mission-scenario-horizon">{scenario.horizon}</span>
             </div>
 
-            {/* Main grid: KG + telemetry left, workers + approvals right */}
+            {/* Daemon heartbeat bar */}
+            <DaemonBar />
+
+            {/* Main grid: KG + telemetry left, workers + demo feed + approvals right */}
             <div className="mission-grid">
                 <div className="mission-left-col">
                     <AnimatedKnowledgeGraph />
@@ -36,6 +41,7 @@ export default function MissionControl({
                 </div>
                 <div className="mission-sidebar">
                     <WorkerFleet />
+                    <DemoFeed />
                     <ApprovalQueue />
                 </div>
             </div>

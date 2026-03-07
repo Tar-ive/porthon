@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useAgentStream } from '../../hooks/useAgentStream';
 
 interface WorkerData {
     id: string;
@@ -22,7 +23,7 @@ const DEMO_TOKEN = 'Bearer sk_demo_default';
 export default function WorkerFleet() {
     const [workers, setWorkers] = useState<WorkerData[]>([]);
     const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading');
-    const sseRef = useRef<EventSource | null>(null);
+    const { lastEvent } = useAgentStream();
 
     const load = useCallback(async () => {
         try {
@@ -38,23 +39,17 @@ export default function WorkerFleet() {
         }
     }, []);
 
+    // Initial load + periodic poll
     useEffect(() => {
         load();
         const poll = setInterval(load, 8000);
-
-        // SSE for real-time events
-        const source = new EventSource('/v1/events/stream');
-        sseRef.current = source;
-        source.onmessage = () => {
-            load(); // refresh on any event
-        };
-        source.onerror = () => source.close();
-
-        return () => {
-            clearInterval(poll);
-            source.close();
-        };
+        return () => clearInterval(poll);
     }, [load]);
+
+    // Refresh on any SSE event (shared connection via context, no extra SSE)
+    useEffect(() => {
+        if (lastEvent) load();
+    }, [lastEvent, load]);
 
     return (
         <div className="ops-panel worker-fleet">

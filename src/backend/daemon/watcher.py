@@ -349,7 +349,15 @@ class DataWatcher:
                     name="data-watcher-actions-refresh",
                 )
             else:
-                # Inputs unchanged — no LLM call needed, just let frontend know it's stable
+                # In demo mode, always refresh actions even if scenario hash unchanged.
+                # Demo actions are context-aware (detect pushed records), so they change
+                # even when the scenario trajectory itself doesn't.
+                if ctx.demo_mode:
+                    asyncio.create_task(
+                        self._reanalyze_active_actions(cache, has_llm, ctx),
+                        name="data-watcher-actions-refresh",
+                    )
+                # Let frontend know analysis is stable
                 await self._master.stream.publish({
                     "event_id": _evt_id(),
                     "type": "analysis_stable",
