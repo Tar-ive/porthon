@@ -875,6 +875,76 @@
     padding: 0.08rem 0.4rem;
 }
 
+.mission-thesis {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid rgba(200, 146, 42, 0.08);
+    background:
+        radial-gradient(circle at top left, rgba(200, 146, 42, 0.09), transparent 42%),
+        linear-gradient(90deg, rgba(200, 146, 42, 0.04), transparent 55%);
+}
+
+.mission-thesis-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.mission-thesis-kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    color: var(--amber);
+    text-transform: uppercase;
+}
+
+.mission-thesis-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    line-height: 1.35;
+    color: var(--cream);
+}
+
+.mission-thesis-text {
+    max-width: 58rem;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: rgba(232, 223, 200, 0.82);
+}
+
+.mission-thesis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+.mission-thesis-card {
+    min-height: 100%;
+    padding: 0.8rem 0.85rem;
+    border: 1px solid rgba(200, 146, 42, 0.14);
+    background: rgba(7, 8, 10, 0.44);
+}
+
+.mission-thesis-card-label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    color: var(--amber);
+    text-transform: uppercase;
+}
+
+.mission-thesis-card-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    line-height: 1.55;
+    color: rgba(232, 223, 200, 0.82);
+}
+
 .mission-grid {
     flex: 1;
     display: grid;
@@ -884,6 +954,14 @@
 }
 
 @media (max-width: 900px) {
+    .mission-thesis {
+        grid-template-columns: 1fr;
+    }
+
+    .mission-thesis-grid {
+        grid-template-columns: 1fr;
+    }
+
     .mission-grid {
         grid-template-columns: 1fr;
         overflow-y: auto;
@@ -1103,6 +1181,14 @@
     padding: 0 0.65rem;
 }
 
+.chat-sidebar-note {
+    margin-bottom: 0.45rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.54rem;
+    line-height: 1.55;
+    color: rgba(232, 223, 200, 0.74);
+}
+
 .chat-sidebar-item {
     display: flex;
     align-items: flex-start;
@@ -1164,6 +1250,31 @@
 .chat-sidebar-approval-actions .approval-btn {
     font-size: 0.5rem;
     padding: 0.06rem 0.35rem;
+}
+
+.chat-sidebar-role {
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(200, 146, 42, 0.06);
+}
+
+.chat-sidebar-role:last-child {
+    border-bottom: none;
+}
+
+.chat-sidebar-role-label {
+    margin-bottom: 0.12rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+}
+
+.chat-sidebar-role-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.53rem;
+    line-height: 1.45;
+    color: rgba(232, 223, 200, 0.72);
 }
 
 .chat-sidebar-events {

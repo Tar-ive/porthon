@@ -99,6 +99,49 @@ export default function ChatSidebar({ quests }: { quests: Quest[] }) {
 
     return (
         <aside className="chat-sidebar">
+            <div className="chat-sidebar-section">
+                <div className="chat-sidebar-header">
+                    <span>Why Questline</span>
+                </div>
+                <div className="chat-sidebar-items">
+                    <div className="chat-sidebar-note">
+                        Questline is built for freelancers who lose revenue in tiny gaps: slow follow-ups, overloaded weeks, and inbound demand that never turns into booked work.
+                    </div>
+                    <div className="chat-sidebar-item">
+                        <span className="chat-sidebar-item-num">01</span>
+                        <span className="chat-sidebar-item-text">Catch leads before they cool off or disappear behind delivery work.</span>
+                    </div>
+                    <div className="chat-sidebar-item">
+                        <span className="chat-sidebar-item-num">02</span>
+                        <span className="chat-sidebar-item-text">Turn live signals into next actions Theo can actually execute today.</span>
+                    </div>
+                    <div className="chat-sidebar-item">
+                        <span className="chat-sidebar-item-num">03</span>
+                        <span className="chat-sidebar-item-text">Balance pipeline urgency against time pressure so growth does not break delivery.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="chat-sidebar-section">
+                <div className="chat-sidebar-header">
+                    <span>Agent Roles</span>
+                </div>
+                <div className="chat-sidebar-items">
+                    <div className="chat-sidebar-role">
+                        <div className="chat-sidebar-role-label">Reactive agents</div>
+                        <div className="chat-sidebar-role-text">
+                            Watch Notion, approvals, calendar pressure, and incoming demand so the operating picture updates the moment Theo&apos;s world changes.
+                        </div>
+                    </div>
+                    <div className="chat-sidebar-role">
+                        <div className="chat-sidebar-role-label">Proactive agents</div>
+                        <div className="chat-sidebar-role-text">
+                            Convert those changes into follow-ups, focus blocks, pricing nudges, and outreach sequences that keep revenue moving.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Follow-ups from quest actions */}
             {quests.length > 0 && (
                 <div className="chat-sidebar-section">

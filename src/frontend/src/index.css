@@ -111,6 +111,16 @@ body::after {
   margin-top: 0.15rem;
 }
 
+.chat-header-brief {
+  margin-top: 0.55rem;
+  max-width: 40rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  color: rgba(232, 223, 200, 0.68);
+}
+
 .chat-header-dot {
   width: 6px;
   height: 6px;
@@ -167,11 +177,40 @@ body::after {
 
 .chat-empty-text {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 300;
-  letter-spacing: 0.15em;
-  color: var(--muted);
-  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(232, 223, 200, 0.72);
+  text-transform: none;
+  max-width: 36rem;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.chat-empty-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  max-width: 44rem;
+}
+
+.chat-empty-prompt {
+  border: 1px solid rgba(200, 146, 42, 0.2);
+  background: rgba(14, 16, 20, 0.74);
+  color: var(--cream);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease, color 0.18s ease;
+}
+
+.chat-empty-prompt:hover {
+  border-color: var(--amber-dim);
+  color: var(--amber);
+  transform: translateY(-1px);
 }
 
 /* Message row */

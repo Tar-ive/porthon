@@ -129,7 +129,7 @@ export default function DemoFeed() {
             </div>
             <div className="ops-panel-body">
                 <p className="demo-feed-hint">
-                    Push a real-time data event — the daemon detects the change and re-runs analysis instantly.
+                    Push real freelance pressure into the system. Questline turns inbound demand, freed capacity, and partnership movement into updated follow-ups, scenarios, and Notion pipeline state.
                 </p>
                 {events.map((evt) => {
                     const state = states[evt.slug] ?? 'idle';

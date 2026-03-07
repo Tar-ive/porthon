@@ -48,7 +48,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [questsPhase, setQuestsPhase] = useState<'loading' | 'ready' | 'error'>('loading');
   const [questsCollapsed, setQuestsCollapsed] = useState(false);
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
-  const [workflowStatus] = useState<string>('');
+  const [workflowStatus, setWorkflowStatus] = useState<string>('');
 
   // Demo feed state
   const [demoEvents, setDemoEvents] = useState<{ slug: string; label: string; description: string }[]>([]);
@@ -68,10 +68,29 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const pushDemoEvent = async (slug: string) => {
     setPushingSlug(slug);
     try {
-      await fetch(`/api/agent/demo/push/${slug}`, {
+      const response = await fetch(`/api/agent/demo/push/${slug}`, {
         method: 'POST',
         headers: DEMO_JSON_HEADERS,
       });
+      const body = await response.json();
+      const notionSync = body?.notion_sync;
+      const label = body?.label || slug;
+      if (notionSync?.status === 'completed') {
+        const counts = notionSync.counts ?? {};
+        const detail =
+          Number(counts.created ?? 0) > 0
+            ? `created ${counts.created} Notion row`
+            : Number(counts.updated ?? 0) > 0
+              ? `updated ${counts.updated} Notion row`
+              : 'no material Notion change';
+        setWorkflowStatus(`${label} injected · ${detail}`);
+      } else if (notionSync?.status === 'failed') {
+        setWorkflowStatus(`${label} injected · Notion sync failed`);
+      } else if (notionSync?.status === 'skipped') {
+        setWorkflowStatus(`${label} injected · Notion sync skipped`);
+      } else {
+        setWorkflowStatus(`${label} injected · analysis queued`);
+      }
     } finally {
       setPushingSlug(null);
     }
@@ -188,6 +207,9 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
           <div className="chat-header-sub">
             {scenario.title} · {scenario.horizon} · Theo Nakamura
           </div>
+          <div className="chat-header-brief">
+            For freelancers who need one operating surface for leads, delivery pressure, and the next revenue-saving move.
+          </div>
         </div>
         <div className="chat-header-dot" />
       </header>
@@ -280,7 +302,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
       )}
 
       <div className="workflow-strip">
-        <div className="workflow-strip-title">Simulate New Data</div>
+        <div className="workflow-strip-title">Stress-Test the Freelance Pipeline</div>
         <div className="workflow-strip-actions">
           {demoEvents.map((evt) => (
             <button
@@ -308,7 +330,20 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
             {messages.length === 0 && !isStreaming ? (
               <div className="chat-empty">
                 <div className="chat-empty-glyph">◈</div>
-                <div className="chat-empty-text">Begin your inquiry</div>
+                <div className="chat-empty-text">
+                  Ask where revenue is slipping, which lead needs attention, or what Theo should protect this week.
+                </div>
+                <div className="chat-empty-prompts">
+                  <button type="button" className="chat-empty-prompt" onClick={() => setInput('Which lead is most likely to stall unless Theo follows up today?')}>
+                    Find the cooling lead
+                  </button>
+                  <button type="button" className="chat-empty-prompt" onClick={() => setInput('What should Theo do this week to protect both delivery and cash flow?')}>
+                    Protect delivery and cash flow
+                  </button>
+                  <button type="button" className="chat-empty-prompt" onClick={() => setInput('How are the proactive and reactive agents helping right now?')}>
+                    Explain the agent system
+                  </button>
+                </div>
               </div>
             ) : (
               messages.map((message, msgIndex) => (

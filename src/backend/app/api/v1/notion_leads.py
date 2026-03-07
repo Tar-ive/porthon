@@ -113,6 +113,54 @@ def _looks_like_uuid(value: str | None) -> bool:
     return bool(_UUID_RE.fullmatch(str(value or "").strip()))
 
 
+def _configured_workspace_ids(
+    *,
+    payload: dict[str, Any],
+    workflow: dict[str, Any],
+) -> tuple[str | None, str | None]:
+    database_id = next(
+        (
+            candidate
+            for candidate in (
+                str(payload.get("database_id") or "").strip(),
+                str(workflow.get("database_id") or "").strip(),
+                str(os.environ.get("NOTION_LEADS_DATABASE_ID") or "").strip(),
+                str(os.environ.get("NOTION_DATABASE_ID") or "").strip(),
+            )
+            if _looks_like_uuid(candidate)
+        ),
+        None,
+    )
+    data_source_id = next(
+        (
+            candidate
+            for candidate in (
+                str(payload.get("data_source_id") or "").strip(),
+                str(workflow.get("data_source_id") or "").strip(),
+                str(os.environ.get("NOTION_DATA_SOURCE_ID") or "").strip(),
+                str(os.environ.get("NOTION_LEADS_DATA_SOURCE_ID") or "").strip(),
+            )
+            if _looks_like_uuid(candidate)
+        ),
+        None,
+    )
+    return database_id, data_source_id
+
+
+async def _resolve_database_id_for_data_source(
+    *,
+    service: Any,
+    data_source_id: str,
+) -> str | None:
+    try:
+        detail = await service._request("GET", f"/data_sources/{data_source_id}")  # noqa: SLF001
+    except Exception:  # noqa: BLE001
+        logger.warning("NOTION WORKSPACE DATA SOURCE LOOKUP FAILED data_source_id=%s", data_source_id)
+        return None
+    database_id = str(service._extract_database_id_from_search_item(detail) or "").strip()  # noqa: SLF001
+    return database_id or None
+
+
 def _apply_view_filters(
     leads: list[dict[str, Any]],
     view: str | None,
@@ -172,13 +220,7 @@ async def _resolve_workspace(
     parent_page_id = _resolve_parent_page_id(str(payload.get("parent_page_id", "")).strip() or None)
     database_title = str(payload.get("database_title") or workflow.get("database_title") or "Leads")
     data_source_title = str(payload.get("data_source_title") or workflow.get("data_source_title") or "Theo Leads")
-    database_id = str(payload.get("database_id") or workflow.get("database_id") or "").strip() or None
-    data_source_id = str(payload.get("data_source_id") or workflow.get("data_source_id") or "").strip() or None
-
-    if not _looks_like_uuid(database_id):
-        database_id = None
-    if not _looks_like_uuid(data_source_id):
-        data_source_id = None
+    database_id, data_source_id = _configured_workspace_ids(payload=payload, workflow=workflow)
 
     if database_id and data_source_id:
         return {
@@ -207,6 +249,22 @@ async def _resolve_workspace(
             message="NOTION_INTEGRATION_SECRET is not configured.",
             param="NOTION_INTEGRATION_SECRET",
         )
+
+    if data_source_id and not database_id:
+        database_id = await _resolve_database_id_for_data_source(
+            service=service,
+            data_source_id=data_source_id,
+        )
+        if database_id or not allow_setup:
+            return {
+                "parent_page_id": parent_page_id,
+                "database_id": database_id or "",
+                "data_source_id": data_source_id,
+                "database_title": database_title,
+                "data_source_title": data_source_title,
+                "database_url": f"https://www.notion.so/{database_id.replace('-', '')}" if database_id else "",
+                "schema_version": str(workflow.get("schema_version", "")),
+            }
 
     setup = await service.ensure_workspace(
         parent_page_id=parent_page_id,

@@ -159,26 +159,21 @@ def test_demo_push_ignores_demo_placeholder_workspace_and_resolves_live_workspac
         def is_configured(self) -> bool:
             return True
 
-        async def ensure_workspace(  # noqa: ANN001
-            self,
-            *,
-            parent_page_id,
-            database_title,
-            data_source_title,
-            database_id,
-            data_source_id,
-        ):
-            assert database_id is None
-            assert data_source_id is None
+        async def _request(self, method: str, path: str, payload=None):  # noqa: ANN001
+            assert method == "GET"
+            assert path == "/data_sources/5d472424-826f-4719-8ac6-06f0f127e068"
             return {
-                "database_id": "29b3ec6c-4bce-42ca-9e46-28a79466dd53",
-                "data_source_id": "5d472424-826f-4719-8ac6-06f0f127e068",
-                "database_title": database_title,
-                "data_source_title": data_source_title,
-                "database_url": "https://www.notion.so/29b3ec6c4bce42ca9e4628a79466dd53",
-                "schema_version": "crm_leads_v2",
-                "reused": True,
+                "id": "5d472424-826f-4719-8ac6-06f0f127e068",
+                "name": "Theo Client Pipeline",
+                "parent": {"database_id": "29b3ec6c-4bce-42ca-9e46-28a79466dd53"},
             }
+
+        @staticmethod
+        def _extract_database_id_from_search_item(item: dict):  # noqa: ANN001
+            return item.get("parent", {}).get("database_id", "")
+
+        async def ensure_workspace(self, **kwargs):  # noqa: ANN001
+            raise AssertionError("ensure_workspace should not be called when env data_source_id is configured")
 
         async def sync_leads(self, *, data_source_id: str, leads: list[dict], strict_reconcile: bool):  # noqa: ANN001
             assert data_source_id == "5d472424-826f-4719-8ac6-06f0f127e068"
@@ -195,6 +190,7 @@ def test_demo_push_ignores_demo_placeholder_workspace_and_resolves_live_workspac
     }
     client.app.state.always_on_master.store.save(state)
 
+    monkeypatch.setenv("NOTION_LEADS_DATA_SOURCE_ID", "5d472424-826f-4719-8ac6-06f0f127e068")
     monkeypatch.setattr(routes_agent_module, "get_notion_leads_service", lambda: _FakeService())
     monkeypatch.setattr(notion_leads_module, "get_notion_leads_service", lambda: _FakeService())
 
@@ -203,4 +199,5 @@ def test_demo_push_ignores_demo_placeholder_workspace_and_resolves_live_workspac
     assert response.status_code == 200
     body = response.json()
     assert body["notion_sync"]["status"] == "completed"
+    assert body["notion_sync"]["database_id"] == "29b3ec6c-4bce-42ca-9e46-28a79466dd53"
     assert body["notion_sync"]["data_source_id"] == "5d472424-826f-4719-8ac6-06f0f127e068"
