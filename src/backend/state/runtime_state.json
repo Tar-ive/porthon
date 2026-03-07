@@ -220,6 +220,46 @@
       "finished_at": "2026-03-07T00:39:56.912685+00:00",
       "executed_tasks": [],
       "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_f27207b7-7e06-4cb8-ac71-64e33899dbb5",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T01:41:42.266548+00:00",
+      "finished_at": "2026-03-07T01:41:42.266778+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_6a937bf7-fed5-404b-94e4-193f1b0c5389",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T01:56:42.275215+00:00",
+      "finished_at": "2026-03-07T01:56:42.275321+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_008b89f1-29c7-45ff-b6b5-10c57fb2c72c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T02:11:42.282944+00:00",
+      "finished_at": "2026-03-07T02:11:42.283027+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e0ae3109-3e99-4771-b06c-161571615d05",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T02:26:42.290444+00:00",
+      "finished_at": "2026-03-07T02:26:42.290487+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_eb6269f7-9dd1-4261-bdc7-2ad66f5cf093",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T02:41:42.295536+00:00",
+      "finished_at": "2026-03-07T02:41:42.295588+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
     }
   ],
   "event_history": [
@@ -462,7 +502,115 @@
         "approval_waiting": 0
       },
       "created_at": "2026-03-07T00:39:56.912722+00:00"
+    },
+    {
+      "event_id": "evt_376a3d8d-a89a-40d1-8d5e-49312a43d11f",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T01:41:42.266425+00:00"
+    },
+    {
+      "event_id": "evt_c81181da-306d-4ec5-b22b-e95bb333e4a6",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_f27207b7-7e06-4cb8-ac71-64e33899dbb5",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 7
+      },
+      "created_at": "2026-03-07T01:41:42.267036+00:00"
+    },
+    {
+      "event_id": "evt_a31a142b-a342-4757-a3b2-d3e6c78629b4",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T01:56:42.275153+00:00"
+    },
+    {
+      "event_id": "evt_9d55b8ba-3775-4483-ab88-984b81371b4b",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_6a937bf7-fed5-404b-94e4-193f1b0c5389",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 3
+      },
+      "created_at": "2026-03-07T01:56:42.275422+00:00"
+    },
+    {
+      "event_id": "evt_8a9ecea1-7614-4dab-895c-1bcab0487684",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T02:11:42.282880+00:00"
+    },
+    {
+      "event_id": "evt_84be4a79-f9b4-4396-aa27-68771a1e62fc",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_008b89f1-29c7-45ff-b6b5-10c57fb2c72c",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
+      },
+      "created_at": "2026-03-07T02:11:42.283112+00:00"
+    },
+    {
+      "event_id": "evt_11139583-ece4-48bd-a6d8-17cf436da9c4",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T02:26:42.290404+00:00"
+    },
+    {
+      "event_id": "evt_61a1745e-b2a7-4640-93b4-09e015d36291",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_e0ae3109-3e99-4771-b06c-161571615d05",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 3
+      },
+      "created_at": "2026-03-07T02:26:42.290534+00:00"
+    },
+    {
+      "event_id": "evt_067d916d-d440-47ac-881a-59c715fa2e3f",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T02:41:42.295496+00:00"
+    },
+    {
+      "event_id": "evt_fe1b257b-9c69-4693-8a8e-3f90fa00d4d4",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_eb6269f7-9dd1-4261-bdc7-2ad66f5cf093",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
+      },
+      "created_at": "2026-03-07T02:41:42.295652+00:00"
     }
   ],
-  "updated_at": "2026-03-07T00:39:56.912731+00:00"
+  "demo_artifacts": {},
+  "value_signals": {},
+  "workflow_state": {},
+  "updated_at": "2026-03-07T02:41:42.295663+00:00"
 }

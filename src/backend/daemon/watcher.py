@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
@@ -21,6 +22,29 @@ _DOMAIN_MAP: dict[str, str] = {
     "emails.jsonl": "emails",
     "files_index.jsonl": "files",
 }
+
+
+@dataclass
+class RunContext:
+    """Execution context for a single watcher-triggered analysis run.
+
+    Separates *reasoning mode* (demo vs live LLM/KG) from *integration mode*
+    (Notion writes, webhook visibility) so each can be controlled independently.
+
+    Attributes
+    ----------
+    demo_mode:
+        When True, analysis uses demo scenarios/actions instead of live LLM/KG.
+        Does NOT disable Notion writes or webhook visibility.
+    source:
+        What triggered this run (for logging / provenance tagging).
+    notion_write:
+        Whether outbound Notion writes are permitted for this run.
+    """
+
+    demo_mode: bool = False
+    source: str = "file_poll"  # demo_push | live_webhook | file_poll | manual
+    notion_write: bool = True
 
 
 def _evt_id() -> str:
@@ -73,10 +97,18 @@ class DataWatcher:
         self._task = asyncio.create_task(self._poll_loop(), name="data-watcher-poll")
         logger.info("DataWatcher started — watching %s (%.1fs interval)", self._data_dir, self._poll_interval)
 
-    async def force_check(self) -> None:
-        """Trigger an immediate file check without waiting for the next poll tick."""
+    async def force_check(self, demo_mode: bool = False) -> None:
+        """Trigger an immediate file check without waiting for the next poll tick.
+
+        Parameters
+        ----------
+        demo_mode:
+            When True, re-analysis uses demo reasoning (no live LLM/KG queries).
+            Notion writes and webhook visibility are unaffected.
+        """
+        ctx = RunContext(demo_mode=demo_mode, source="demo_push" if demo_mode else "manual")
         try:
-            await self._check_files()
+            await self._check_files(ctx)
         except Exception:
             logger.exception("DataWatcher force_check error")
 
@@ -104,14 +136,17 @@ class DataWatcher:
                 pass
 
     async def _poll_loop(self) -> None:
+        ctx = RunContext(source="file_poll")
         while self._running:
             await asyncio.sleep(self._poll_interval)
             try:
-                await self._check_files()
+                await self._check_files(ctx)
             except Exception:
                 logger.exception("DataWatcher poll error")
 
-    async def _check_files(self) -> None:
+    async def _check_files(self, ctx: RunContext | None = None) -> None:
+        if ctx is None:
+            ctx = RunContext(source="file_poll")
         for path in self._data_dir.glob("*.jsonl"):
             try:
                 mtime = path.stat().st_mtime
@@ -127,14 +162,17 @@ class DataWatcher:
             if mtime != previous:
                 self._mtimes[path] = mtime
                 domain = _DOMAIN_MAP.get(path.name, "unknown")
-                logger.info("DataWatcher: change detected in %s (domain=%s)", path.name, domain)
-                await self._on_file_changed(path, domain)
+                logger.info(
+                    "DataWatcher: change detected in %s (domain=%s, source=%s, demo=%s)",
+                    path.name, domain, ctx.source, ctx.demo_mode,
+                )
+                await self._on_file_changed(path, domain, ctx)
 
     # ------------------------------------------------------------------
     # React to a change
     # ------------------------------------------------------------------
 
-    async def _on_file_changed(self, path: Path, domain: str) -> None:
+    async def _on_file_changed(self, path: Path, domain: str, ctx: RunContext) -> None:
         # 1. Invalidate scenario cache immediately
         self._invalidate_legacy_cache()
 
@@ -147,6 +185,7 @@ class DataWatcher:
                 "file": path.name,
                 "persona_id": self._persona_id,
                 "analysis_running": True,
+                "source": ctx.source,
             },
             "created_at": _now_iso(),
         })
@@ -155,13 +194,15 @@ class DataWatcher:
         if self._reanalysis_task and not self._reanalysis_task.done():
             self._reanalysis_task.cancel()
         self._reanalysis_task = asyncio.create_task(
-            self._reanalyze(domain), name="data-watcher-reanalysis"
+            self._reanalyze(domain, ctx), name="data-watcher-reanalysis"
         )
 
-        # 4. Best-effort: ingest new record into LightRAG (no-op if NEO4J_URI not set)
-        asyncio.create_task(
-            self._ingest_new_record(path, domain), name="data-watcher-kg-ingest"
-        )
+        # 4. Best-effort: ingest new record into LightRAG.
+        # Skipped for demo pushes — we don't want demo data mutating live KG infra.
+        if not ctx.demo_mode:
+            asyncio.create_task(
+                self._ingest_new_record(path, domain), name="data-watcher-kg-ingest"
+            )
 
     def _invalidate_legacy_cache(self) -> None:
         """Also bust the route-level cache so HTTP /api/scenarios reflects fresh data."""
@@ -201,7 +242,7 @@ class DataWatcher:
         except Exception as exc:
             logger.debug("DataWatcher: LightRAG ingest skipped for %s: %s", domain, exc)
 
-    async def _reanalyze_active_actions(self, cache, has_llm: bool) -> None:
+    async def _reanalyze_active_actions(self, cache, has_llm: bool, ctx: RunContext | None = None) -> None:
         """Re-generate actions for the currently active scenario and emit actions_updated."""
         try:
             state = self._master.store.load()
@@ -240,21 +281,35 @@ class DataWatcher:
         except Exception as exc:
             logger.warning("DataWatcher: actions refresh failed: %s", exc)
 
-    async def _reanalyze(self, domain: str) -> None:
+    async def _reanalyze(self, domain: str, ctx: RunContext | None = None) -> None:
         """Re-analyze via AnalysisCache — only re-extracts the changed domain
-        and only calls the LLM if the prompt inputs actually changed."""
+        and only calls the LLM if the prompt inputs actually changed.
+
+        ``has_llm`` is computed from two factors:
+        - env_has_llm: whether live LLM keys are configured
+        - ctx.demo_mode: if True, force demo reasoning regardless of env keys
+
+        This means demo pushes always use demo scenarios/actions, while
+        live file changes (webhooks, operator edits) use real LLM if configured.
+        Notion writes and webhook visibility are NOT affected by demo_mode.
+        """
         from daemon.analysis_cache import get_analysis_cache
+
+        if ctx is None:
+            ctx = RunContext(source="file_poll")
 
         cache = get_analysis_cache()
         if cache is None:
             logger.warning("DataWatcher: AnalysisCache not initialized, skipping re-analysis")
             return
 
-        has_llm = bool(
+        env_has_llm = bool(
             os.environ.get("ANTHROPIC_API_KEY")
             or os.environ.get("OPENAI_API_KEY")
             or os.environ.get("LLM_BINDING_API_KEY")
         )
+        # demo_mode forces demo reasoning even when live keys are present
+        has_llm = env_has_llm and not ctx.demo_mode
 
         await self._master.stream.publish({
             "event_id": _evt_id(),
@@ -290,7 +345,7 @@ class DataWatcher:
                 logger.info("DataWatcher: trajectories updated (%d) after %s change", len(scenarios), domain)
                 # Re-generate actions for the active scenario so quests auto-refresh
                 asyncio.create_task(
-                    self._reanalyze_active_actions(cache, has_llm),
+                    self._reanalyze_active_actions(cache, has_llm, ctx),
                     name="data-watcher-actions-refresh",
                 )
             else:

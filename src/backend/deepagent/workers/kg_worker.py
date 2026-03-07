@@ -107,10 +107,19 @@ def _create_rag_instance(working_dir: str | None = None):
     if _rag_instance is not None:
         return _rag_instance
 
-    # Check required env vars
+    # Require all three pillars: graph DB, LLM, and embedding keys.
+    # A partial config (e.g. Neo4j set but no LLM key) is treated as unconfigured
+    # so we degrade cleanly instead of reaching LightRAG internals.
     neo4j_uri = os.environ.get("NEO4J_URI")
-    if not neo4j_uri:
-        logger.warning("NEO4J_URI not set — KG worker will return empty context")
+    llm_key = os.environ.get("LLM_BINDING_API_KEY") or os.environ.get("OPENAI_API_KEY")
+    embedding_key = os.environ.get("EMBEDDING_BINDING_API_KEY") or os.environ.get("OPENAI_API_KEY")
+    if not (neo4j_uri and llm_key and embedding_key):
+        missing = [k for k, v in [
+            ("NEO4J_URI", neo4j_uri),
+            ("LLM_BINDING_API_KEY/OPENAI_API_KEY", llm_key),
+            ("EMBEDDING_BINDING_API_KEY/OPENAI_API_KEY", embedding_key),
+        ] if not v]
+        logger.warning("KG not fully configured (missing: %s) — returning empty context", ", ".join(missing))
         return None
 
     try:

@@ -273,10 +273,12 @@ async def push_demo_event(slug: str, request: Request):
     with target_file.open("a") as fh:
         fh.write(_json.dumps(record) + "\n")
 
-    # Trigger immediate DataWatcher check (don't wait for 3s poll)
+    # Trigger immediate DataWatcher check (don't wait for 3s poll).
+    # demo_mode=True: re-analysis uses demo scenarios/actions, not live LLM/KG.
+    # Notion writes and webhook visibility are unaffected.
     watcher = getattr(request.app.state, "data_watcher", None)
     if watcher is not None:
-        asyncio.create_task(watcher.force_check())
+        asyncio.create_task(watcher.force_check(demo_mode=True))
 
     return {
         "ok": True,
