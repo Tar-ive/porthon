@@ -61,26 +61,32 @@ async def create_message(body: CreateMessageRequest, request: Request):
     mode = get_mode(request.headers.get("Authorization"))
 
     try:
-        import main as main_mod
+        from deepagent.workers.kg_worker import KgWorker
+        kg = KgWorker()
+        kg_payload: dict = {"query": last_user_text}
 
-        rag_instance = main_mod._rag
-        if mode == "live":
-            if rag_instance is None:
+        if mode == "demo":
+            # Use demo snippets — no external services needed
+            kg_payload["demo_mode"] = True
+        else:
+            # Live mode: lazily init LightRAG if not already running
+            import main as main_mod
+            if main_mod._rag is None:
                 from deepagent.workers.kg_worker import _create_rag_instance
-
                 rag = _create_rag_instance()
                 if rag is not None:
                     await rag.initialize_storages()
                     main_mod._rag = rag
-                    rag_instance = rag
 
-            if rag_instance is not None:
-                from deepagent.workers.kg_worker import KgWorker
-                kg = KgWorker()
-                result = await kg._search({"query": last_user_text})
-                if result.ok and result.data.get("raw_context"):
-                    context = result.data["raw_context"]
-                    intent = result.data.get("intent", intent)
+        result = await kg._search(kg_payload)
+        if result.ok and result.data:
+            raw = result.data.get("raw_context")
+            snippets = result.data.get("snippets", [])
+            if raw:
+                context = raw
+            elif snippets:
+                context = "\n\n".join(snippets)
+            intent = result.data.get("intent", intent)
     except Exception as e:
         logger.error(f"KG retrieval error: {e}")
 

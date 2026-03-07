@@ -48,7 +48,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [questsPhase, setQuestsPhase] = useState<'loading' | 'ready' | 'error'>('loading');
   const [questsCollapsed, setQuestsCollapsed] = useState(false);
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
-  const [workflowStatus, setWorkflowStatus] = useState<string>('');
+  const [workflowStatus] = useState<string>('');
 
   // Demo feed state
   const [demoEvents, setDemoEvents] = useState<{ slug: string; label: string; description: string }[]>([]);

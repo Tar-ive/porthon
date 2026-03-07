@@ -138,9 +138,10 @@ class AnalysisCache:
                 logger.debug("AnalysisCache: scenario inputs unchanged, skipping LLM")
                 return self._scenarios.scenarios, False
 
-            # LLM call required
+            # LLM call required — enrich with KG context first (non-blocking)
             extracted = self._assemble_extracted()
-            scenarios = await _run_scenario_llm(extracted, self._persona_id, has_llm)
+            kg_snippets = await self._fetch_kg_snippets(has_llm)
+            scenarios = await _run_scenario_llm(extracted, self._persona_id, has_llm, kg_snippets)
             self._scenarios = _ScenariosNode(scenarios=scenarios, input_hash=input_hash)
             logger.info(
                 "AnalysisCache: scenarios regenerated (%d) for persona=%s",
@@ -178,7 +179,8 @@ class AnalysisCache:
                 return cached.actions, False
 
             extracted = self._assemble_extracted()
-            result = await _run_actions_llm(scenario, extracted, has_llm)
+            kg_snippets = await self._fetch_kg_snippets(has_llm)
+            result = await _run_actions_llm(scenario, extracted, has_llm, kg_snippets)
             actions = result.get("actions", [])
             self._actions[scenario_id] = _ActionsNode(actions=actions, input_hash=input_hash)
             logger.info(
@@ -192,6 +194,22 @@ class AnalysisCache:
         """Force full regeneration on next call (external cache bust)."""
         self._scenarios = None
         self._actions.clear()
+
+    async def _fetch_kg_snippets(self, has_llm: bool) -> list[str]:
+        """Retrieve cross-domain patterns from the KG. Fails silently."""
+        try:
+            from deepagent.workers.kg_worker import KgWorker
+            kg = KgWorker()
+            name = self._profile.get("name", "Theo")
+            payload: dict = {"query": f"{name}'s behavioral patterns and life trajectory"}
+            if not has_llm:
+                payload["demo_mode"] = True
+            result = await asyncio.wait_for(kg._search(payload), timeout=8.0)
+            if result.ok and result.data:
+                return result.data.get("snippets", [])
+        except Exception as exc:
+            logger.warning("AnalysisCache: KG fetch failed: %s", exc)
+        return []
 
     # -----------------------------------------------------------------------
     # Domain extraction (sync — called inside async lock)
@@ -313,20 +331,24 @@ class AnalysisCache:
 # LLM helpers (thin wrappers so they can be patched in tests)
 # ---------------------------------------------------------------------------
 
-async def _run_scenario_llm(extracted: dict, persona_id: str, has_llm: bool) -> list[dict]:
+async def _run_scenario_llm(
+    extracted: dict, persona_id: str, has_llm: bool, kg_snippets: list | None = None
+) -> list[dict]:
     if not has_llm:
         from pipeline.demo_theo import generate_demo_scenarios
         return generate_demo_scenarios(persona_id)
     from pipeline.scenario_gen import generate_scenarios
-    return await generate_scenarios(extracted)
+    return await generate_scenarios(extracted, kg_snippets=kg_snippets)
 
 
-async def _run_actions_llm(scenario: dict, extracted: dict, has_llm: bool) -> dict:
+async def _run_actions_llm(
+    scenario: dict, extracted: dict, has_llm: bool, kg_snippets: list | None = None
+) -> dict:
     if not has_llm:
         from pipeline.demo_theo import generate_demo_actions
         return generate_demo_actions(scenario.get("id", ""), "p05")
     from pipeline.action_planner import generate_actions
-    return await generate_actions(scenario, extracted)
+    return await generate_actions(scenario, extracted, kg_snippets=kg_snippets)
 
 
 # ---------------------------------------------------------------------------

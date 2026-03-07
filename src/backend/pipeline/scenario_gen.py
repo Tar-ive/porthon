@@ -5,7 +5,7 @@ import os
 from openai import AsyncOpenAI
 
 
-def _build_prompt(extracted: dict) -> str:
+def _build_prompt(extracted: dict, kg_snippets: list | None = None) -> str:
     profile = extracted["profile"]
     goals = "\n".join(f"  - {g}" for g in profile.get("goals", []))
     pain_points = "\n".join(f"  - {p}" for p in profile.get("pain_points", []))
@@ -34,6 +34,12 @@ def _build_prompt(extracted: dict) -> str:
     recent_ll = ll.get("recent", [])
     recent_ll_str = "\n".join(f"  [{e['id']}] {e['text'][:120]}" for e in recent_ll[:3])
 
+    # KG memory context (cross-domain patterns retrieved from knowledge graph)
+    kg_section = ""
+    if kg_snippets:
+        kg_lines = "\n".join(f"  - {s}" for s in kg_snippets[:6])
+        kg_section = f"\nKnowledge graph memory (cross-domain patterns):\n{kg_lines}\n"
+
     return f"""Persona: {profile['name']}, {profile['job']}, {profile['income']}
 
 Goals:
@@ -49,7 +55,7 @@ Behavioral signals:
 
 Recent lifelog entries:
 {recent_ll_str}
-
+{kg_section}
 Generate exactly 3 life scenarios for this person. Each must:
 - Cover a different time horizon (1yr, 5yr, 10yr — one each)
 - Have a different likelihood (most_likely, possible, aspirational — one each)
@@ -69,14 +75,14 @@ Return a JSON array with exactly 3 objects. Each object:
 }}"""
 
 
-async def generate_scenarios(extracted: dict) -> list[dict]:
+async def generate_scenarios(extracted: dict, kg_snippets: list | None = None) -> list[dict]:
     client = AsyncOpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"),
         base_url=os.environ.get("OPENAI_BASE_URL") or None,
     )
     model = os.environ.get("LLM_MODEL", "gpt-4o-mini")
 
-    prompt = _build_prompt(extracted)
+    prompt = _build_prompt(extracted, kg_snippets=kg_snippets)
 
     response = await client.chat.completions.create(
         model=model,

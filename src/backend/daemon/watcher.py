@@ -136,7 +136,7 @@ class DataWatcher:
 
     async def _on_file_changed(self, path: Path, domain: str) -> None:
         # 1. Invalidate scenario cache immediately
-        self._invalidate_scenario_cache()
+        self._invalidate_legacy_cache()
 
         # 2. Publish data_changed so frontend can show a banner right away
         await self._master.stream.publish({
@@ -158,6 +158,11 @@ class DataWatcher:
             self._reanalyze(domain), name="data-watcher-reanalysis"
         )
 
+        # 4. Best-effort: ingest new record into LightRAG (no-op if NEO4J_URI not set)
+        asyncio.create_task(
+            self._ingest_new_record(path, domain), name="data-watcher-kg-ingest"
+        )
+
     def _invalidate_legacy_cache(self) -> None:
         """Also bust the route-level cache so HTTP /api/scenarios reflects fresh data."""
         try:
@@ -165,6 +170,36 @@ class DataWatcher:
             _cached_scenarios.clear()
         except Exception:
             pass
+
+    async def _ingest_new_record(self, path: Path, domain: str) -> None:
+        """Best-effort: ingest the last record from a changed JSONL file into LightRAG."""
+        import json as _json
+        try:
+            import os
+            if not os.environ.get("NEO4J_URI"):
+                return  # LightRAG not configured — skip silently
+            from deepagent.workers.kg_worker import _create_rag_instance
+            rag = _create_rag_instance()
+            if rag is None:
+                return
+            # Read the last non-empty line (newest record)
+            last_line = ""
+            with path.open("rb") as f:
+                f.seek(0, 2)
+                pos = f.tell()
+                while pos > 0:
+                    pos -= 1
+                    f.seek(pos)
+                    ch = f.read(1)
+                    if ch == b"\n" and last_line.strip():
+                        break
+                    last_line = ch.decode("utf-8", errors="ignore") + last_line
+            record = _json.loads(last_line.strip())
+            text = record.get("text") or _json.dumps(record)
+            await asyncio.wait_for(rag.ainsert(text), timeout=20.0)
+            logger.info("DataWatcher: ingested new %s record into LightRAG", domain)
+        except Exception as exc:
+            logger.debug("DataWatcher: LightRAG ingest skipped for %s: %s", domain, exc)
 
     async def _reanalyze(self, domain: str) -> None:
         """Re-analyze via AnalysisCache — only re-extracts the changed domain

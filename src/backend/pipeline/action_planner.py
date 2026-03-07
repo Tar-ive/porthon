@@ -9,7 +9,7 @@ import os
 from openai import AsyncOpenAI
 
 
-def _build_prompt(scenario: dict, extracted: dict) -> str:
+def _build_prompt(scenario: dict, extracted: dict, kg_snippets: list | None = None) -> str:
     profile = extracted["profile"]
     goals = "\n".join(f"  - {g}" for g in profile.get("goals", []))
 
@@ -39,6 +39,12 @@ def _build_prompt(scenario: dict, extracted: dict) -> str:
     )
     ids_list = ", ".join(available_ids)
 
+    # KG memory context
+    kg_section = ""
+    if kg_snippets:
+        kg_lines = "\n".join(f"  - {s}" for s in kg_snippets[:4])
+        kg_section = f"\nKnowledge graph memory (long-term patterns):\n{kg_lines}\n"
+
     return f"""Persona: {profile['name']}, {profile['job']}
 
 Goals:
@@ -55,7 +61,7 @@ Recent transactions:
 
 Recent lifelog entries:
 {ll_str}
-
+{kg_section}
 Available record IDs to cite: {ids_list}
 
 Generate 3-5 concrete, time-bound action recommendations to move {profile['name']} toward this scenario.
@@ -80,14 +86,14 @@ Return a JSON object:
 }}"""
 
 
-async def generate_actions(scenario: dict, extracted: dict) -> dict:
+async def generate_actions(scenario: dict, extracted: dict, kg_snippets: list | None = None) -> dict:
     client = AsyncOpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"),
         base_url=os.environ.get("OPENAI_BASE_URL") or None,
     )
     model = os.environ.get("LLM_MODEL", "gpt-4o-mini")
 
-    prompt = _build_prompt(scenario, extracted)
+    prompt = _build_prompt(scenario, extracted, kg_snippets=kg_snippets)
 
     response = await client.chat.completions.create(
         model=model,
