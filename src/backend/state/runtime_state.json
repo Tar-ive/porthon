@@ -12,14 +12,49 @@
       "focus",
       "freelance"
     ],
-    "activated_at": "2026-03-07T03:11:57.701812+00:00",
+    "activated_at": "2026-03-07T13:39:55.520747+00:00",
     "created": 0,
     "metadata": {}
   },
-  "archived_scenarios": [],
+  "archived_scenarios": [
+    {
+      "scenario_id": "scen_001",
+      "title": "Conversion-First Freelance Stabilization",
+      "horizon": "1yr",
+      "likelihood": "most_likely",
+      "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+      "tags": [
+        "conversion",
+        "revenue",
+        "focus",
+        "freelance"
+      ],
+      "activated_at": "2026-03-07T03:11:57.701812+00:00",
+      "created": 0,
+      "metadata": {},
+      "archived_at": "2026-03-07T07:10:14.968918+00:00"
+    },
+    {
+      "scenario_id": "scen_001",
+      "title": "Conversion-First Freelance Stabilization",
+      "horizon": "1yr",
+      "likelihood": "most_likely",
+      "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+      "tags": [
+        "conversion",
+        "revenue",
+        "focus",
+        "freelance"
+      ],
+      "activated_at": "2026-03-07T07:10:14.969038+00:00",
+      "created": 0,
+      "metadata": {},
+      "archived_at": "2026-03-07T13:39:55.520684+00:00"
+    }
+  ],
   "queue": [
     {
-      "task_id": "task_2e05d2f6-00ed-4056-b434-7effa97be7d5",
+      "task_id": "task_d0841d73-e9dc-4370-afb4-371b6cfb7ace",
       "worker_id": "kg_worker",
       "action": "search",
       "priority": 10,
@@ -29,21 +64,21 @@
         "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
         "horizon": "1yr",
         "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": false
+        "demo_mode": true
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-07T04:11:29.268163+00:00",
-      "updated_at": "2026-03-07T04:11:29.271078+00:00",
-      "finished_at": "2026-03-07T04:11:29.271097+00:00",
-      "result_summary": "KG returned no results",
+      "created_at": "2026-03-07T13:39:55.520835+00:00",
+      "updated_at": "2026-03-07T13:39:55.524619+00:00",
+      "finished_at": "2026-03-07T13:39:55.524624+00:00",
+      "result_summary": "KG demo context generated",
       "external_links": {},
       "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_bb52dd24-b94e-4fef-8537-f9f5680b85ed",
+      "task_id": "task_e877e3c5-adfa-47ad-85a1-b133a582a58b",
       "worker_id": "calendar_worker",
       "action": "sync_schedule",
       "priority": 20,
@@ -53,25 +88,23 @@
         "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
         "horizon": "1yr",
         "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": false
+        "demo_mode": true
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-07T04:11:29.268163+00:00",
-      "updated_at": "2026-03-07T04:11:49.034206+00:00",
-      "finished_at": "2026-03-07T04:11:49.034232+00:00",
-      "result_summary": "Scheduled 0 events (4 planned)",
-      "external_links": {
-        "calendar_events": []
-      },
+      "created_at": "2026-03-07T13:39:55.520835+00:00",
+      "updated_at": "2026-03-07T13:39:55.524718+00:00",
+      "finished_at": "2026-03-07T13:39:55.524722+00:00",
+      "result_summary": "Scheduled 4 deterministic demo events",
+      "external_links": {},
       "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_e8f99a24-d912-4961-ad5d-120b14c6b606",
+      "task_id": "task_0e740191-b684-4f75-bb84-ab543a40902c",
       "worker_id": "notion_leads_worker",
-      "action": "ensure_pipeline",
+      "action": "sync_leads",
       "priority": 30,
       "payload": {
         "scenario_id": "scen_001",
@@ -79,21 +112,56 @@
         "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
         "horizon": "1yr",
         "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": false
+        "demo_mode": true,
+        "leads": [
+          {
+            "name": "Referral Lead",
+            "source": "Referral",
+            "lead_type": "Referral",
+            "status": "Lead",
+            "priority": "High",
+            "deal_size": 1500,
+            "next_action": "Send intro scope and availability",
+            "next_follow_up_date": "2026-03-09"
+          },
+          {
+            "name": "Portfolio Lead",
+            "source": "Portfolio",
+            "lead_type": "Inbound",
+            "status": "Proposal sent",
+            "priority": "High",
+            "deal_size": 2500,
+            "next_action": "Follow up on proposal feedback",
+            "next_follow_up_date": "2026-03-10"
+          },
+          {
+            "name": "Direct Lead",
+            "source": "Direct",
+            "lead_type": "Outbound",
+            "status": "Contacted",
+            "priority": "Medium",
+            "deal_size": 3000,
+            "next_action": "Book discovery call",
+            "next_follow_up_date": "2026-03-11"
+          }
+        ],
+        "strict_reconcile": true
       },
-      "status": "pending",
-      "retries": 2,
-      "created_at": "2026-03-07T04:11:29.268163+00:00",
-      "updated_at": "2026-03-07T04:26:57.025951+00:00",
-      "finished_at": "2026-03-07T04:26:57.025963+00:00",
-      "result_summary": "NOTION_INTEGRATION_SECRET is not configured",
-      "external_links": {},
-      "error_code": "execution_error",
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-07T13:39:55.520835+00:00",
+      "updated_at": "2026-03-07T13:39:55.524758+00:00",
+      "finished_at": "2026-03-07T13:39:55.524762+00:00",
+      "result_summary": "Leads synced (demo)",
+      "external_links": {
+        "notion_database": "https://www.notion.so/demo_notion_pipeline"
+      },
+      "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_d1b85e6a-605b-48ba-9b6f-9d6a358e058e",
+      "task_id": "task_204b97a6-0446-461d-beaa-e5955ec8a9a0",
       "worker_id": "notion_opportunity_worker",
       "action": "create_workspace",
       "priority": 30,
@@ -103,21 +171,23 @@
         "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
         "horizon": "1yr",
         "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": false
+        "demo_mode": true
       },
-      "status": "pending",
-      "retries": 2,
-      "created_at": "2026-03-07T04:11:29.268163+00:00",
-      "updated_at": "2026-03-07T04:26:57.026119+00:00",
-      "finished_at": "2026-03-07T04:26:57.026126+00:00",
-      "result_summary": "No parent page found for workspace",
-      "external_links": {},
-      "error_code": "execution_error",
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-07T13:39:55.520835+00:00",
+      "updated_at": "2026-03-07T13:39:55.524791+00:00",
+      "finished_at": "2026-03-07T13:39:55.524795+00:00",
+      "result_summary": "Created workspace: Questline: Conversion-First Freelance Stabilization (demo)",
+      "external_links": {
+        "notion_workspace": "https://www.notion.so/demo_notion_workspace"
+      },
+      "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_059a8e2b-3a3a-4d25-89f0-6e67c0f60443",
+      "task_id": "task_80a8c838-edd1-47e1-810b-409ecd5be853",
       "worker_id": "facebook_worker",
       "action": "draft_posts",
       "priority": 40,
@@ -127,21 +197,21 @@
         "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
         "horizon": "1yr",
         "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": false
+        "demo_mode": true
       },
-      "status": "pending",
-      "retries": 2,
-      "created_at": "2026-03-07T04:11:29.268163+00:00",
-      "updated_at": "2026-03-07T04:27:16.201985+00:00",
-      "finished_at": "2026-03-07T04:27:16.202019+00:00",
-      "result_summary": "LLM output failed FacebookDraftPlanLLM validation",
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-07T13:39:55.520835+00:00",
+      "updated_at": "2026-03-07T13:39:55.524841+00:00",
+      "finished_at": "2026-03-07T13:39:55.524844+00:00",
+      "result_summary": "Drafted 2 deterministic demo posts (not published)",
       "external_links": {},
-      "error_code": "execution_error",
+      "error_code": null,
       "created": 0,
       "metadata": {}
     },
     {
-      "task_id": "task_3995c6a2-d95d-4769-80ce-f3693504c72c",
+      "task_id": "task_be270e47-6dd2-4966-95bd-06f432d144d9",
       "worker_id": "figma_worker",
       "action": "generate_challenge",
       "priority": 40,
@@ -151,14 +221,14 @@
         "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
         "horizon": "1yr",
         "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
-        "demo_mode": false
+        "demo_mode": true
       },
       "status": "completed",
       "retries": 0,
-      "created_at": "2026-03-07T04:11:29.268163+00:00",
-      "updated_at": "2026-03-07T04:11:57.015750+00:00",
-      "finished_at": "2026-03-07T04:11:57.015779+00:00",
-      "result_summary": "Generated 4 design challenges",
+      "created_at": "2026-03-07T13:39:55.520835+00:00",
+      "updated_at": "2026-03-07T13:39:55.524885+00:00",
+      "finished_at": "2026-03-07T13:39:55.524889+00:00",
+      "result_summary": "Generated 3 deterministic demo challenges",
       "external_links": {},
       "error_code": null,
       "created": 0,
@@ -184,23 +254,23 @@
     {
       "worker_id": "notion_leads_worker",
       "label": "Notion Leads Tracker",
-      "status": "open_circuit",
-      "queue_depth": 1,
-      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "notion_opportunity_worker",
       "label": "Notion Opportunity Tracker",
-      "status": "open_circuit",
-      "queue_depth": 1,
-      "last_error": "No parent page found for workspace"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "facebook_worker",
       "label": "Facebook Publisher",
-      "status": "degraded",
-      "queue_depth": 1,
-      "last_error": "LLM output failed FacebookDraftPlanLLM validation"
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
     },
     {
       "worker_id": "figma_worker",
@@ -263,21 +333,21 @@
     },
     {
       "worker_id": "notion_leads_worker",
-      "failure_streak": 5,
-      "open_until": "2026-03-07T04:31:57.025983+00:00",
-      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
     },
     {
       "worker_id": "notion_opportunity_worker",
-      "failure_streak": 5,
-      "open_until": "2026-03-07T04:31:57.026140+00:00",
-      "last_error": "No parent page found for workspace"
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
     },
     {
       "worker_id": "facebook_worker",
-      "failure_streak": 2,
+      "failure_streak": 0,
       "open_until": null,
-      "last_error": "LLM output failed FacebookDraftPlanLLM validation"
+      "last_error": null
     },
     {
       "worker_id": "figma_worker",
@@ -488,6 +558,163 @@
       "started_at": "2026-03-07T04:26:57.025275+00:00",
       "finished_at": "2026-03-07T04:27:16.202295+00:00",
       "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e6829d5c-c4b0-4144-a5d6-3742d9db821b",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:09:33.267346+00:00",
+      "finished_at": "2026-03-07T07:09:55.959753+00:00",
+      "executed_tasks": [
+        "task_059a8e2b-3a3a-4d25-89f0-6e67c0f60443"
+      ],
+      "failed_tasks": [
+        "task_d1b85e6a-605b-48ba-9b6f-9d6a358e058e",
+        "task_e8f99a24-d912-4961-ad5d-120b14c6b606"
+      ]
+    },
+    {
+      "cycle_id": "cycle_2fbcf86c-7bbc-4879-8ee1-57676e11e59d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:10:14.972872+00:00",
+      "finished_at": "2026-03-07T07:10:14.974707+00:00",
+      "executed_tasks": [
+        "task_baf684c0-ef1c-4f3a-bac6-13d1c81576c2",
+        "task_07a7d185-eebb-4aeb-b5d1-e2f11da36cd9",
+        "task_ed098b99-7b71-4634-ba21-c3fcbb1ee69d",
+        "task_a0639806-82bb-4dab-9799-3d41f826c35b"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_d7940ddb-623f-44c5-bb2e-905a47c52af0",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:10:31.871436+00:00",
+      "finished_at": "2026-03-07T07:10:31.871478+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_c9cd3b90-ca01-49d5-9177-00d8f9023925",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:10:32.475978+00:00",
+      "finished_at": "2026-03-07T07:10:32.475996+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_102aa437-74ba-419f-9eb0-3c34b64ed56b",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:10:32.921666+00:00",
+      "finished_at": "2026-03-07T07:10:32.921715+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_639a91f6-4fd2-4fe8-959c-2c6e9e79cb3e",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:10:33.569886+00:00",
+      "finished_at": "2026-03-07T07:10:33.569927+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_a2d8d16d-88f4-488d-afcc-31ce841d9f9b",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:14:10.598102+00:00",
+      "finished_at": "2026-03-07T07:14:10.598208+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e03e5bb7-1620-4b0c-8af4-c48c61f8c442",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:40:27.313462+00:00",
+      "finished_at": "2026-03-07T07:40:27.336230+00:00",
+      "executed_tasks": [
+        "task_a5060d7c-0875-4ed0-8722-3b9d70560f33",
+        "task_9e3ee7a2-b1e4-4e95-80ec-d9e5efb84603"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_34885a47-e436-4c40-8852-860e61b3db54",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T07:55:27.347900+00:00",
+      "finished_at": "2026-03-07T08:12:05.187788+00:00",
+      "executed_tasks": [
+        "task_8a55d136-dfe8-4352-9814-93029ec1cfe5"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_d288412d-0c8e-470e-a395-12b81879b753",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T09:02:04.660682+00:00",
+      "finished_at": "2026-03-07T09:24:42.212745+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_708daaa1-8749-4389-b5d3-a3dd21f051e9",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T10:25:42.461237+00:00",
+      "finished_at": "2026-03-07T11:00:15.152367+00:00",
+      "executed_tasks": [
+        "task_c540d83f-9923-492d-9e25-c92c42130f5a"
+      ],
+      "failed_tasks": [
+        "task_54a91cb2-8406-4a31-afd6-0b3defa0a5a6",
+        "task_b1b07722-0cd1-483a-9331-8b82ec70057b",
+        "task_ca302b05-202b-4b0c-aa82-eac60af72e74",
+        "task_655fbc83-b211-4944-9e45-5a52bb364e7f"
+      ]
+    },
+    {
+      "cycle_id": "cycle_9f18ebc6-84f5-4d67-ad9f-ed0058df66c7",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T11:18:30.207279+00:00",
+      "finished_at": "2026-03-07T11:26:42.120852+00:00",
+      "executed_tasks": [
+        "task_f681fd58-ced8-492e-adff-4d40661661fa"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_74a54ad2-220b-4174-94f0-91bdd1921657",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T11:45:47.847303+00:00",
+      "finished_at": "2026-03-07T12:27:42.102172+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_9423babb-be50-43ce-b085-6bbfe4c6dc7d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T12:57:29.278795+00:00",
+      "finished_at": "2026-03-07T13:28:42.249025+00:00",
+      "executed_tasks": [],
+      "failed_tasks": [
+        "task_c62cb56e-76ee-4947-aa85-ee7e3ecde76a",
+        "task_dcbab4ed-0e77-4c40-964f-a7f826fcb38f",
+        "task_011070f4-bd42-4dad-9148-ba1efef0bce0",
+        "task_e5a0ef70-7b55-4ad4-98ef-aedf68c55ac3",
+        "task_d4748fd3-557d-4c64-98a0-f2693088ecad"
+      ]
+    },
+    {
+      "cycle_id": "cycle_f0db39dc-ac92-4d08-8075-5ca66be5f7e0",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T13:39:55.524196+00:00",
+      "finished_at": "2026-03-07T13:39:55.525417+00:00",
+      "executed_tasks": [
+        "task_d0841d73-e9dc-4370-afb4-371b6cfb7ace",
+        "task_e877e3c5-adfa-47ad-85a1-b133a582a58b",
+        "task_0e740191-b684-4f75-bb84-ab543a40902c",
+        "task_204b97a6-0446-461d-beaa-e5955ec8a9a0",
+        "task_80a8c838-edd1-47e1-810b-409ecd5be853",
+        "task_be270e47-6dd2-4966-95bd-06f432d144d9"
+      ],
       "failed_tasks": []
     }
   ],
@@ -971,6 +1198,498 @@
         "cycle_duration_ms": 19180
       },
       "created_at": "2026-03-07T04:27:16.202456+00:00"
+    },
+    {
+      "event_id": "evt_6b5e7b09-cab2-4124-b226-b9e307003a70",
+      "type": "integration.notion.webhook.received",
+      "payload": {
+        "event_id": "4498bc68-4b34-42ed-a752-ff1a20a95cd8",
+        "id": "4498bc68-4b34-42ed-a752-ff1a20a95cd8",
+        "event_type": "page.properties_updated",
+        "workspace_id": "cc7dc7fb-68c4-4840-806d-082fac864772",
+        "integration_id": "31ad872b-594c-8195-bb93-0037a869cdea",
+        "attempt_number": 1,
+        "entity_type": "page",
+        "entity_id": "31c74e49-e5de-81da-bec2-e078463a9f83",
+        "timestamp": "2026-03-07T07:09:16.705Z",
+        "relevant": true
+      },
+      "created_at": "2026-03-07T07:09:32.953497+00:00"
+    },
+    {
+      "event_id": "evt_bd9baae0-4a56-41e6-8521-cf5810cf6742",
+      "type": "notion_leads_refreshed",
+      "payload": {
+        "event_id": "4498bc68-4b34-42ed-a752-ff1a20a95cd8",
+        "event_type": "page.properties_updated",
+        "lead_count": 9,
+        "time_commitment_count": 0,
+        "budget_commitment_count": 0,
+        "recommended_count": 8,
+        "changed_domains": [
+          "budget_commitments",
+          "notion_leads",
+          "time_commitments"
+        ]
+      },
+      "created_at": "2026-03-07T07:09:33.262573+00:00"
+    },
+    {
+      "event_id": "evt_bdc4bffe-db8b-4222-bbfc-c3616439703e",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "integration.notion.webhook.received"
+      },
+      "created_at": "2026-03-07T07:09:33.267307+00:00"
+    },
+    {
+      "event_id": "evt_6cc8e48c-9543-404f-9a90-e2392195b336",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "integration.notion.webhook.received",
+        "cycle_id": "cycle_e6829d5c-c4b0-4144-a5d6-3742d9db821b",
+        "executed": 1,
+        "failed": 2,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 22693
+      },
+      "created_at": "2026-03-07T07:09:55.959836+00:00"
+    },
+    {
+      "event_id": "evt_2203c75a-04a2-4e6e-bd4d-3fcad961bbf2",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "scen_001",
+        "title": "Conversion-First Freelance Stabilization"
+      },
+      "created_at": "2026-03-07T07:10:14.969393+00:00"
+    },
+    {
+      "event_id": "evt_a2d02409-ca44-4c6f-abff-30a314d39309",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-07T07:10:14.972797+00:00"
+    },
+    {
+      "event_id": "evt_c4192f23-e580-4107-adba-166d41d1ba13",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_2fbcf86c-7bbc-4879-8ee1-57676e11e59d",
+        "executed": 4,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
+      },
+      "created_at": "2026-03-07T07:10:14.974788+00:00"
+    },
+    {
+      "event_id": "evt_8d2947e3-3ca5-45b0-acad-fb8d98f7f02a",
+      "type": "integration.notion.webhook.received",
+      "payload": {
+        "event_id": "7703e792-fd1b-48f6-8408-00e84b177bae",
+        "id": "7703e792-fd1b-48f6-8408-00e84b177bae",
+        "event_type": "page.deleted",
+        "workspace_id": "cc7dc7fb-68c4-4840-806d-082fac864772",
+        "integration_id": "31ad872b-594c-8195-bb93-0037a869cdea",
+        "attempt_number": 1,
+        "entity_type": "page",
+        "entity_id": "31c74e49-e5de-814f-accb-c14ea0eec39e",
+        "timestamp": "2026-03-07T07:09:29.584Z",
+        "relevant": true
+      },
+      "created_at": "2026-03-07T07:10:31.432835+00:00"
+    },
+    {
+      "event_id": "evt_c6ed6581-818a-41d2-b18f-c62d78703d30",
+      "type": "notion_leads_refreshed",
+      "payload": {
+        "event_id": "7703e792-fd1b-48f6-8408-00e84b177bae",
+        "event_type": "page.deleted",
+        "lead_count": 9,
+        "time_commitment_count": 0,
+        "budget_commitment_count": 0,
+        "recommended_count": 8,
+        "changed_domains": []
+      },
+      "created_at": "2026-03-07T07:10:31.867598+00:00"
+    },
+    {
+      "event_id": "evt_bfe5fae0-f10a-409c-b59b-0b4a3b147eaf",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "integration.notion.webhook.received"
+      },
+      "created_at": "2026-03-07T07:10:31.871412+00:00"
+    },
+    {
+      "event_id": "evt_820740e7-e164-4585-a99f-19abd78eb48e",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "integration.notion.webhook.received",
+        "cycle_id": "cycle_d7940ddb-623f-44c5-bb2e-905a47c52af0",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
+      },
+      "created_at": "2026-03-07T07:10:31.871505+00:00"
+    },
+    {
+      "event_id": "evt_e51ffa70-1488-4c02-ba35-4443c561283d",
+      "type": "integration.notion.webhook.received",
+      "payload": {
+        "event_id": "2bf8e9f7-632a-4621-b764-fb4f77d49813",
+        "id": "2bf8e9f7-632a-4621-b764-fb4f77d49813",
+        "event_type": "page.deleted",
+        "workspace_id": "cc7dc7fb-68c4-4840-806d-082fac864772",
+        "integration_id": "31ad872b-594c-8195-bb93-0037a869cdea",
+        "attempt_number": 1,
+        "entity_type": "page",
+        "entity_id": "31c74e49-e5de-812e-9369-f0dc42dc9ce7",
+        "timestamp": "2026-03-07T07:09:29.584Z",
+        "relevant": true
+      },
+      "created_at": "2026-03-07T07:10:31.877751+00:00"
+    },
+    {
+      "event_id": "evt_bcc1f63e-7733-4ab9-960a-12247fd54dc9",
+      "type": "notion_leads_refreshed",
+      "payload": {
+        "event_id": "2bf8e9f7-632a-4621-b764-fb4f77d49813",
+        "event_type": "page.deleted",
+        "lead_count": 9,
+        "time_commitment_count": 0,
+        "budget_commitment_count": 0,
+        "recommended_count": 8,
+        "changed_domains": []
+      },
+      "created_at": "2026-03-07T07:10:32.472625+00:00"
+    },
+    {
+      "event_id": "evt_1a0078f4-3b01-4e09-b9a5-7c5795c61eba",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "integration.notion.webhook.received"
+      },
+      "created_at": "2026-03-07T07:10:32.475967+00:00"
+    },
+    {
+      "event_id": "evt_d63b3921-865b-4f22-9d26-ee51c68e09e9",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "integration.notion.webhook.received",
+        "cycle_id": "cycle_c9cd3b90-ca01-49d5-9177-00d8f9023925",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
+      },
+      "created_at": "2026-03-07T07:10:32.476008+00:00"
+    },
+    {
+      "event_id": "evt_cc99055a-923c-4065-a081-180430487f95",
+      "type": "integration.notion.webhook.received",
+      "payload": {
+        "event_id": "3e71b220-e0f5-453f-a859-c74d3f254617",
+        "id": "3e71b220-e0f5-453f-a859-c74d3f254617",
+        "event_type": "page.deleted",
+        "workspace_id": "cc7dc7fb-68c4-4840-806d-082fac864772",
+        "integration_id": "31ad872b-594c-8195-bb93-0037a869cdea",
+        "attempt_number": 1,
+        "entity_type": "page",
+        "entity_id": "31c74e49-e5de-81f0-8637-e6b6e8e735cf",
+        "timestamp": "2026-03-07T07:09:29.584Z",
+        "relevant": true
+      },
+      "created_at": "2026-03-07T07:10:32.480932+00:00"
+    },
+    {
+      "event_id": "evt_1af3263e-fbce-467b-bc1a-e9cad785dbef",
+      "type": "notion_leads_refreshed",
+      "payload": {
+        "event_id": "3e71b220-e0f5-453f-a859-c74d3f254617",
+        "event_type": "page.deleted",
+        "lead_count": 9,
+        "time_commitment_count": 0,
+        "budget_commitment_count": 0,
+        "recommended_count": 8,
+        "changed_domains": []
+      },
+      "created_at": "2026-03-07T07:10:32.918973+00:00"
+    },
+    {
+      "event_id": "evt_fa6cef68-ddc2-44d4-98ed-989489f5b643",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "integration.notion.webhook.received"
+      },
+      "created_at": "2026-03-07T07:10:32.921643+00:00"
+    },
+    {
+      "event_id": "evt_c2f49bc5-84db-4c34-9411-944b3679bb8b",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "integration.notion.webhook.received",
+        "cycle_id": "cycle_102aa437-74ba-419f-9eb0-3c34b64ed56b",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
+      },
+      "created_at": "2026-03-07T07:10:32.921742+00:00"
+    },
+    {
+      "event_id": "evt_69b44701-dc5c-46f5-869d-1a4ec07efb04",
+      "type": "integration.notion.webhook.received",
+      "payload": {
+        "event_id": "9ec08134-d5ad-4466-9c28-010666fb4c50",
+        "id": "9ec08134-d5ad-4466-9c28-010666fb4c50",
+        "event_type": "page.deleted",
+        "workspace_id": "cc7dc7fb-68c4-4840-806d-082fac864772",
+        "integration_id": "31ad872b-594c-8195-bb93-0037a869cdea",
+        "attempt_number": 1,
+        "entity_type": "page",
+        "entity_id": "31c74e49-e5de-81da-bec2-e078463a9f83",
+        "timestamp": "2026-03-07T07:09:29.584Z",
+        "relevant": true
+      },
+      "created_at": "2026-03-07T07:10:33.172846+00:00"
+    },
+    {
+      "event_id": "evt_c1655c6f-43e5-4568-9beb-a583ff5f157a",
+      "type": "notion_leads_refreshed",
+      "payload": {
+        "event_id": "9ec08134-d5ad-4466-9c28-010666fb4c50",
+        "event_type": "page.deleted",
+        "lead_count": 9,
+        "time_commitment_count": 0,
+        "budget_commitment_count": 0,
+        "recommended_count": 8,
+        "changed_domains": []
+      },
+      "created_at": "2026-03-07T07:10:33.566228+00:00"
+    },
+    {
+      "event_id": "evt_6997c56c-86e8-4131-9b71-f8d4ca68b034",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "integration.notion.webhook.received"
+      },
+      "created_at": "2026-03-07T07:10:33.569859+00:00"
+    },
+    {
+      "event_id": "evt_3e14144c-93b9-4c2a-8590-b622280dcfe4",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "integration.notion.webhook.received",
+        "cycle_id": "cycle_639a91f6-4fd2-4fe8-959c-2c6e9e79cb3e",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
+      },
+      "created_at": "2026-03-07T07:10:33.569952+00:00"
+    },
+    {
+      "event_id": "evt_b931ead9-301e-496a-97e4-13e2a2e3c121",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T07:14:10.598016+00:00"
+    },
+    {
+      "event_id": "evt_00b8a481-d85c-4fba-ad8a-fb3388b6b91c",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_a2d8d16d-88f4-488d-afcc-31ce841d9f9b",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 6
+      },
+      "created_at": "2026-03-07T07:14:10.598251+00:00"
+    },
+    {
+      "event_id": "evt_22155f12-5b57-4e86-8e17-786724c5b2b0",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T07:40:27.313270+00:00"
+    },
+    {
+      "event_id": "evt_a2e492ed-1f67-44ad-84e9-3e1380f2ba09",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_e03e5bb7-1620-4b0c-8af4-c48c61f8c442",
+        "executed": 2,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 114
+      },
+      "created_at": "2026-03-07T07:40:27.336681+00:00"
+    },
+    {
+      "event_id": "evt_11a49284-725f-4023-8034-556452bcd944",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T07:55:27.344647+00:00"
+    },
+    {
+      "event_id": "evt_fb6fa051-4b5f-4a18-bcf7-cfff9ef8bb2e",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_34885a47-e436-4c40-8852-860e61b3db54",
+        "executed": 1,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 4776
+      },
+      "created_at": "2026-03-07T08:12:05.188841+00:00"
+    },
+    {
+      "event_id": "evt_5c748c64-c516-4d32-b2f1-5203aadd562b",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T09:02:04.660496+00:00"
+    },
+    {
+      "event_id": "evt_ad2e8e8e-6231-4269-8d04-efda7be10a3f",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_d288412d-0c8e-470e-a395-12b81879b753",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 14874
+      },
+      "created_at": "2026-03-07T09:24:42.213505+00:00"
+    },
+    {
+      "event_id": "evt_be0c1840-159a-4c23-b17d-b07def2fc3bb",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T10:25:42.461175+00:00"
+    },
+    {
+      "event_id": "evt_8be18c9c-6cc4-4f3a-b80d-33ad96c2af53",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_708daaa1-8749-4389-b5d3-a3dd21f051e9",
+        "executed": 1,
+        "failed": 4,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 19502
+      },
+      "created_at": "2026-03-07T11:00:15.184007+00:00"
+    },
+    {
+      "event_id": "evt_891fd2dd-4351-4b19-876d-40f77249b04a",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T11:18:30.206451+00:00"
+    },
+    {
+      "event_id": "evt_9205bf8d-e321-4a83-b798-b5284c517ceb",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_9f18ebc6-84f5-4d67-ad9f-ed0058df66c7",
+        "executed": 1,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 5434
+      },
+      "created_at": "2026-03-07T11:26:42.121685+00:00"
+    },
+    {
+      "event_id": "evt_b64af173-6c10-4015-9b27-e03055543f4c",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T11:45:47.847071+00:00"
+    },
+    {
+      "event_id": "evt_f0ba93cd-eeed-4723-95e0-0a9f8bc5dbec",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_74a54ad2-220b-4174-94f0-91bdd1921657",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 10065
+      },
+      "created_at": "2026-03-07T12:27:42.103233+00:00"
+    },
+    {
+      "event_id": "evt_903714a5-7986-43e2-9c73-ebd51f56e320",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T12:57:29.278573+00:00"
+    },
+    {
+      "event_id": "evt_01403a4c-d824-491d-b381-5f2e2084add6",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_9423babb-be50-43ce-b085-6bbfe4c6dc7d",
+        "executed": 0,
+        "failed": 5,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 5401
+      },
+      "created_at": "2026-03-07T13:28:42.249456+00:00"
+    },
+    {
+      "event_id": "evt_a87e3e69-856d-4a60-b1ee-5b48e1ec2871",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "scen_001",
+        "title": "Conversion-First Freelance Stabilization"
+      },
+      "created_at": "2026-03-07T13:39:55.520981+00:00"
+    },
+    {
+      "event_id": "evt_0d6aa335-51e5-444a-b76c-071717df1738",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-07T13:39:55.524161+00:00"
+    },
+    {
+      "event_id": "evt_0404954b-2e35-4789-8fe6-38474722f01e",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_f0db39dc-ac92-4d08-8075-5ca66be5f7e0",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
+      },
+      "created_at": "2026-03-07T13:39:55.525483+00:00"
     }
   ],
   "demo_artifacts": {
@@ -1099,6 +1818,438 @@
       ]
     }
   },
-  "workflow_state": {},
-  "updated_at": "2026-03-07T04:27:16.202475+00:00"
+  "workflow_state": {
+    "notion_leads": {
+      "parent_page_id": "25774e49-e5de-8021-b744-cc595050193e",
+      "database_id": "29b3ec6c-4bce-42ca-9e46-28a79466dd53",
+      "data_source_id": "5d472424-826f-4719-8ac6-06f0f127e068",
+      "database_title": "Leads",
+      "data_source_title": "Theo Leads",
+      "database_url": "https://www.notion.so/29b3ec6c4bce42ca9e4628a79466dd53",
+      "schema_version": "",
+      "last_demo_push_sync_at": "2026-03-07T14:00:00-05:00"
+    },
+    "notion_watch": {
+      "seen_events": [
+        {
+          "id": "4498bc68-4b34-42ed-a752-ff1a20a95cd8",
+          "seen_at": "2026-03-07T07:09:32.949555+00:00"
+        },
+        {
+          "id": "7703e792-fd1b-48f6-8408-00e84b177bae",
+          "seen_at": "2026-03-07T07:10:31.427971+00:00"
+        },
+        {
+          "id": "2bf8e9f7-632a-4621-b764-fb4f77d49813",
+          "seen_at": "2026-03-07T07:10:31.789871+00:00"
+        },
+        {
+          "id": "3e71b220-e0f5-453f-a859-c74d3f254617",
+          "seen_at": "2026-03-07T07:10:31.940621+00:00"
+        },
+        {
+          "id": "9ec08134-d5ad-4466-9c28-010666fb4c50",
+          "seen_at": "2026-03-07T07:10:33.169313+00:00"
+        }
+      ],
+      "stats": {
+        "received": 5,
+        "accepted": 5,
+        "processed": 5
+      },
+      "last_event_id": "9ec08134-d5ad-4466-9c28-010666fb4c50",
+      "last_event_type": "page.deleted",
+      "last_event_at": "2026-03-07T07:10:33.564514+00:00",
+      "updated_at": "2026-03-07T07:10:33.169313+00:00",
+      "event_retention_days": 7,
+      "last_processed_at": "2026-03-07T07:10:33.564514+00:00",
+      "last_processed_event_id": "9ec08134-d5ad-4466-9c28-010666fb4c50",
+      "last_error": null,
+      "last_refresh_source": "live_webhook",
+      "last_refresh_counts": {
+        "leads": 9,
+        "time_commitments": 0,
+        "budget_commitments": 0
+      },
+      "last_mirror_results": {
+        "notion_leads": {
+          "file": "notion_leads.jsonl",
+          "rows": 9,
+          "changed": false
+        },
+        "time_commitments": {
+          "file": "time_commitments.jsonl",
+          "rows": 0,
+          "changed": false
+        },
+        "budget_commitments": {
+          "file": "budget_commitments.jsonl",
+          "rows": 0,
+          "changed": false
+        }
+      }
+    },
+    "lead_os": {
+      "version": "v3",
+      "persona_id": "p05",
+      "objective": {
+        "title": "Profile-driven freelance stability",
+        "persona_name": "Theo Nakamura",
+        "primary_goal": "Increase conversion and cash reliability without forcing high-anxiety outreach patterns.",
+        "constraints": {
+          "trust_first": true,
+          "ad_hoc_spam_forbidden": true,
+          "customer_approval_required_for_irreversible_sends": true,
+          "avg_monthly_revenue": 1820.0,
+          "debt": 6000.0
+        }
+      },
+      "lead_pcb": {
+        "austin creatives (meetup contact) \u2014 potential client::unknown": {
+          "lead_key": "austin creatives (meetup contact) \u2014 potential client::unknown",
+          "name": "Austin Creatives (Meetup contact) \u2014 Potential client",
+          "status": "Lead",
+          "priority": "Low",
+          "source": "Unknown",
+          "lane": "Outbound",
+          "owner_pod": "intake_pod",
+          "deal_size": 2500.0,
+          "next_action": "Send a short follow-up DM/email and share portfolio link",
+          "next_follow_up_date": "2026-03-13",
+          "last_contact": "",
+          "overdue_days": 0,
+          "conversion_confidence": 0.04999999999999999,
+          "trust_risk": 0.38,
+          "effort_est_minutes": 20,
+          "acquisition_cost_est": 36.0,
+          "response_sla_due_at": "2026-03-13",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "austin_creatives_meetup_contact": {
+          "lead_key": "austin_creatives_meetup_contact",
+          "name": "Austin Creatives (Meetup contact) \u2014 Potential client",
+          "status": "Lead",
+          "priority": "Low",
+          "source": "Unknown",
+          "lane": "Outbound",
+          "owner_pod": "intake_pod",
+          "deal_size": 2500.0,
+          "next_action": "Send a short follow-up DM/email and share portfolio link",
+          "next_follow_up_date": "2024-04-04",
+          "last_contact": "2024-04-02",
+          "overdue_days": 702,
+          "conversion_confidence": 0.04999999999999999,
+          "trust_risk": 0.38,
+          "effort_est_minutes": 20,
+          "acquisition_cost_est": 36.0,
+          "response_sla_due_at": "2024-04-04",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "designneed (referral via jake) \u2014 rebrand::referral": {
+          "lead_key": "designneed (referral via jake) \u2014 rebrand::referral",
+          "name": "DesignNeed (Referral via Jake) \u2014 Rebrand",
+          "status": "Contacted",
+          "priority": "Medium",
+          "source": "Referral",
+          "lane": "Referral",
+          "owner_pod": "nurture_pod",
+          "deal_size": 1500.0,
+          "next_action": "Propose 20-min intro call + share relevant work samples",
+          "next_follow_up_date": "2026-03-11",
+          "last_contact": "",
+          "overdue_days": 0,
+          "conversion_confidence": 0.44,
+          "trust_risk": 0.12,
+          "effort_est_minutes": 25,
+          "acquisition_cost_est": 8.0,
+          "response_sla_due_at": "2026-03-11",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "designneed_referral_rebrand": {
+          "lead_key": "designneed_referral_rebrand",
+          "name": "DesignNeed (Referral via Jake) \u2014 Rebrand",
+          "status": "Contacted",
+          "priority": "Medium",
+          "source": "Unknown",
+          "lane": "Referral",
+          "owner_pod": "nurture_pod",
+          "deal_size": 1500.0,
+          "next_action": "Propose 20-min intro call + share relevant work samples",
+          "next_follow_up_date": "2024-11-06",
+          "last_contact": "2024-10-31",
+          "overdue_days": 486,
+          "conversion_confidence": 0.44,
+          "trust_risk": 0.12,
+          "effort_est_minutes": 25,
+          "acquisition_cost_est": 8.0,
+          "response_sla_due_at": "2024-11-06",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "local coffee roaster website refresh::portfolio": {
+          "lead_key": "local coffee roaster website refresh::portfolio",
+          "name": "Local Coffee Roaster Website Refresh",
+          "status": "Lead",
+          "priority": "Medium",
+          "source": "Portfolio",
+          "lane": "Inbound",
+          "owner_pod": "intake_pod",
+          "deal_size": 1800.0,
+          "next_action": "Send first-touch portfolio samples and discovery call link",
+          "next_follow_up_date": "2026-03-08",
+          "last_contact": "",
+          "overdue_days": 0,
+          "conversion_confidence": 0.22999999999999998,
+          "trust_risk": 0.2,
+          "effort_est_minutes": 20,
+          "acquisition_cost_est": 12.0,
+          "response_sla_due_at": "2026-03-08",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "new client onboarding (zoom) \u2014 unnamed prospect::unknown": {
+          "lead_key": "new client onboarding (zoom) \u2014 unnamed prospect::unknown",
+          "name": "New client onboarding (Zoom) \u2014 Unnamed prospect",
+          "status": "Meeting booked",
+          "priority": "High",
+          "source": "Unknown",
+          "lane": "Inbound",
+          "owner_pod": "close_pod",
+          "deal_size": 3000.0,
+          "next_action": "Identify prospect + log email/handle; prep onboarding checklist",
+          "next_follow_up_date": "2026-03-10",
+          "last_contact": "2026-03-06",
+          "overdue_days": 0,
+          "conversion_confidence": 0.71,
+          "trust_risk": 0.2,
+          "effort_est_minutes": 40,
+          "acquisition_cost_est": 12.0,
+          "response_sla_due_at": "2026-03-10",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "onboarding_zoom_unnamed": {
+          "lead_key": "onboarding_zoom_unnamed",
+          "name": "New client onboarding (Zoom) \u2014 Unnamed prospect",
+          "status": "Lead",
+          "priority": "High",
+          "source": "Unknown",
+          "lane": "Inbound",
+          "owner_pod": "intake_pod",
+          "deal_size": 3000.0,
+          "next_action": "Identify prospect + log email/handle; prep onboarding checklist",
+          "next_follow_up_date": "2024-04-10",
+          "last_contact": "2024-04-09",
+          "overdue_days": 696,
+          "conversion_confidence": 0.31,
+          "trust_risk": 0.2,
+          "effort_est_minutes": 20,
+          "acquisition_cost_est": 12.0,
+          "response_sla_due_at": "2024-04-10",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "startupco \u2014 brand identity project::direct": {
+          "lead_key": "startupco \u2014 brand identity project::direct",
+          "name": "StartupCo \u2014 Brand identity project",
+          "status": "Proposal sent",
+          "priority": "High",
+          "source": "Direct",
+          "lane": "Outbound",
+          "owner_pod": "close_pod",
+          "deal_size": 2200.0,
+          "next_action": "Send revised concept board for Full-Time Freelance",
+          "next_follow_up_date": "2026-03-12",
+          "last_contact": "2026-03-26",
+          "overdue_days": 0,
+          "conversion_confidence": 0.7599999999999999,
+          "trust_risk": 0.38,
+          "effort_est_minutes": 35,
+          "acquisition_cost_est": 36.0,
+          "response_sla_due_at": "2026-03-12",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        },
+        "startupco_brand_identity": {
+          "lead_key": "startupco_brand_identity",
+          "name": "StartupCo \u2014 Brand identity project",
+          "status": "Lead",
+          "priority": "High",
+          "source": "Unknown",
+          "lane": "Inbound",
+          "owner_pod": "intake_pod",
+          "deal_size": 2200.0,
+          "next_action": "Send revised warmer palette + bolder wordmark options",
+          "next_follow_up_date": "2024-12-13",
+          "last_contact": "2024-12-09",
+          "overdue_days": 449,
+          "conversion_confidence": 0.31,
+          "trust_risk": 0.2,
+          "effort_est_minutes": 20,
+          "acquisition_cost_est": 12.0,
+          "response_sla_due_at": "2024-12-13",
+          "updated_at": "2026-03-07T07:10:33.564514+00:00"
+        }
+      },
+      "recommended_actions": [
+        {
+          "lead_key": "onboarding_zoom_unnamed",
+          "name": "New client onboarding (Zoom) \u2014 Unnamed prospect",
+          "owner_pod": "intake_pod",
+          "status": "Lead",
+          "source": "Unknown",
+          "lane": "Inbound",
+          "priority": "High",
+          "deal_size": 3000.0,
+          "conversion_confidence": 0.31,
+          "score": 3.5693,
+          "next_step": "Identify prospect + log email/handle; prep onboarding checklist",
+          "next_touch_date": "2024-04-10"
+        },
+        {
+          "lead_key": "startupco_brand_identity",
+          "name": "StartupCo \u2014 Brand identity project",
+          "owner_pod": "intake_pod",
+          "status": "Lead",
+          "source": "Unknown",
+          "lane": "Inbound",
+          "priority": "High",
+          "deal_size": 2200.0,
+          "conversion_confidence": 0.31,
+          "score": 3.4093,
+          "next_step": "Send revised warmer palette + bolder wordmark options",
+          "next_touch_date": "2024-12-13"
+        },
+        {
+          "lead_key": "designneed_referral_rebrand",
+          "name": "DesignNeed (Referral via Jake) \u2014 Rebrand",
+          "owner_pod": "nurture_pod",
+          "status": "Contacted",
+          "source": "Unknown",
+          "lane": "Referral",
+          "priority": "Medium",
+          "deal_size": 1500.0,
+          "conversion_confidence": 0.44,
+          "score": 3.1977,
+          "next_step": "Propose 20-min intro call + share relevant work samples",
+          "next_touch_date": "2024-11-06"
+        },
+        {
+          "lead_key": "new client onboarding (zoom) \u2014 unnamed prospect::unknown",
+          "name": "New client onboarding (Zoom) \u2014 Unnamed prospect",
+          "owner_pod": "close_pod",
+          "status": "Meeting booked",
+          "source": "Unknown",
+          "lane": "Inbound",
+          "priority": "High",
+          "deal_size": 3000.0,
+          "conversion_confidence": 0.71,
+          "score": 2.5427,
+          "next_step": "Identify prospect + log email/handle; prep onboarding checklist",
+          "next_touch_date": "2026-03-10"
+        },
+        {
+          "lead_key": "startupco \u2014 brand identity project::direct",
+          "name": "StartupCo \u2014 Brand identity project",
+          "owner_pod": "close_pod",
+          "status": "Proposal sent",
+          "source": "Direct",
+          "lane": "Outbound",
+          "priority": "High",
+          "deal_size": 2200.0,
+          "conversion_confidence": 0.7599999999999999,
+          "score": 1.8823,
+          "next_step": "Send revised concept board for Full-Time Freelance",
+          "next_touch_date": "2026-03-12"
+        },
+        {
+          "lead_key": "designneed (referral via jake) \u2014 rebrand::referral",
+          "name": "DesignNeed (Referral via Jake) \u2014 Rebrand",
+          "owner_pod": "nurture_pod",
+          "status": "Contacted",
+          "source": "Referral",
+          "lane": "Referral",
+          "priority": "Medium",
+          "deal_size": 1500.0,
+          "conversion_confidence": 0.44,
+          "score": 1.6977,
+          "next_step": "Propose 20-min intro call + share relevant work samples",
+          "next_touch_date": "2026-03-11"
+        },
+        {
+          "lead_key": "austin_creatives_meetup_contact",
+          "name": "Austin Creatives (Meetup contact) \u2014 Potential client",
+          "owner_pod": "intake_pod",
+          "status": "Lead",
+          "source": "Unknown",
+          "lane": "Outbound",
+          "priority": "Low",
+          "deal_size": 2500.0,
+          "conversion_confidence": 0.04999999999999999,
+          "score": 1.4713,
+          "next_step": "Send a short follow-up DM/email and share portfolio link",
+          "next_touch_date": "2024-04-04"
+        },
+        {
+          "lead_key": "local coffee roaster website refresh::portfolio",
+          "name": "Local Coffee Roaster Website Refresh",
+          "owner_pod": "intake_pod",
+          "status": "Lead",
+          "source": "Portfolio",
+          "lane": "Inbound",
+          "priority": "Medium",
+          "deal_size": 1800.0,
+          "conversion_confidence": 0.22999999999999998,
+          "score": 1.2213,
+          "next_step": "Send first-touch portfolio samples and discovery call link",
+          "next_touch_date": "2026-03-08"
+        }
+      ],
+      "dispatch_log": [],
+      "figma_comment_links": {},
+      "figma_actor_file_links": {},
+      "pods": {
+        "intake_pod": {
+          "status": "active",
+          "queue_depth": 4,
+          "worker_queue_depth": 1,
+          "focus": "ingest and classify"
+        },
+        "nurture_pod": {
+          "status": "active",
+          "queue_depth": 2,
+          "worker_queue_depth": 1,
+          "focus": "follow-up cadence"
+        },
+        "close_pod": {
+          "status": "active",
+          "queue_depth": 2,
+          "worker_queue_depth": 1,
+          "focus": "proposal progression"
+        },
+        "finance_pod": {
+          "status": "active",
+          "queue_depth": 0,
+          "worker_queue_depth": 0,
+          "focus": "sustainability guardrails"
+        }
+      },
+      "updated_at": "2026-03-07T07:10:33.564514+00:00",
+      "sustainability": {
+        "open_leads": 9,
+        "expected_pipeline_value": 20200.0,
+        "weighted_pipeline_value": 7398.0,
+        "estimated_acquisition_cost": 172.0,
+        "followup_overdue_count": 4,
+        "lane_distribution": {
+          "Referral": 2,
+          "Inbound": 4,
+          "Previous client": 0,
+          "Outbound": 3
+        },
+        "outbound_share": 0.333,
+        "trust_first_share": 0.667,
+        "efficiency_ratio": 43.012,
+        "sustainability_status": "watch"
+      },
+      "last_tick_at": "2026-03-07T07:10:33.564514+00:00",
+      "last_notion_event_id": "9ec08134-d5ad-4466-9c28-010666fb4c50"
+    }
+  },
+  "updated_at": "2026-03-07T13:39:55.525491+00:00"
 }
