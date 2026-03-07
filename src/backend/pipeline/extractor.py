@@ -7,7 +7,7 @@ domain without re-reading all files.
 """
 import json
 from collections import defaultdict
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 
@@ -28,6 +28,20 @@ def _read_jsonl(path: Path) -> list[dict]:
                 except json.JSONDecodeError:
                     pass
     return records
+
+
+def _parse_iso_date(value: str | None) -> date | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
+
+
+def _today() -> date:
+    return datetime.now().date()
 
 
 # ---------------------------------------------------------------------------
@@ -135,6 +149,156 @@ def extract_social(persona_id: str) -> tuple[list, list]:
     return summary, social
 
 
+def extract_notion_leads(persona_id: str) -> tuple[dict, list]:
+    """Returns (notion_leads_summary, raw_records)."""
+    root = _data_root(persona_id)
+    leads = _read_jsonl(root / "notion_leads.jsonl")
+    today = _today()
+
+    status_counts: dict[str, int] = defaultdict(int)
+    open_pipeline_value = 0.0
+    due_followups: list[dict] = []
+    top_leads: list[dict] = []
+
+    for lead in leads:
+        status = str(lead.get("status", "")).strip() or "Lead"
+        status_counts[status] += 1
+        deal_size = float(lead.get("deal_size", 0) or 0)
+        if status not in {"Won", "Lost"}:
+            open_pipeline_value += deal_size
+        follow_up = _parse_iso_date(str(lead.get("next_follow_up_date", "")).strip())
+        lead_item = {
+            "id": str(lead.get("id", "")).strip(),
+            "name": str(lead.get("name", "")).strip(),
+            "status": status,
+            "priority": str(lead.get("priority", "")).strip(),
+            "deal_size": deal_size,
+            "next_follow_up_date": follow_up.isoformat() if follow_up else "",
+            "text": str(lead.get("text", "")).strip(),
+        }
+        top_leads.append(lead_item)
+        if follow_up is not None and follow_up <= (today + timedelta(days=7)) and status not in {"Won", "Lost"}:
+            due_followups.append(lead_item)
+
+    due_followups.sort(
+        key=lambda item: (
+            item["next_follow_up_date"] or "9999-12-31",
+            -(item["deal_size"] or 0),
+        )
+    )
+    top_leads.sort(key=lambda item: (-(item["deal_size"] or 0), item["name"]))
+
+    summary = {
+        "status_counts": dict(status_counts),
+        "open_pipeline_value": round(open_pipeline_value, 2),
+        "due_followups": due_followups[:5],
+        "top_leads": top_leads[:5],
+        "open_lead_count": sum(
+            count for status, count in status_counts.items() if status not in {"Won", "Lost"}
+        ),
+    }
+    return summary, leads
+
+
+def extract_time_commitments(persona_id: str) -> tuple[dict, list]:
+    """Returns (time_commitments_summary, raw_records)."""
+    root = _data_root(persona_id)
+    commitments = _read_jsonl(root / "time_commitments.jsonl")
+    today = _today()
+
+    status_counts: dict[str, int] = defaultdict(int)
+    total_minutes_open = 0
+    due_soon: list[dict] = []
+    blocked: list[dict] = []
+
+    for item in commitments:
+        status = str(item.get("status", "")).strip() or "Inbox"
+        status_counts[status] += 1
+        estimated = int(item.get("estimated_minutes", 0) or 0)
+        if status not in {"Done", "Dropped"}:
+            total_minutes_open += estimated
+        due_date = _parse_iso_date(str(item.get("due_date", "")).strip())
+        commitment = {
+            "id": str(item.get("id", "")).strip(),
+            "title": str(item.get("title", "")).strip(),
+            "status": status,
+            "priority": str(item.get("priority", "")).strip(),
+            "due_date": due_date.isoformat() if due_date else "",
+            "estimated_minutes": estimated,
+            "text": str(item.get("text", "")).strip(),
+        }
+        if status == "Blocked":
+            blocked.append(commitment)
+        if due_date is not None and due_date <= (today + timedelta(days=7)) and status not in {"Done", "Dropped"}:
+            due_soon.append(commitment)
+
+    due_soon.sort(key=lambda item: (item["due_date"] or "9999-12-31", -(item["estimated_minutes"] or 0)))
+    blocked.sort(key=lambda item: (item["due_date"] or "9999-12-31", item["title"]))
+
+    summary = {
+        "status_counts": dict(status_counts),
+        "total_minutes_open": total_minutes_open,
+        "due_soon": due_soon[:5],
+        "blocked": blocked[:5],
+        "open_commitment_count": sum(
+            count for status, count in status_counts.items() if status not in {"Done", "Dropped"}
+        ),
+    }
+    return summary, commitments
+
+
+def extract_budget_commitments(persona_id: str) -> tuple[dict, list]:
+    """Returns (budget_commitments_summary, raw_records)."""
+    root = _data_root(persona_id)
+    budgets = _read_jsonl(root / "budget_commitments.jsonl")
+    today = _today()
+
+    status_counts: dict[str, int] = defaultdict(int)
+    inflow_open = 0.0
+    outflow_open = 0.0
+    high_pressure: list[dict] = []
+    due_soon: list[dict] = []
+
+    for item in budgets:
+        status = str(item.get("status", "")).strip() or "Planned"
+        status_counts[status] += 1
+        amount = float(item.get("amount", 0) or 0)
+        direction = str(item.get("direction", "")).strip() or "outflow"
+        if status not in {"Paid", "Cancelled"}:
+            if direction == "inflow":
+                inflow_open += amount
+            else:
+                outflow_open += amount
+        due_date = _parse_iso_date(str(item.get("due_date", "")).strip())
+        budget = {
+            "id": str(item.get("id", "")).strip(),
+            "title": str(item.get("title", "")).strip(),
+            "status": status,
+            "pressure_level": str(item.get("pressure_level", "")).strip(),
+            "direction": direction,
+            "amount": amount,
+            "due_date": due_date.isoformat() if due_date else "",
+            "text": str(item.get("text", "")).strip(),
+        }
+        if budget["pressure_level"] in {"high", "critical"}:
+            high_pressure.append(budget)
+        if due_date is not None and due_date <= (today + timedelta(days=7)) and status not in {"Paid", "Cancelled"}:
+            due_soon.append(budget)
+
+    due_soon.sort(key=lambda item: (item["due_date"] or "9999-12-31", -(item["amount"] or 0)))
+    high_pressure.sort(key=lambda item: (item["pressure_level"] != "critical", -(item["amount"] or 0)))
+
+    summary = {
+        "status_counts": dict(status_counts),
+        "open_inflow_total": round(inflow_open, 2),
+        "open_outflow_total": round(outflow_open, 2),
+        "net_open_pressure": round(inflow_open - outflow_open, 2),
+        "due_soon": due_soon[:5],
+        "high_pressure": high_pressure[:5],
+    }
+    return summary, budgets
+
+
 # ---------------------------------------------------------------------------
 # Full extractor (backward-compatible, calls per-domain functions)
 # ---------------------------------------------------------------------------
@@ -145,9 +309,20 @@ def extract_persona_data(persona_id: str = "p01") -> dict:
     calendar_summary, calendar_records = extract_calendar_data(persona_id)
     lifelog_summary, lifelog = extract_lifelog(persona_id)
     social_summary, social = extract_social(persona_id)
+    notion_leads_summary, notion_leads = extract_notion_leads(persona_id)
+    time_commitments_summary, time_commitments = extract_time_commitments(persona_id)
+    budget_commitments_summary, budget_commitments = extract_budget_commitments(persona_id)
 
     data_refs: dict[str, str] = {}
-    for records in [calendar_records, transactions, lifelog, social]:
+    for records in [
+        calendar_records,
+        transactions,
+        lifelog,
+        social,
+        notion_leads,
+        time_commitments,
+        budget_commitments,
+    ]:
         for r in records:
             rid = r.get("id")
             if rid:
@@ -159,5 +334,8 @@ def extract_persona_data(persona_id: str = "p01") -> dict:
         "calendar": calendar_summary,
         "lifelog": lifelog_summary,
         "social": social_summary,
+        "notion_leads": notion_leads_summary,
+        "time_commitments": time_commitments_summary,
+        "budget_commitments": budget_commitments_summary,
         "data_refs": data_refs,
     }

@@ -11,6 +11,7 @@ const EVENT_META: Record<string, { glyph: string; cls: string; label: string }> 
     analysis_running:  { glyph: '◈', cls: 'feed-event--analyzing', label: 'analyzing'         },
     scenarios_updated: { glyph: '✦', cls: 'feed-event--updated',   label: 'trajectories'      },
     actions_updated:   { glyph: '✦', cls: 'feed-event--updated',   label: 'actions'           },
+    notion_leads_refreshed: { glyph: '▣', cls: 'feed-event--notion', label: 'notion refresh'  },
     analysis_stable:   { glyph: '·', cls: 'feed-event--stable',    label: 'stable'            },
     analysis_error:    { glyph: '✗', cls: 'feed-event--error',     label: 'error'             },
     cycle_start:       { glyph: '▶', cls: 'feed-event--cycle',     label: 'cycle start'       },
@@ -28,7 +29,16 @@ function describeEvent(evt: FeedEvent): string {
             const src = p.source as string ?? '';
             return src === 'demo_push'
                 ? `${domain} — demo push received`
+                : src === 'live_webhook'
+                ? `${domain} — live Notion webhook refresh`
                 : `${domain} file updated`;
+        }
+        case 'notion_leads_refreshed': {
+            const leads = p.lead_count as number ?? 0;
+            const changedDomains = Array.isArray(p.changed_domains) ? p.changed_domains.join(', ') : '';
+            return changedDomains
+                ? `${leads} mirrored leads refreshed (${changedDomains})`
+                : `${leads} mirrored leads refreshed`;
         }
         case 'analysis_running': {
             return (p.message as string) ?? `running ${p.stage ?? ''}…`;

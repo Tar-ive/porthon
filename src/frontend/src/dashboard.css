@@ -1367,6 +1367,29 @@
     padding: 0.05rem 0.35rem;
 }
 
+.demo-event-domain--notion {
+    display: block;
+    width: fit-content;
+    margin-top: 0.25rem;
+    color: var(--muted);
+    border-color: rgba(200, 146, 42, 0.14);
+}
+
+.demo-event-domain--completed {
+    color: #6ee7a0;
+    border-color: rgba(110, 231, 160, 0.3);
+}
+
+.demo-event-domain--failed {
+    color: #fca5a5;
+    border-color: rgba(252, 165, 165, 0.28);
+}
+
+.demo-event-domain--skipped {
+    color: var(--muted);
+    border-color: rgba(160, 160, 160, 0.2);
+}
+
 .demo-event-status {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.65rem;
@@ -1428,6 +1451,8 @@
 .feed-event--analyzing .feed-type      { color: #fcd34d; animation: pulse 1s ease-in-out infinite; }
 .feed-event--updated   .feed-glyph,
 .feed-event--updated   .feed-type      { color: #6ee7a0; }
+.feed-event--notion    .feed-glyph,
+.feed-event--notion    .feed-type      { color: #7dd3fc; }
 .feed-event--done      .feed-glyph,
 .feed-event--done      .feed-type      { color: #6ee7a0; }
 .feed-event--error     .feed-glyph,

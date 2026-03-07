@@ -9,6 +9,10 @@ interface DemoEvent {
 }
 
 type PushState = 'idle' | 'pushing' | 'analyzing' | 'done';
+type NotionSyncState = {
+    status: 'completed' | 'skipped' | 'failed';
+    detail: string;
+};
 
 const DOMAIN_GLYPH: Record<string, string> = {
     calendar: '◈',
@@ -29,6 +33,7 @@ const DOMAIN_LABEL: Record<string, string> = {
 export default function DemoFeed() {
     const [events, setEvents] = useState<DemoEvent[]>([]);
     const [states, setStates] = useState<Record<string, PushState>>({});
+    const [notionStates, setNotionStates] = useState<Record<string, NotionSyncState | undefined>>({});
     const activeSlug = useRef<string | null>(null);
 
     const { isAnalyzing, scenariosVersion, actionsVersion, changedDomain, lastEvent } = useAgentStream();
@@ -66,7 +71,31 @@ export default function DemoFeed() {
         activeSlug.current = slug;
         setStates((s) => ({ ...s, [slug]: 'pushing' }));
         try {
-            await fetch(`/api/agent/demo/push/${slug}`, { method: 'POST' });
+            const response = await fetch(`/api/agent/demo/push/${slug}`, { method: 'POST' });
+            const body = await response.json();
+            const notionSync = body?.notion_sync;
+            if (notionSync?.status) {
+                const counts = notionSync.counts ?? {};
+                const detail =
+                    notionSync.status === 'completed'
+                        ? (
+                            Number(counts.created ?? 0) > 0
+                                ? `Notion synced · created ${counts.created}`
+                                : Number(counts.updated ?? 0) > 0
+                                ? `Notion synced · updated ${counts.updated}`
+                                : `Notion synced · no material change`
+                        )
+                        : notionSync.status === 'skipped'
+                        ? `Notion skipped · ${String(notionSync.reason ?? 'not configured')}`
+                        : `Notion failed · ${String(notionSync.reason ?? 'error')}`;
+                setNotionStates((s) => ({
+                    ...s,
+                    [slug]: {
+                        status: notionSync.status,
+                        detail,
+                    },
+                }));
+            }
         } catch {
             setStates((s) => ({ ...s, [slug]: 'idle' }));
             activeSlug.current = null;
@@ -104,6 +133,7 @@ export default function DemoFeed() {
                 </p>
                 {events.map((evt) => {
                     const state = states[evt.slug] ?? 'idle';
+                    const notionState = notionStates[evt.slug];
                     return (
                         <button
                             key={evt.slug}
@@ -121,6 +151,11 @@ export default function DemoFeed() {
                                     <span className="demo-event-domain">
                                         {DOMAIN_LABEL[evt.domain] ?? evt.domain}
                                     </span>
+                                    {notionState && (
+                                        <span className={`demo-event-domain demo-event-domain--notion demo-event-domain--${notionState.status}`}>
+                                            {notionState.detail}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <span className={`demo-event-status demo-event-status--${state}`}>

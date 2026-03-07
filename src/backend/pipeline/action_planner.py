@@ -32,10 +32,38 @@ def _build_prompt(scenario: dict, extracted: dict, kg_snippets: list | None = No
     recent_ll = ll.get("recent", [])
     ll_str = "\n".join(f"  [{e['id']}] {e['text'][:120]}" for e in recent_ll[:5])
 
+    # Notion mirrors
+    notion = extracted.get("notion_leads", {})
+    lead_refs = {k: v for k, v in data_refs.items() if k.startswith("nl_")}
+    top_leads = notion.get("top_leads", [])
+    lead_str = "\n".join(
+        f"  [{item['id']}] {item['name']} {item['status']} ${item['deal_size']:.0f} follow-up {item['next_follow_up_date'] or 'undated'}"
+        for item in top_leads[:5]
+    ) or "\n".join(f"  [{rid}] {text}" for rid, text in list(lead_refs.items())[:5])
+
+    time_commitments = extracted.get("time_commitments", {})
+    time_refs = {k: v for k, v in data_refs.items() if k.startswith("tc_")}
+    due_commitments = time_commitments.get("due_soon", [])
+    time_str = "\n".join(
+        f"  [{item['id']}] {item['title']} due {item['due_date']} ({item['estimated_minutes']} min)"
+        for item in due_commitments[:5]
+    ) or "\n".join(f"  [{rid}] {text}" for rid, text in list(time_refs.items())[:5])
+
+    budget = extracted.get("budget_commitments", {})
+    budget_refs = {k: v for k, v in data_refs.items() if k.startswith("bc_")}
+    pressure_items = budget.get("high_pressure", [])
+    budget_str = "\n".join(
+        f"  [{item['id']}] {item['title']} {item['direction']} ${item['amount']:.0f} ({item['pressure_level']})"
+        for item in pressure_items[:5]
+    ) or "\n".join(f"  [{rid}] {text}" for rid, text in list(budget_refs.items())[:5])
+
     available_ids = (
         [rid for rid, _ in recent_cal]
         + [rid for rid, _ in recent_tx]
         + [e["id"] for e in recent_ll[:5]]
+        + [item["id"] for item in top_leads[:5]]
+        + [item["id"] for item in due_commitments[:5]]
+        + [item["id"] for item in pressure_items[:5]]
     )
     ids_list = ", ".join(available_ids)
 
@@ -61,6 +89,15 @@ Recent transactions:
 
 Recent lifelog entries:
 {ll_str}
+
+Top monetization leads:
+{lead_str}
+
+Due-soon time commitments:
+{time_str}
+
+High-pressure budget commitments:
+{budget_str}
 {kg_section}
 Available record IDs to cite: {ids_list}
 
@@ -71,6 +108,8 @@ Rules:
 2. Actions must be specific and time-bound (NOT "exercise more" — instead "Block 6–6:30pm Monday for a 30min run — cal_XXXX shows that slot is free")
 3. Connect each action to at least one cross-domain pattern (e.g. how fixing sleep also improves career focus)
 4. Reference the scenario outcome in each rationale
+5. Prioritize actions from top monetization leads, due time commitments, and high-pressure budget commitments when they materially affect the scenario
+6. Use `nl_*`, `tc_*`, or `bc_*` references when the action comes from mirrored Notion data
 
 Return a JSON object:
 {{

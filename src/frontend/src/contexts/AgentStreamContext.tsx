@@ -18,6 +18,8 @@ const defaultState: AgentStreamState = {
     scenariosVersion: 0,
     actionsVersion: 0,
     analysisMessage: null,
+    lastSource: null,
+    lastNotionRefresh: null,
 };
 
 const AgentStreamContext = createContext<AgentStreamState>(defaultState);
@@ -44,6 +46,7 @@ export function AgentStreamProvider({ children }: { children: ReactNode }) {
                         switch (evt.type) {
                             case 'data_changed':
                                 next.changedDomain = (evt.payload?.domain as string) ?? null;
+                                next.lastSource = (evt.payload?.source as string) ?? null;
                                 next.isAnalyzing = true;
                                 next.analysisMessage = `New ${next.changedDomain ?? ''} data detected`;
                                 break;
@@ -65,6 +68,16 @@ export function AgentStreamProvider({ children }: { children: ReactNode }) {
                             case 'analysis_error':
                                 next.isAnalyzing = false;
                                 next.analysisMessage = null;
+                                break;
+                            case 'notion_leads_refreshed':
+                                next.lastSource = 'live_webhook';
+                                next.lastNotionRefresh = {
+                                    eventId: (evt.payload?.event_id as string) ?? null,
+                                    leadCount: Number(evt.payload?.lead_count ?? 0),
+                                    changedDomains: Array.isArray(evt.payload?.changed_domains)
+                                        ? (evt.payload?.changed_domains as string[])
+                                        : [],
+                                };
                                 break;
                         }
                         return next;

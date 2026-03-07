@@ -2,7 +2,7 @@ FRONTEND_DIR := src/frontend
 BACKEND_DIR  := src/backend
 STATIC_DIR   := $(BACKEND_DIR)/static
 
-.PHONY: build dev install clean test test-live test-live-kg
+.PHONY: build dev dev-stable install clean test test-live test-live-kg
 
 ## Install all dependencies
 install:
@@ -16,6 +16,10 @@ build:
 ## Build frontend then start the FastAPI server
 dev: build
 	cd $(BACKEND_DIR) && uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+## Build frontend then start a stable FastAPI server (no reload) for webhook/tunnel testing
+dev-stable: build
+	cd $(BACKEND_DIR) && uv run uvicorn main:app --host 0.0.0.0 --port 8000
 
 ## Run backend fast tests (default)
 test:

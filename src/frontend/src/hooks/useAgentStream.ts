@@ -21,6 +21,12 @@ export interface AgentStreamState {
     scenariosVersion: number;
     actionsVersion: number;
     analysisMessage: string | null;
+    lastSource: string | null;
+    lastNotionRefresh: {
+        eventId: string | null;
+        leadCount: number;
+        changedDomains: string[];
+    } | null;
 }
 
 export function useAgentStream(): AgentStreamState {

@@ -34,6 +34,34 @@ def _build_prompt(extracted: dict, kg_snippets: list | None = None) -> str:
     recent_ll = ll.get("recent", [])
     recent_ll_str = "\n".join(f"  [{e['id']}] {e['text'][:120]}" for e in recent_ll[:3])
 
+    notion = extracted.get("notion_leads", {})
+    status_counts = notion.get("status_counts", {})
+    pipeline_status_str = ", ".join(f"{status}({count})" for status, count in status_counts.items()) or "none"
+    open_pipeline_value = float(notion.get("open_pipeline_value", 0) or 0)
+    due_followups = notion.get("due_followups", [])
+    due_followups_str = "\n".join(
+        f"  [{item['id']}] {item['name']} due {item['next_follow_up_date']} ({item['priority']}, ${item['deal_size']:.0f})"
+        for item in due_followups[:4]
+    ) or "  none due soon"
+
+    time_commitments = extracted.get("time_commitments", {})
+    open_minutes = int(time_commitments.get("total_minutes_open", 0) or 0)
+    due_soon_commitments = time_commitments.get("due_soon", [])
+    due_soon_commitments_str = "\n".join(
+        f"  [{item['id']}] {item['title']} due {item['due_date']} ({item['estimated_minutes']} min)"
+        for item in due_soon_commitments[:4]
+    ) or "  no near-term commitments"
+
+    budget = extracted.get("budget_commitments", {})
+    inflow_total = float(budget.get("open_inflow_total", 0) or 0)
+    outflow_total = float(budget.get("open_outflow_total", 0) or 0)
+    net_pressure = float(budget.get("net_open_pressure", 0) or 0)
+    high_pressure = budget.get("high_pressure", [])
+    high_pressure_str = "\n".join(
+        f"  [{item['id']}] {item['title']} {item['direction']} ${item['amount']:.0f} ({item['pressure_level']})"
+        for item in high_pressure[:4]
+    ) or "  no high-pressure budget items"
+
     # KG memory context (cross-domain patterns retrieved from knowledge graph)
     kg_section = ""
     if kg_snippets:
@@ -52,14 +80,28 @@ Behavioral signals:
 - Top spending categories (aggregate): {spend_str}
 - Calendar top tags: {cal_tags_str}
 - Lifelog top tags: {ll_tags_str}
+- Open pipeline value: ${open_pipeline_value:.0f}
+- Pipeline status mix: {pipeline_status_str}
+- Open scheduled commitment load: {open_minutes} minutes
+- Open budget pressure: inflow ${inflow_total:.0f} vs outflow ${outflow_total:.0f} (net {net_pressure:+.0f})
 
 Recent lifelog entries:
 {recent_ll_str}
+
+Due-soon lead follow-ups:
+{due_followups_str}
+
+Due-soon time commitments:
+{due_soon_commitments_str}
+
+High-pressure budget commitments:
+{high_pressure_str}
 {kg_section}
 Generate exactly 3 life scenarios for this person. Each must:
 - Cover a different time horizon (1yr, 5yr, 10yr — one each)
 - Have a different likelihood (most_likely, possible, aspirational — one each)
 - Reference ≥2 cross-domain behavioral patterns (e.g. career+health, finance+relationship)
+- Consider pipeline pressure, time load, and inflow/outflow pressure when relevant
 - Be grounded in the stated goals above
 - Include 2-4 relevant tags
 

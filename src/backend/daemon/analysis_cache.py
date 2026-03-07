@@ -27,7 +27,9 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 # Domains whose changes can affect the scenario generation prompt
-_SCENARIO_DOMAINS: frozenset[str] = frozenset({"finance", "calendar", "lifelog"})
+_SCENARIO_DOMAINS: frozenset[str] = frozenset(
+    {"finance", "calendar", "lifelog", "notion_leads", "time_commitments", "budget_commitments"}
+)
 
 # Domain name → JSONL filename
 _DOMAIN_FILE: dict[str, str] = {
@@ -36,6 +38,9 @@ _DOMAIN_FILE: dict[str, str] = {
     "lifelog": "lifelog.jsonl",
     "social": "social_posts.jsonl",
     "conversations": "conversations.jsonl",
+    "notion_leads": "notion_leads.jsonl",
+    "time_commitments": "time_commitments.jsonl",
+    "budget_commitments": "budget_commitments.jsonl",
 }
 
 
@@ -268,6 +273,15 @@ class AnalysisCache:
         elif domain == "social":
             from pipeline.extractor import extract_social
             summary, raw = extract_social(self._persona_id)
+        elif domain == "notion_leads":
+            from pipeline.extractor import extract_notion_leads
+            summary, raw = extract_notion_leads(self._persona_id)
+        elif domain == "time_commitments":
+            from pipeline.extractor import extract_time_commitments
+            summary, raw = extract_time_commitments(self._persona_id)
+        elif domain == "budget_commitments":
+            from pipeline.extractor import extract_budget_commitments
+            summary, raw = extract_budget_commitments(self._persona_id)
         else:
             return
 
@@ -275,7 +289,15 @@ class AnalysisCache:
 
     def _rebuild_data_refs(self) -> None:
         refs: dict[str, str] = {}
-        for domain in ("calendar", "finance", "lifelog", "social"):
+        for domain in (
+            "calendar",
+            "finance",
+            "lifelog",
+            "social",
+            "notion_leads",
+            "time_commitments",
+            "budget_commitments",
+        ):
             snap = self._domains.get(domain)
             if snap:
                 for r in snap.raw:
@@ -295,6 +317,9 @@ class AnalysisCache:
             "calendar": _snap_summary("calendar", {}),
             "lifelog": _snap_summary("lifelog", {}),
             "social": _snap_summary("social", []),
+            "notion_leads": _snap_summary("notion_leads", {}),
+            "time_commitments": _snap_summary("time_commitments", {}),
+            "budget_commitments": _snap_summary("budget_commitments", {}),
             "data_refs": self._data_refs,
         }
 
@@ -307,22 +332,34 @@ class AnalysisCache:
         fin = self._domains.get("finance")
         cal = self._domains.get("calendar")
         ll = self._domains.get("lifelog")
+        nl = self._domains.get("notion_leads")
+        tc = self._domains.get("time_commitments")
+        bc = self._domains.get("budget_commitments")
         payload = {
             "profile": self._profile,
             "transactions": fin.summary if fin else {},
             "calendar": cal.summary if cal else {},
             "lifelog": ll.summary if ll else {},
+            "notion_leads": nl.summary if nl else {},
+            "time_commitments": tc.summary if tc else {},
+            "budget_commitments": bc.summary if bc else {},
         }
         return _sha256(payload)
 
     def _hash_action_inputs(self, scenario: dict) -> str:
         """Hash the inputs consumed by action_planner._build_prompt."""
         ll = self._domains.get("lifelog")
+        nl = self._domains.get("notion_leads")
+        tc = self._domains.get("time_commitments")
+        bc = self._domains.get("budget_commitments")
         payload = {
             "scenario": scenario,
             "profile": self._profile,
             "data_refs": self._data_refs,
             "lifelog_recent": (ll.summary or {}).get("recent", []) if ll else [],
+            "notion_leads": nl.summary if nl else {},
+            "time_commitments": tc.summary if tc else {},
+            "budget_commitments": bc.summary if bc else {},
         }
         return _sha256(payload)
 

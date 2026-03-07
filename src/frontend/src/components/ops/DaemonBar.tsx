@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAgentStream } from '../../hooks/useAgentStream';
 
 export default function DaemonBar() {
-    const { isAnalyzing, analysisMessage, changedDomain, scenariosVersion } = useAgentStream();
+    const { isAnalyzing, analysisMessage, changedDomain, scenariosVersion, lastEvent, lastNotionRefresh, lastSource } = useAgentStream();
     const [lastUpdated, setLastUpdated] = useState<string | null>(null);
     const [flash, setFlash] = useState(false);
 
@@ -27,12 +27,20 @@ export default function DaemonBar() {
         ? 'updated'
         : 'idle';
 
-    const label =
-        state === 'analyzing'
-            ? (analysisMessage ?? `Analyzing ${changedDomain ?? 'data'}…`)
-            : state === 'updated'
-            ? 'Trajectories updated'
-            : 'Daemon running';
+    const notionRefreshLabel =
+        lastEvent?.type === 'notion_leads_refreshed' && lastNotionRefresh
+            ? `Live Notion refresh mirrored ${lastNotionRefresh.leadCount} leads`
+            : null;
+
+    const label = state === 'analyzing'
+        ? (
+            lastSource === 'live_webhook'
+                ? (analysisMessage ?? `Analyzing ${changedDomain ?? 'notion_leads'} from live webhook…`)
+                : (analysisMessage ?? `Analyzing ${changedDomain ?? 'data'}…`)
+        )
+        : state === 'updated'
+        ? (notionRefreshLabel ?? 'Trajectories updated')
+        : 'Daemon running';
 
     return (
         <div className={`daemon-bar daemon-bar--${state}`}>
