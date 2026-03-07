@@ -3,6 +3,7 @@ import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
 import ChatSidebar from './components/ChatSidebar';
 import { MemoizedMarkdown } from './MemoizedMarkdown';
+import { useAgentStream } from './hooks/useAgentStream';
 
 interface Scenario {
   id: string;
@@ -48,7 +49,33 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [questsCollapsed, setQuestsCollapsed] = useState(false);
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
   const [workflowStatus, setWorkflowStatus] = useState<string>('');
-  const [workflowBusy, setWorkflowBusy] = useState<'proactive' | 'figma' | null>(null);
+
+  // Demo feed state
+  const [demoEvents, setDemoEvents] = useState<{ slug: string; label: string; description: string }[]>([]);
+  const [pushingSlug, setPushingSlug] = useState<string | null>(null);
+
+  // Live data stream
+  const { isAnalyzing, analysisMessage, changedDomain } = useAgentStream();
+
+  // Load demo feed event list once on mount
+  useEffect(() => {
+    fetch('/api/agent/demo/events', { headers: DEMO_JSON_HEADERS })
+      .then((r) => r.json())
+      .then((d) => setDemoEvents(d.events ?? []))
+      .catch(() => {});
+  }, []);
+
+  const pushDemoEvent = async (slug: string) => {
+    setPushingSlug(slug);
+    try {
+      await fetch(`/api/agent/demo/push/${slug}`, {
+        method: 'POST',
+        headers: DEMO_JSON_HEADERS,
+      });
+    } finally {
+      setPushingSlug(null);
+    }
+  };
 
   useEffect(() => {
     fetch('/api/agent/activate', {
@@ -112,63 +139,6 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
 
   const isStreaming = status === 'streaming' || status === 'submitted';
 
-  const postDemoEvent = async (type: string, payload: Record<string, unknown>) => {
-    const res = await fetch('/v1/events', {
-      method: 'POST',
-      headers: DEMO_JSON_HEADERS,
-      body: JSON.stringify({ type, payload }),
-    });
-    if (!res.ok) {
-      throw new Error(`Failed: ${type}`);
-    }
-    return res.json();
-  };
-
-  const runProactiveWorkflow = async () => {
-    setWorkflowBusy('proactive');
-    setWorkflowStatus('Running proactive workflow...');
-    try {
-      await postDemoEvent('demo.workflow.proactive.preview', {});
-      const commit = await postDemoEvent('demo.workflow.proactive.commit', {});
-      const duration = commit?.cycle?.cycle_duration_ms;
-      setWorkflowStatus(
-        duration ? `Proactive workflow complete (${duration}ms cycle).` : 'Proactive workflow complete.'
-      );
-    } catch {
-      setWorkflowStatus('Proactive workflow failed. Check /v1/events.');
-    } finally {
-      setWorkflowBusy(null);
-    }
-  };
-
-  const runFigmaWorkflow = async () => {
-    setWorkflowBusy('figma');
-    setWorkflowStatus('Running figma watch workflow...');
-    try {
-      await postDemoEvent('demo.workflow.figma_watch.start', {
-        file_key: 'demo_file_123',
-        demo_mode: false,
-      });
-      await fetch('/v1/integrations/composio/webhook', {
-        method: 'POST',
-        headers: DEMO_JSON_HEADERS,
-        body: JSON.stringify({
-          id: 'ui_wh_001',
-          event_id: 'ui_wh_001',
-          comment_id: 'ui_comment_001',
-          file_key: 'demo_file_123',
-          message: 'Can we simplify this frame hierarchy?',
-          from: { name: 'Teammate' },
-          created_at: new Date().toISOString(),
-        }),
-      });
-      setWorkflowStatus('Figma watch workflow complete. Pending items updated.');
-    } catch {
-      setWorkflowStatus('Figma workflow failed. Check /v1/events.');
-    } finally {
-      setWorkflowBusy(null);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -288,25 +258,31 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         )}
       </div>
 
+      {/* Live data banner */}
+      {(isAnalyzing || changedDomain) && (
+        <div className="stream-banner stream-banner--analyzing">
+          <span className="stream-banner-dot" />
+          {isAnalyzing
+            ? (analysisMessage ?? 'Re-analyzing trajectories…')
+            : `New ${changedDomain} data — trajectories stable`}
+        </div>
+      )}
+
       <div className="workflow-strip">
-        <div className="workflow-strip-title">Demo Workflows</div>
+        <div className="workflow-strip-title">Simulate New Data</div>
         <div className="workflow-strip-actions">
-          <button
-            type="button"
-            className="workflow-btn"
-            onClick={runProactiveWorkflow}
-            disabled={workflowBusy !== null}
-          >
-            {workflowBusy === 'proactive' ? 'Running...' : 'Run Proactive'}
-          </button>
-          <button
-            type="button"
-            className="workflow-btn"
-            onClick={runFigmaWorkflow}
-            disabled={workflowBusy !== null}
-          >
-            {workflowBusy === 'figma' ? 'Running...' : 'Run Figma Watch'}
-          </button>
+          {demoEvents.map((evt) => (
+            <button
+              key={evt.slug}
+              type="button"
+              className="workflow-btn"
+              title={evt.description}
+              onClick={() => pushDemoEvent(evt.slug)}
+              disabled={pushingSlug !== null}
+            >
+              {pushingSlug === evt.slug ? 'Pushing…' : evt.label}
+            </button>
+          ))}
         </div>
         {workflowStatus && <div className="workflow-strip-status">{workflowStatus}</div>}
       </div>

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Depends, Request
@@ -209,3 +210,79 @@ async def stream_agent_events(request: Request):
 
     master = get_master(request)
     return await stream_events(master)
+
+
+# ---------------------------------------------------------------------------
+# Demo feed — scripted real-time data events
+# ---------------------------------------------------------------------------
+
+_DEMO_FEED_DIR = Path(__file__).resolve().parents[4] / "data" / "demo_feed"
+_PERSONA_DATA_DIR = Path(__file__).resolve().parents[4] / "data" / "all_personas" / "persona_p05"
+
+
+def _load_demo_events() -> list[dict]:
+    if not _DEMO_FEED_DIR.exists():
+        return []
+    events = []
+    for f in sorted(_DEMO_FEED_DIR.glob("*.json")):
+        try:
+            import json as _json
+            events.append(_json.loads(f.read_text()))
+        except Exception:
+            pass
+    return events
+
+
+@router.get("/demo/events", include_in_schema=False)
+async def list_demo_events():
+    """List available scripted demo feed events."""
+    events = _load_demo_events()
+    return {
+        "events": [
+            {
+                "slug": e["slug"],
+                "label": e["label"],
+                "description": e["description"],
+                "domain": e["domain"],
+            }
+            for e in events
+        ]
+    }
+
+
+@router.post("/demo/push/{slug}", include_in_schema=False)
+async def push_demo_event(slug: str, request: Request):
+    """Append a scripted record to Theo's data files and trigger immediate re-analysis."""
+    import json as _json
+
+    event_file = _DEMO_FEED_DIR / f"{slug}.json"
+    if not event_file.exists():
+        from app.middleware.errors import ApiException
+        raise ApiException(
+            status_code=404,
+            code="resource_missing",
+            message=f"Demo event '{slug}' not found.",
+            param="slug",
+        )
+
+    descriptor = _json.loads(event_file.read_text())
+    record = descriptor["record"]
+    target_file = _PERSONA_DATA_DIR / descriptor["file"]
+
+    # Append the new JSONL record
+    with target_file.open("a") as fh:
+        fh.write(_json.dumps(record) + "\n")
+
+    # Trigger immediate DataWatcher check (don't wait for 3s poll)
+    watcher = getattr(request.app.state, "data_watcher", None)
+    if watcher is not None:
+        asyncio.create_task(watcher.force_check())
+
+    return {
+        "ok": True,
+        "slug": slug,
+        "label": descriptor["label"],
+        "domain": descriptor["domain"],
+        "record_id": record["id"],
+        "file": descriptor["file"],
+    }

@@ -73,6 +73,13 @@ class DataWatcher:
         self._task = asyncio.create_task(self._poll_loop(), name="data-watcher-poll")
         logger.info("DataWatcher started — watching %s (%.1fs interval)", self._data_dir, self._poll_interval)
 
+    async def force_check(self) -> None:
+        """Trigger an immediate file check without waiting for the next poll tick."""
+        try:
+            await self._check_files()
+        except Exception:
+            logger.exception("DataWatcher force_check error")
+
     async def stop(self) -> None:
         self._running = False
         for t in (self._task, self._reanalysis_task):

@@ -180,6 +180,38 @@
       "finished_at": "2026-03-06T23:24:56.888258+00:00",
       "executed_tasks": [],
       "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_9291d0ed-f670-4a49-af33-451e71a5900d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:39:56.893674+00:00",
+      "finished_at": "2026-03-06T23:39:56.893706+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_ecd6d2c4-9c69-4501-a837-629d89b78775",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:54:56.897772+00:00",
+      "finished_at": "2026-03-06T23:54:56.897788+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_de7c3c57-a5a1-4db4-8e6e-1a04e7423efd",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T00:09:56.902945+00:00",
+      "finished_at": "2026-03-07T00:09:56.903016+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_1df2039a-d803-47d4-8c63-c605098e31db",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T00:24:56.908455+00:00",
+      "finished_at": "2026-03-07T00:24:56.908471+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
     }
   ],
   "event_history": [
@@ -322,7 +354,87 @@
         "approval_waiting": 0
       },
       "created_at": "2026-03-06T23:24:56.888271+00:00"
+    },
+    {
+      "event_id": "evt_db747158-9b71-4826-b482-aca064a6ed00",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:39:56.893645+00:00"
+    },
+    {
+      "event_id": "evt_b887e1cf-b49f-4e30-bf6f-31e1782fc454",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_9291d0ed-f670-4a49-af33-451e71a5900d",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:39:56.893731+00:00"
+    },
+    {
+      "event_id": "evt_16cc2324-b242-4374-b881-7b065cb5f281",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:54:56.897754+00:00"
+    },
+    {
+      "event_id": "evt_db31beb4-8dee-4d93-a077-be3c65c5a666",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_ecd6d2c4-9c69-4501-a837-629d89b78775",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:54:56.897805+00:00"
+    },
+    {
+      "event_id": "evt_3b0bc0e5-b403-4919-895b-3f40b653dfab",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T00:09:56.902852+00:00"
+    },
+    {
+      "event_id": "evt_acf2e2ec-f500-4514-8ffe-226863977c0e",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_de7c3c57-a5a1-4db4-8e6e-1a04e7423efd",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-07T00:09:56.903058+00:00"
+    },
+    {
+      "event_id": "evt_07fb71f6-8334-43df-b34d-152249ed70b7",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T00:24:56.908443+00:00"
+    },
+    {
+      "event_id": "evt_ee4f1da0-24aa-446c-960a-9a8373df9b4d",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_1df2039a-d803-47d4-8c63-c605098e31db",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-07T00:24:56.908483+00:00"
     }
   ],
-  "updated_at": "2026-03-06T23:24:56.888274+00:00"
+  "updated_at": "2026-03-07T00:24:56.908486+00:00"
 }

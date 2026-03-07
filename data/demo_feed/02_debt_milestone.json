@@ -1,0 +1,17 @@
+{
+  "slug": "02_debt_milestone",
+  "label": "Debt Milestone Hit",
+  "description": "$1,000 credit card payment — balance down to $2,640",
+  "domain": "finance",
+  "file": "transactions.jsonl",
+  "record": {
+    "id": "t_0121",
+    "ts": "2026-03-06T10:00:00-05:00",
+    "source": "bank",
+    "type": "transaction",
+    "text": "$1,000.00 - credit card payment - debt_payoff",
+    "tags": ["debt_payoff", "milestone", "financial_health"],
+    "refs": [],
+    "pii_level": "synthetic"
+  }
+}

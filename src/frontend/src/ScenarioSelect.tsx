@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAgentStream } from './hooks/useAgentStream';
 
 interface Scenario {
   id: string;
@@ -41,7 +42,9 @@ export default function ScenarioSelect({ onSelect }: Props) {
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [hovered, setHovered] = useState<string | null>(null);
 
-  const handleGenerate = async () => {
+  const { isAnalyzing, analysisMessage, scenariosVersion, changedDomain } = useAgentStream();
+
+  const fetchScenarios = async () => {
     setPhase('loading');
     try {
       const res = await fetch('/api/scenarios', { headers: DEMO_AUTH_HEADER });
@@ -54,8 +57,28 @@ export default function ScenarioSelect({ onSelect }: Props) {
     }
   };
 
+  const handleGenerate = () => fetchScenarios();
+
+  // Auto-refresh trajectories when the daemon signals new scenarios are ready
+  useEffect(() => {
+    if (scenariosVersion > 0 && phase === 'ready') {
+      fetchScenarios();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenariosVersion]);
+
   return (
     <div className="scenario-root">
+      {/* Live data banner */}
+      {(isAnalyzing || changedDomain) && (
+        <div className="stream-banner stream-banner--analyzing">
+          <span className="stream-banner-dot" />
+          {isAnalyzing
+            ? (analysisMessage ?? 'Re-analyzing trajectories…')
+            : `New ${changedDomain} data received`}
+        </div>
+      )}
+
       <div className="scenario-header">
         <div className="scenario-wordmark">Questline</div>
         <div className="scenario-persona">Theo Nakamura · p05</div>
