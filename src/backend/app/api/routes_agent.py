@@ -398,7 +398,13 @@ async def push_demo_event(slug: str, request: Request):
     # Notion writes and webhook visibility are unaffected.
     watcher = getattr(request.app.state, "data_watcher", None)
     if watcher is not None:
-        asyncio.create_task(watcher.force_check(demo_mode=True))
+        asyncio.create_task(
+            watcher.force_check(
+                demo_mode=True,
+                source="demo_push",
+                notion_write=True,
+            )
+        )
 
     notion_sync = await _sync_demo_event_to_notion(master, slug, descriptor)
 

@@ -148,3 +148,59 @@ def test_demo_push_skips_notion_sync_when_unconfigured(client, monkeypatch):
     assert body["ok"] is True
     assert body["notion_sync"]["status"] == "skipped"
     assert body["notion_sync"]["reason"] == "notion_unconfigured"
+
+
+@pytest.mark.fast
+def test_demo_push_ignores_demo_placeholder_workspace_and_resolves_live_workspace(client, monkeypatch):
+    import app.api.routes_agent as routes_agent_module
+    import app.api.v1.notion_leads as notion_leads_module
+
+    class _FakeService:
+        def is_configured(self) -> bool:
+            return True
+
+        async def ensure_workspace(  # noqa: ANN001
+            self,
+            *,
+            parent_page_id,
+            database_title,
+            data_source_title,
+            database_id,
+            data_source_id,
+        ):
+            assert database_id is None
+            assert data_source_id is None
+            return {
+                "database_id": "29b3ec6c-4bce-42ca-9e46-28a79466dd53",
+                "data_source_id": "5d472424-826f-4719-8ac6-06f0f127e068",
+                "database_title": database_title,
+                "data_source_title": data_source_title,
+                "database_url": "https://www.notion.so/29b3ec6c4bce42ca9e4628a79466dd53",
+                "schema_version": "crm_leads_v2",
+                "reused": True,
+            }
+
+        async def sync_leads(self, *, data_source_id: str, leads: list[dict], strict_reconcile: bool):  # noqa: ANN001
+            assert data_source_id == "5d472424-826f-4719-8ac6-06f0f127e068"
+            assert strict_reconcile is False
+            assert len(leads) == 1
+            return {"counts": {"desired": 1, "created": 1, "updated": 0, "noop": 0, "archived": 0}}
+
+    state = client.app.state.always_on_master.store.load()
+    state.workflow_state["notion_leads"] = {
+        "database_id": "demo_notion_pipeline",
+        "data_source_id": "demo_notion_leads",
+        "database_title": "Demo Leads",
+        "data_source_title": "Demo Leads",
+    }
+    client.app.state.always_on_master.store.save(state)
+
+    monkeypatch.setattr(routes_agent_module, "get_notion_leads_service", lambda: _FakeService())
+    monkeypatch.setattr(notion_leads_module, "get_notion_leads_service", lambda: _FakeService())
+
+    response = client.post("/api/agent/demo/push/04_agency_partnership")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["notion_sync"]["status"] == "completed"
+    assert body["notion_sync"]["data_source_id"] == "5d472424-826f-4719-8ac6-06f0f127e068"

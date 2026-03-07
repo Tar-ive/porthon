@@ -212,6 +212,11 @@ After live Notion refresh:
    - `notion_leads_refreshed`
 6. let normal cycle/run continue
 
+### Step 2 implementation note for this repo
+- Current worktree supports full live `notion_leads.jsonl` mirroring now.
+- `time_commitments.jsonl` and `budget_commitments.jsonl` are created as deterministic empty snapshot files in step 2 so the watcher/domain bridge exists without inventing unsupported live Notion fetches.
+- The old dirty operator workspace (`time commitments`, `budget commitments`, weekly brief, templates) still needs a later port before those two mirrored files can be populated from live Notion.
+
 ## DataWatcher Changes
 ### Primary file
 - `/Users/tarive/porthon-kusum-test/src/backend/daemon/watcher.py`

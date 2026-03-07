@@ -6,6 +6,7 @@ import asyncio
 import contextlib
 import logging
 import os
+import re
 import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -29,6 +30,7 @@ from deepagent.demo_artifacts import (
 from deepagent.dispatcher import Dispatcher
 from deepagent.stream import StreamBroker
 from integrations.notion_leads_service import get_notion_leads_service, normalize_lead_payload
+from integrations.notion_mirror import write_notion_mirror_snapshots
 from state.models import ActiveScenarioState, AgentRuntimeState, ArchivedScenarioState, TaskStatus, WorkerTask
 from state.store import JsonStateStore
 
@@ -37,6 +39,15 @@ logger = logging.getLogger(__name__)
 
 def _prefixed_id(prefix: str) -> str:
     return f"{prefix}{uuid4()}"
+
+
+_UUID_RE = re.compile(
+    r"^[0-9a-fA-F]{32}$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+
+
+def _looks_like_uuid(value: str | None) -> bool:
+    return bool(_UUID_RE.fullmatch(str(value or "").strip()))
 
 
 class AlwaysOnMaster:
@@ -48,12 +59,16 @@ class AlwaysOnMaster:
         self._lock = asyncio.Lock()
         self._tick_task: asyncio.Task | None = None
         self._running = False
+        self._data_watcher: Any | None = None
 
     def _now(self) -> datetime:
         return datetime.now(UTC)
 
     def _now_iso(self) -> str:
         return self._now().isoformat()
+
+    def set_data_watcher(self, watcher: Any | None) -> None:
+        self._data_watcher = watcher
 
     async def start(self) -> None:
         if self._running:
@@ -568,12 +583,17 @@ class AlwaysOnMaster:
         workspace = state.workflow_state.get("notion_leads", {})
         if not isinstance(workspace, dict):
             workspace = {}
-        data_source_id = str(
-            workspace.get("data_source_id")
-            or os.environ.get("NOTION_DATA_SOURCE_ID")
+        workflow_data_source_id = str(workspace.get("data_source_id") or "").strip()
+        env_data_source_id = str(
+            os.environ.get("NOTION_DATA_SOURCE_ID")
             or os.environ.get("NOTION_LEADS_DATA_SOURCE_ID")
             or ""
         ).strip()
+        data_source_id = (
+            workflow_data_source_id
+            if _looks_like_uuid(workflow_data_source_id)
+            else (env_data_source_id if _looks_like_uuid(env_data_source_id) else "")
+        )
         if not data_source_id:
             stats["skipped_missing_workspace"] = int(stats.get("skipped_missing_workspace", 0)) + 1
             cfg["stats"] = stats
@@ -583,6 +603,17 @@ class AlwaysOnMaster:
             cfg["last_event_at"] = self._now_iso()
             state.workflow_state["notion_watch"] = cfg
             return
+        if workflow_data_source_id and not _looks_like_uuid(workflow_data_source_id):
+            logger.warning(
+                "Notion webhook ignoring invalid workflow data_source_id=%s and using fallback=%s",
+                workflow_data_source_id,
+                data_source_id,
+            )
+            if isinstance(state.workflow_state.get("notion_leads"), dict):
+                repaired = dict(state.workflow_state["notion_leads"])
+                repaired["data_source_id"] = data_source_id
+                repaired["updated_at"] = self._now_iso()
+                state.workflow_state["notion_leads"] = repaired
 
         service = get_notion_leads_service()
         if not service.is_configured():
@@ -596,9 +627,50 @@ class AlwaysOnMaster:
             return
 
         try:
+            logger.info(
+                "NOTION REFRESH START event_id=%s data_source_id=%s source=live_webhook",
+                event_id,
+                data_source_id,
+            )
             rows = await service.list_leads(data_source_id)
-            leads = [normalize_lead_payload(item) for item in rows if isinstance(item, dict)]
+            leads: list[dict[str, Any]] = []
+            for item in rows:
+                if not isinstance(item, dict):
+                    continue
+                normalized = normalize_lead_payload(item)
+                page_id = str(item.get("page_id", "")).strip()
+                if page_id:
+                    normalized["page_id"] = page_id
+                leads.append(normalized)
             now_iso = self._now_iso()
+            mirror_results = write_notion_mirror_snapshots(
+                persona_id=str(state.persona_id),
+                leads=leads,
+                run_id=event_id or _prefixed_id("evt_"),
+                origin="live_webhook",
+                refreshed_at=now_iso,
+            )
+            changed_domains = {
+                domain
+                for domain, result in mirror_results.items()
+                if isinstance(result, dict) and bool(result.get("changed"))
+            }
+            changed_files = [
+                Path(str(result["path"]))
+                for result in mirror_results.values()
+                if isinstance(result, dict) and bool(result.get("changed"))
+            ]
+            for result in mirror_results.values():
+                if not isinstance(result, dict):
+                    continue
+                logger.info(
+                    "NOTION MIRROR WRITE event_id=%s file=%s rows=%s changed=%s",
+                    event_id,
+                    result.get("file", ""),
+                    result.get("rows", 0),
+                    bool(result.get("changed")),
+                )
+
             lead_os_cfg = ensure_lead_os_config(
                 state.workflow_state.get("lead_os", {}),
                 persona_id=str(state.persona_id),
@@ -623,7 +695,39 @@ class AlwaysOnMaster:
             cfg["last_event_type"] = event_type
             cfg["last_event_at"] = now_iso
             cfg["last_error"] = None
+            cfg["last_refresh_source"] = "live_webhook"
+            cfg["last_refresh_counts"] = {
+                "leads": len(leads),
+                "time_commitments": 0,
+                "budget_commitments": 0,
+            }
+            cfg["last_mirror_results"] = {
+                domain: {
+                    "file": result.get("file", ""),
+                    "rows": result.get("rows", 0),
+                    "changed": bool(result.get("changed")),
+                }
+                for domain, result in mirror_results.items()
+                if isinstance(result, dict)
+            }
             state.workflow_state["notion_watch"] = cfg
+
+            logger.info(
+                "NOTION REFRESH OK event_id=%s leads=%s time_commitments=%s budget_commitments=%s",
+                event_id,
+                len(leads),
+                0,
+                0,
+            )
+            if self._data_watcher is not None and changed_domains:
+                await self._data_watcher.force_check(
+                    demo_mode=False,
+                    source="live_webhook",
+                    notion_write=True,
+                    event_id=event_id,
+                    changed_files=changed_files,
+                    changed_domains=changed_domains,
+                )
 
             await self._append_event(
                 state,
@@ -632,7 +736,10 @@ class AlwaysOnMaster:
                     "event_id": event_id,
                     "event_type": event_type,
                     "lead_count": len(leads),
+                    "time_commitment_count": 0,
+                    "budget_commitment_count": 0,
                     "recommended_count": len(recommendations),
+                    "changed_domains": sorted(changed_domains),
                 },
             )
         except Exception as exc:  # noqa: BLE001

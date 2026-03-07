@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -70,4 +71,14 @@ class JsonStateStore:
 
     def save(self, state: AgentRuntimeState) -> None:
         state.updated_at = self._now()
-        self.path.write_text(json.dumps(state.model_dump(mode="json"), indent=2))
+        content = json.dumps(state.model_dump(mode="json"), indent=2)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            dir=str(self.path.parent),
+            prefix=f"{self.path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as tmp:
+            tmp.write(content)
+            tmp_path = Path(tmp.name)
+        tmp_path.replace(self.path)

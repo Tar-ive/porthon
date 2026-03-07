@@ -48,6 +48,12 @@ if not os.environ.get("OPENAI_BASE_URL") and os.environ.get("LLM_BINDING_HOST"):
 
 logger = logging.getLogger(__name__)
 
+if not logging.getLogger().handlers:
+    logging.basicConfig(
+        level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+        format="%(levelname)s: %(message)s",
+    )
+
 ASSETS_DIR = Path(__file__).parent / "static"
 
 OLLAMA_HOST = "http://192.168.1.26:11434"
@@ -83,12 +89,14 @@ async def lifespan(app: FastAPI):
         persona_id="p05",
         poll_interval=float(os.environ.get("DATA_WATCHER_INTERVAL", "3.0")),
     )
+    master.set_data_watcher(data_watcher)
     await data_watcher.start()
     app.state.data_watcher = data_watcher
 
     logger.info("Skipping eager LightRAG startup; KG is lazy-initialized when needed")
     yield
     await data_watcher.stop()
+    master.set_data_watcher(None)
     await master.stop()
     if _rag is not None:
         try:

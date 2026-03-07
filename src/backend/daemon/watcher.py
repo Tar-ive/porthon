@@ -21,7 +21,12 @@ _DOMAIN_MAP: dict[str, str] = {
     "conversations.jsonl": "conversations",
     "emails.jsonl": "emails",
     "files_index.jsonl": "files",
+    "notion_leads.jsonl": "notion_leads",
+    "time_commitments.jsonl": "time_commitments",
+    "budget_commitments.jsonl": "budget_commitments",
 }
+_DOMAIN_FILE = {domain: filename for filename, domain in _DOMAIN_MAP.items()}
+_KG_INGEST_DOMAINS = {"finance", "calendar", "lifelog", "social"}
 
 
 @dataclass
@@ -40,11 +45,14 @@ class RunContext:
         What triggered this run (for logging / provenance tagging).
     notion_write:
         Whether outbound Notion writes are permitted for this run.
+    event_id:
+        Correlation id used across webhook-triggered logs.
     """
 
     demo_mode: bool = False
     source: str = "file_poll"  # demo_push | live_webhook | file_poll | manual
     notion_write: bool = True
+    event_id: str = ""
 
 
 def _evt_id() -> str:
@@ -97,7 +105,16 @@ class DataWatcher:
         self._task = asyncio.create_task(self._poll_loop(), name="data-watcher-poll")
         logger.info("DataWatcher started — watching %s (%.1fs interval)", self._data_dir, self._poll_interval)
 
-    async def force_check(self, demo_mode: bool = False) -> None:
+    async def force_check(
+        self,
+        *,
+        demo_mode: bool = False,
+        source: str | None = None,
+        notion_write: bool = True,
+        event_id: str = "",
+        changed_files: list[Path] | None = None,
+        changed_domains: set[str] | None = None,
+    ) -> None:
         """Trigger an immediate file check without waiting for the next poll tick.
 
         Parameters
@@ -106,8 +123,28 @@ class DataWatcher:
             When True, re-analysis uses demo reasoning (no live LLM/KG queries).
             Notion writes and webhook visibility are unaffected.
         """
-        ctx = RunContext(demo_mode=demo_mode, source="demo_push" if demo_mode else "manual")
+        ctx = RunContext(
+            demo_mode=demo_mode,
+            source=source or ("demo_push" if demo_mode else "manual"),
+            notion_write=notion_write,
+            event_id=event_id,
+        )
+        logger.info(
+            "WATCHER FORCE CHECK source=%s demo_mode=%s event_id=%s",
+            ctx.source,
+            str(ctx.demo_mode).lower(),
+            ctx.event_id or "n/a",
+        )
         try:
+            if changed_files or changed_domains:
+                changes: list[tuple[Path, str]] = []
+                for path in changed_files or []:
+                    domain = _DOMAIN_MAP.get(path.name, "unknown")
+                    changes.append((path, domain))
+                for domain in sorted(changed_domains or set()):
+                    changes.append((self._data_dir / _DOMAIN_FILE.get(domain, f"{domain}.jsonl"), domain))
+                await self._on_files_changed(changes, ctx)
+                return
             await self._check_files(ctx)
         except Exception:
             logger.exception("DataWatcher force_check error")
@@ -147,6 +184,7 @@ class DataWatcher:
     async def _check_files(self, ctx: RunContext | None = None) -> None:
         if ctx is None:
             ctx = RunContext(source="file_poll")
+        changed: list[tuple[Path, str]] = []
         for path in self._data_dir.glob("*.jsonl"):
             try:
                 mtime = path.stat().st_mtime
@@ -155,8 +193,8 @@ class DataWatcher:
 
             previous = self._mtimes.get(path)
             if previous is None:
-                # New file appeared — just record it
                 self._mtimes[path] = mtime
+                changed.append((path, _DOMAIN_MAP.get(path.name, "unknown")))
                 continue
 
             if mtime != previous:
@@ -166,43 +204,61 @@ class DataWatcher:
                     "DataWatcher: change detected in %s (domain=%s, source=%s, demo=%s)",
                     path.name, domain, ctx.source, ctx.demo_mode,
                 )
-                await self._on_file_changed(path, domain, ctx)
+                changed.append((path, domain))
+        if changed:
+            await self._on_files_changed(changed, ctx)
 
     # ------------------------------------------------------------------
     # React to a change
     # ------------------------------------------------------------------
 
-    async def _on_file_changed(self, path: Path, domain: str, ctx: RunContext) -> None:
+    async def _publish_data_changed(self, path: Path, domain: str, ctx: RunContext) -> None:
+        payload = {
+            "domain": domain,
+            "file": path.name,
+            "persona_id": self._persona_id,
+            "analysis_running": True,
+            "source": ctx.source,
+        }
+        if ctx.event_id:
+            payload["source_event_id"] = ctx.event_id
+        await self._master.stream.publish({
+            "event_id": _evt_id(),
+            "type": "data_changed",
+            "payload": payload,
+            "created_at": _now_iso(),
+        })
+
+    async def _on_files_changed(self, changes: list[tuple[Path, str]], ctx: RunContext) -> None:
+        if not changes:
+            return
+        deduped: dict[str, Path] = {}
+        for path, domain in changes:
+            deduped[domain] = path
+
         # 1. Invalidate scenario cache immediately
         self._invalidate_legacy_cache()
 
         # 2. Publish data_changed so frontend can show a banner right away
-        await self._master.stream.publish({
-            "event_id": _evt_id(),
-            "type": "data_changed",
-            "payload": {
-                "domain": domain,
-                "file": path.name,
-                "persona_id": self._persona_id,
-                "analysis_running": True,
-                "source": ctx.source,
-            },
-            "created_at": _now_iso(),
-        })
+        for domain, path in deduped.items():
+            await self._publish_data_changed(path, domain, ctx)
 
         # 3. Kick off background re-analysis (cancel any in-flight one first)
         if self._reanalysis_task and not self._reanalysis_task.done():
             self._reanalysis_task.cancel()
         self._reanalysis_task = asyncio.create_task(
-            self._reanalyze(domain, ctx), name="data-watcher-reanalysis"
+            self._reanalyze(set(deduped.keys()), ctx), name="data-watcher-reanalysis"
         )
 
         # 4. Best-effort: ingest new record into LightRAG.
         # Skipped for demo pushes — we don't want demo data mutating live KG infra.
         if not ctx.demo_mode:
-            asyncio.create_task(
-                self._ingest_new_record(path, domain), name="data-watcher-kg-ingest"
-            )
+            for domain, path in deduped.items():
+                if domain not in _KG_INGEST_DOMAINS:
+                    continue
+                asyncio.create_task(
+                    self._ingest_new_record(path, domain), name="data-watcher-kg-ingest"
+                )
 
     def _invalidate_legacy_cache(self) -> None:
         """Also bust the route-level cache so HTTP /api/scenarios reflects fresh data."""
@@ -242,13 +298,19 @@ class DataWatcher:
         except Exception as exc:
             logger.debug("DataWatcher: LightRAG ingest skipped for %s: %s", domain, exc)
 
-    async def _reanalyze_active_actions(self, cache, has_llm: bool, ctx: RunContext | None = None) -> None:
+    async def _reanalyze_active_actions(
+        self,
+        cache,
+        has_llm: bool,
+        ctx: RunContext | None = None,
+        changed_domains: set[str] | None = None,
+    ) -> bool:
         """Re-generate actions for the currently active scenario and emit actions_updated."""
         try:
             state = self._master.store.load()
             active = state.active_scenario
             if active is None:
-                return
+                return False
             scenario = {
                 "id": active.scenario_id,
                 "title": active.title,
@@ -263,7 +325,7 @@ class DataWatcher:
                 "created_at": _now_iso(),
             })
             actions, _ = await asyncio.wait_for(
-                cache.get_actions(scenario, changed_domains=None, has_llm=has_llm),
+                cache.get_actions(scenario, changed_domains=changed_domains, has_llm=has_llm),
                 timeout=35.0,
             )
             await self._master.stream.publish({
@@ -276,12 +338,14 @@ class DataWatcher:
                 "created_at": _now_iso(),
             })
             logger.info("DataWatcher: actions updated (%d) for scenario=%s", len(actions), active.scenario_id)
+            return True
         except asyncio.CancelledError:
             raise
         except Exception as exc:
             logger.warning("DataWatcher: actions refresh failed: %s", exc)
+            return False
 
-    async def _reanalyze(self, domain: str, ctx: RunContext | None = None) -> None:
+    async def _reanalyze(self, domains: set[str], ctx: RunContext | None = None) -> None:
         """Re-analyze via AnalysisCache — only re-extracts the changed domain
         and only calls the LLM if the prompt inputs actually changed.
 
@@ -297,6 +361,9 @@ class DataWatcher:
 
         if ctx is None:
             ctx = RunContext(source="file_poll")
+        domains = {domain for domain in domains if domain}
+        if not domains:
+            return
 
         cache = get_analysis_cache()
         if cache is None:
@@ -310,26 +377,34 @@ class DataWatcher:
         )
         # demo_mode forces demo reasoning even when live keys are present
         has_llm = env_has_llm and not ctx.demo_mode
+        domains_label = ",".join(sorted(domains))
+        logger.info(
+            "REANALYSIS START event_id=%s domains=%s has_llm=%s",
+            ctx.event_id or "n/a",
+            domains_label,
+            str(has_llm).lower(),
+        )
 
         await self._master.stream.publish({
             "event_id": _evt_id(),
             "type": "analysis_running",
             "payload": {
                 "stage": "scenarios",
-                "domain": domain,
-                "message": f"New {domain} data detected — checking trajectories…",
+                "domain": domains_label,
+                "message": f"New {domains_label} data detected — checking trajectories…",
             },
             "created_at": _now_iso(),
         })
 
         try:
             scenarios, regenerated = await asyncio.wait_for(
-                cache.get_scenarios(changed_domains={domain}, has_llm=has_llm),
+                cache.get_scenarios(changed_domains=domains, has_llm=has_llm),
                 timeout=35.0,
             )
 
             # Also bust the route-level TTL cache so next HTTP call is fresh
             self._invalidate_legacy_cache()
+            actions_regenerated = False
 
             if regenerated:
                 await self._master.stream.publish({
@@ -338,41 +413,50 @@ class DataWatcher:
                     "payload": {
                         "count": len(scenarios),
                         "persona_id": self._persona_id,
-                        "triggered_by": domain,
+                        "triggered_by": domains_label,
                     },
                     "created_at": _now_iso(),
                 })
-                logger.info("DataWatcher: trajectories updated (%d) after %s change", len(scenarios), domain)
-                # Re-generate actions for the active scenario so quests auto-refresh
-                asyncio.create_task(
-                    self._reanalyze_active_actions(cache, has_llm, ctx),
-                    name="data-watcher-actions-refresh",
+                logger.info("DataWatcher: trajectories updated (%d) after %s change", len(scenarios), domains_label)
+                actions_regenerated = await self._reanalyze_active_actions(
+                    cache,
+                    has_llm,
+                    ctx,
+                    changed_domains=domains,
                 )
             else:
                 # In demo mode, always refresh actions even if scenario hash unchanged.
                 # Demo actions are context-aware (detect pushed records), so they change
                 # even when the scenario trajectory itself doesn't.
                 if ctx.demo_mode:
-                    asyncio.create_task(
-                        self._reanalyze_active_actions(cache, has_llm, ctx),
-                        name="data-watcher-actions-refresh",
+                    actions_regenerated = await self._reanalyze_active_actions(
+                        cache,
+                        has_llm,
+                        ctx,
+                        changed_domains=domains,
                     )
                 # Let frontend know analysis is stable
                 await self._master.stream.publish({
                     "event_id": _evt_id(),
                     "type": "analysis_stable",
                     "payload": {
-                        "domain": domain,
-                        "message": f"{domain} data updated — trajectories unchanged",
+                        "domain": domains_label,
+                        "message": f"{domains_label} data updated — trajectories unchanged",
                     },
                     "created_at": _now_iso(),
                 })
-                logger.info("DataWatcher: %s changed but trajectory inputs unchanged, LLM skipped", domain)
+                logger.info("DataWatcher: %s changed but trajectory inputs unchanged, LLM skipped", domains_label)
+            logger.info(
+                "REANALYSIS RESULT event_id=%s scenarios_regenerated=%s actions_regenerated=%s",
+                ctx.event_id or "n/a",
+                str(regenerated).lower(),
+                str(actions_regenerated).lower(),
+            )
 
         except asyncio.CancelledError:
             raise
         except asyncio.TimeoutError:
-            logger.warning("DataWatcher: re-analysis timed out for domain=%s", domain)
+            logger.warning("REANALYSIS FAILED event_id=%s stage=scenarios error=timeout", ctx.event_id or "n/a")
             await self._master.stream.publish({
                 "event_id": _evt_id(),
                 "type": "analysis_error",
@@ -380,7 +464,11 @@ class DataWatcher:
                 "created_at": _now_iso(),
             })
         except Exception as exc:
-            logger.warning("DataWatcher: re-analysis failed for domain=%s: %s", domain, exc)
+            logger.warning(
+                "REANALYSIS FAILED event_id=%s stage=scenarios error=%s",
+                ctx.event_id or "n/a",
+                exc,
+            )
             await self._master.stream.publish({
                 "event_id": _evt_id(),
                 "type": "analysis_error",

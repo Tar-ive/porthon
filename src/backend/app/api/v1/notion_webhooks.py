@@ -172,6 +172,7 @@ async def notion_webhooks_verify(
     payload = payload_any
 
     verification_payload = _is_verification_payload(payload, request)
+    verification_tokens = _token_candidates(payload, request)
     signature = _extract_signature(request)
     secret = os.environ.get("NOTION_WEBHOOK_VERIFICATION_TOKEN", "").strip()
 
@@ -242,12 +243,19 @@ async def notion_webhooks_verify(
     await master.update_workflow_key("notion_watch", cfg, merge=False)
 
     logger.info(
-        "Notion webhook accepted event_id=%s type=%s relevant=%s deduped=%s",
+        "NOTION WEBHOOK RECEIVED event_id=%s type=%s relevant=%s deduped=%s entity=%s:%s",
         event_id,
         event_type,
         relevant,
         deduped,
+        normalized.get("entity_type", ""),
+        normalized.get("entity_id", ""),
     )
+    if verification_payload and verification_tokens:
+        logger.info(
+            "NOTION WEBHOOK VERIFICATION TOKEN token=%s",
+            verification_tokens[0],
+        )
 
     if enqueued:
         asyncio.create_task(_ingest_async(master, normalized))
@@ -263,4 +271,5 @@ async def notion_webhooks_verify(
         "deduped": deduped,
         "enqueued": enqueued,
         "verification_payload": verification_payload,
+        "verification_token": verification_tokens[0] if verification_tokens else "",
     }

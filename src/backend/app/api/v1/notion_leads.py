@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import logging
+import re
 from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
@@ -103,6 +104,15 @@ def _resolve_parent_page_id(explicit: str | None) -> str | None:
     return value or None
 
 
+_UUID_RE = re.compile(
+    r"^[0-9a-fA-F]{32}$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+
+
+def _looks_like_uuid(value: str | None) -> bool:
+    return bool(_UUID_RE.fullmatch(str(value or "").strip()))
+
+
 def _apply_view_filters(
     leads: list[dict[str, Any]],
     view: str | None,
@@ -164,6 +174,11 @@ async def _resolve_workspace(
     data_source_title = str(payload.get("data_source_title") or workflow.get("data_source_title") or "Theo Leads")
     database_id = str(payload.get("database_id") or workflow.get("database_id") or "").strip() or None
     data_source_id = str(payload.get("data_source_id") or workflow.get("data_source_id") or "").strip() or None
+
+    if not _looks_like_uuid(database_id):
+        database_id = None
+    if not _looks_like_uuid(data_source_id):
+        data_source_id = None
 
     if database_id and data_source_id:
         return {
