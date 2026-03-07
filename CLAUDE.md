@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AI agent that analyzes behavioral data (financial, calendar, social, lifelog) to project life scenarios 1/5/10 years out and generate concrete daily micro-actions. Built for a hackathon demo using a synthetic persona dataset (`data/all_personas/`). Primary demo persona is **Theo Nakamura (p05)**.
 
+> **Note:** This project is in active development for a hackathon. Many patterns below (frontend flow, architecture, API contracts) are evolving. Always study the current codebase to understand what's implemented rather than relying solely on this document.
+
 ## Commands
 
 ```bash
@@ -30,6 +32,11 @@ cd src/backend && uv add <package>
 
 # Add frontend dependency
 cd src/frontend && pnpm add <package>
+
+# Run tests
+make test              # Fast tests (default, no external services)
+make test-live         # Live integration tests (requires API keys)
+make test-live-kg      # Live KG tests (requires Neo4j/Qdrant + binding keys)
 ```
 
 ## Architecture
@@ -45,9 +52,30 @@ Typed contracts are defined in code — see `PRD.md` for the full struct definit
 
 **Key constraint:** Each agent step has a 30-second timeout with graceful error state. Streaming output during each step is required (no blank loading screens).
 
+## Deep Agents
+
+The system uses "workers" that run in an always-on master loop:
+
+| Worker | Purpose |
+|--------|---------|
+| **KgWorker** | Knowledge Graph memory, pattern recognition |
+| **CalendarWorker** | Calendar focus blocks, body-doubling windows |
+| **NotionLeadsWorker** | Lead tracking in Notion |
+| **NotionOpportunityWorker** | Opportunity pipeline in Notion |
+| **FigmaWorker** | Design challenges, portfolio scaffolding |
+| **FacebookWorker** | Social media drafting |
+
+Core orchestration:
+- **Master Loop** (`deepagent/loop.py`) — Always-on, 15-minute tick + event-triggered cycles
+- **Dispatcher/Factory** (`deepagent/dispatcher.py`, `factory.py`) — Worker lifecycle management
+
+See `docs/product_concept.md` for allowed vs never actions (auto-execute vs approval-required).
+
 ## Frontend Flow
 
 4 screens: **Consent → Patterns/Stats → Scenarios → Actions**
+
+> **Note:** Screen flow and features are subject to change as we iterate on the product.
 
 - Consent screen uses `consent.json` schema; toggling a source excludes it from the entire pipeline
 - Pattern screen: 3–7 patterns, cross-domain ones visually distinguished, data_refs visible on expand
@@ -55,11 +83,31 @@ Typed contracts are defined in code — see `PRD.md` for the full struct definit
 - Scenario screen: select one scenario to trigger Action Planner
 - Actions screen: each action links rationale to a specific pattern and data record
 
+## Test Types
+
+| Type | Location | When to Run |
+|------|----------|-------------|
+| **fast** | `src/backend/tests/fast/` | Default — no external services needed |
+| **live** | `src/backend/tests/live/` + `test_e2e_composio.py` | Requires API keys (Composio, Figma, etc.) |
+| **KG live** | `tests/live/test_live_kg.py` | Requires Neo4j/Qdrant + API keys |
+
+**Rule:** Run `make test` before every commit. Run `make test-live` before merging to main.
+
+## Slice Pattern
+
+3-slice delivery with test gates — see `docs/SLICED_EXECUTION_PLAN.md`:
+
+- **Slice 1**: Foundation Shell + Read-Only Agent Map
+- **Slice 2**: Always-On Loop + Scenario Activation + Queue Dispatch
+- **Slice 3**: Skills + Tiered Approval + Realtime Stream
+
+**Policy:** Do not progress to next slice until current slice test gate passes.
+
 ## Data Layout
 
 ```
 data/all_personas/
-  p01/                        # Jordan Lee — primary demo persona
+  p05/                        # Theo Nakamura — primary demo persona
     persona_profile.json
     consent.json
     lifelog.jsonl
@@ -71,10 +119,81 @@ data/all_personas/
     files_index.jsonl
 ```
 
+## API Design Best Practices
+
+All API endpoints follow Stripe-like conventions under `/v1/`. The OpenAPI spec is at `docs/openapi.yaml`.
+
+### V1 Endpoint Map
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/health` | GET | Service health + livemode |
+| `/v1/scenarios` | GET | List scenarios (ListObject, pagination, expand[]) |
+| `/v1/scenarios/{id}` | GET | Get single scenario |
+| `/v1/quests` | POST | Create quest (merged quest+activate), Idempotency-Key |
+| `/v1/quests` | GET | List active quests |
+| `/v1/actions` | POST | Generate actions for scenario, Idempotency-Key |
+| `/v1/approvals` | GET | List approval requests |
+| `/v1/approvals/{id}/resolve` | POST | Approve/reject, Idempotency-Key |
+| `/v1/events` | POST | Ingest event, Idempotency-Key |
+| `/v1/events` | GET | List events |
+| `/v1/events/stream` | GET | SSE event stream |
+| `/v1/workers` | GET | List workers (expand[]=skills) |
+| `/v1/workers/map` | GET | System topology |
+| `/v1/workers/skills` | GET | All available skills |
+| `/v1/messages` | POST | Chat with SSE streaming, Idempotency-Key |
+| `/v1/runtime` | GET | Full agent runtime state |
+
+Legacy `/api/*` routes remain as backward-compatible aliases.
+
+### Resource Identity
+- Prefixed IDs: `scen_` (scenario), `qst_` (quest), `act_` (action), `apprv_` (approval), `evt_` (event), `msg_` (message), `wrkr_` (worker), `task_` (task)
+- All resources have: `id`, `object`, `created`, `livemode`, `metadata`
+
+### Test Mode
+- `Authorization: Bearer sk_test_*` → `livemode: false`, pinned to persona p05
+- `Authorization: Bearer sk_live_*` → `livemode: true`
+- Test mode uses real LLM calls with `temperature: 0` for deterministic output
+
+### Expansion (3-level max)
+```
+GET /v1/quests/qst_xxx?expand[]=tasks.worker.skills
+GET /v1/quests?status=active&expand[]=tasks.worker
+```
+
+### Idempotency
+All POST/PUT/DELETE accept `Idempotency-Key` header. Same key → same response (24h TTL).
+
+### Pagination
+Cursor-based: `limit` (1-100) + `starting_after` (last item ID) → `has_more: bool`
+
+### Error Format
+```json
+{
+  "error": {
+    "type": "invalid_request_error",
+    "code": "resource_missing",
+    "message": "The requested scenario does not exist.",
+    "param": "scenario_id",
+    "doc_url": "https://api.porthon.ai/docs/errors#resource_missing"
+  }
+}
+```
+
+### Extensibility
+- All resources support a `metadata` key-value store for custom state
+- Pin API version via header: `X-Api-Version: 2026-03-01`
+
+See `docs/api/openapi.yaml` for full OpenAPI spec and `docs/api/api_reference.md` for usage guide.
+
 ## Serving
 
 FastAPI serves the Vite SPA via `StaticFiles(html=True)` mounted at `/`. API routes must be defined **before** the static mount. Vite builds assets to `static/` subdirectory (not `assets/`) — configured in `vite.config.ts`.
 
+> **Note:** This may change as we refine the frontend/backend integration for the hackathon demo.
+
 ## Build Priority
 
 Ship in order: P0 (Extractor + 3-step pipeline + streaming UI) → P1 (consent wiring + cross-domain insights + data refs on expand) → P2 (stats dashboard + compound summaries) → P3 (RPG map visualization, stretch).
+
+> **Note:** Priorities may shift based on hackathon demo needs.

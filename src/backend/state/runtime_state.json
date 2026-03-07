@@ -1,0 +1,1104 @@
+{
+  "persona_id": "p05",
+  "active_scenario": {
+    "scenario_id": "scen_001",
+    "title": "Conversion-First Freelance Stabilization",
+    "horizon": "1yr",
+    "likelihood": "most_likely",
+    "summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+    "tags": [
+      "conversion",
+      "revenue",
+      "focus",
+      "freelance"
+    ],
+    "activated_at": "2026-03-07T03:11:57.701812+00:00",
+    "created": 0,
+    "metadata": {}
+  },
+  "archived_scenarios": [],
+  "queue": [
+    {
+      "task_id": "task_2e05d2f6-00ed-4056-b434-7effa97be7d5",
+      "worker_id": "kg_worker",
+      "action": "search",
+      "priority": 10,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": false
+      },
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-07T04:11:29.268163+00:00",
+      "updated_at": "2026-03-07T04:11:29.271078+00:00",
+      "finished_at": "2026-03-07T04:11:29.271097+00:00",
+      "result_summary": "KG returned no results",
+      "external_links": {},
+      "error_code": null,
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_bb52dd24-b94e-4fef-8537-f9f5680b85ed",
+      "worker_id": "calendar_worker",
+      "action": "sync_schedule",
+      "priority": 20,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": false
+      },
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-07T04:11:29.268163+00:00",
+      "updated_at": "2026-03-07T04:11:49.034206+00:00",
+      "finished_at": "2026-03-07T04:11:49.034232+00:00",
+      "result_summary": "Scheduled 0 events (4 planned)",
+      "external_links": {
+        "calendar_events": []
+      },
+      "error_code": null,
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_e8f99a24-d912-4961-ad5d-120b14c6b606",
+      "worker_id": "notion_leads_worker",
+      "action": "ensure_pipeline",
+      "priority": 30,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": false
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-07T04:11:29.268163+00:00",
+      "updated_at": "2026-03-07T04:26:57.025951+00:00",
+      "finished_at": "2026-03-07T04:26:57.025963+00:00",
+      "result_summary": "NOTION_INTEGRATION_SECRET is not configured",
+      "external_links": {},
+      "error_code": "execution_error",
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_d1b85e6a-605b-48ba-9b6f-9d6a358e058e",
+      "worker_id": "notion_opportunity_worker",
+      "action": "create_workspace",
+      "priority": 30,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": false
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-07T04:11:29.268163+00:00",
+      "updated_at": "2026-03-07T04:26:57.026119+00:00",
+      "finished_at": "2026-03-07T04:26:57.026126+00:00",
+      "result_summary": "No parent page found for workspace",
+      "external_links": {},
+      "error_code": "execution_error",
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_059a8e2b-3a3a-4d25-89f0-6e67c0f60443",
+      "worker_id": "facebook_worker",
+      "action": "draft_posts",
+      "priority": 40,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": false
+      },
+      "status": "pending",
+      "retries": 2,
+      "created_at": "2026-03-07T04:11:29.268163+00:00",
+      "updated_at": "2026-03-07T04:27:16.201985+00:00",
+      "finished_at": "2026-03-07T04:27:16.202019+00:00",
+      "result_summary": "LLM output failed FacebookDraftPlanLLM validation",
+      "external_links": {},
+      "error_code": "execution_error",
+      "created": 0,
+      "metadata": {}
+    },
+    {
+      "task_id": "task_3995c6a2-d95d-4769-80ce-f3693504c72c",
+      "worker_id": "figma_worker",
+      "action": "generate_challenge",
+      "priority": 40,
+      "payload": {
+        "scenario_id": "scen_001",
+        "scenario_title": "Conversion-First Freelance Stabilization",
+        "scenario_summary": "Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "horizon": "1yr",
+        "query": "Scenario context for Conversion-First Freelance Stabilization: Theo shifts focus from endless learning to revenue conversion by productizing core design offers, tightening follow-up cadence, and protecting deep-work blocks.",
+        "demo_mode": false
+      },
+      "status": "completed",
+      "retries": 0,
+      "created_at": "2026-03-07T04:11:29.268163+00:00",
+      "updated_at": "2026-03-07T04:11:57.015750+00:00",
+      "finished_at": "2026-03-07T04:11:57.015779+00:00",
+      "result_summary": "Generated 4 design challenges",
+      "external_links": {},
+      "error_code": null,
+      "created": 0,
+      "metadata": {}
+    }
+  ],
+  "approvals": [],
+  "workers": [
+    {
+      "worker_id": "kg_worker",
+      "label": "KG Search",
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
+    },
+    {
+      "worker_id": "calendar_worker",
+      "label": "Calendar Scheduler",
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
+    },
+    {
+      "worker_id": "notion_leads_worker",
+      "label": "Notion Leads Tracker",
+      "status": "open_circuit",
+      "queue_depth": 1,
+      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
+    },
+    {
+      "worker_id": "notion_opportunity_worker",
+      "label": "Notion Opportunity Tracker",
+      "status": "open_circuit",
+      "queue_depth": 1,
+      "last_error": "No parent page found for workspace"
+    },
+    {
+      "worker_id": "facebook_worker",
+      "label": "Facebook Publisher",
+      "status": "degraded",
+      "queue_depth": 1,
+      "last_error": "LLM output failed FacebookDraftPlanLLM validation"
+    },
+    {
+      "worker_id": "figma_worker",
+      "label": "Figma Plan Generator",
+      "status": "ready",
+      "queue_depth": 0,
+      "last_error": null
+    }
+  ],
+  "budgets": [
+    {
+      "worker_id": "kg_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "calendar_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "notion_leads_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "notion_opportunity_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "facebook_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    },
+    {
+      "worker_id": "figma_worker",
+      "max_runtime_seconds": 60,
+      "max_retries": 2,
+      "max_queue_items": 10
+    }
+  ],
+  "circuits": [
+    {
+      "worker_id": "kg_worker",
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
+    },
+    {
+      "worker_id": "calendar_worker",
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
+    },
+    {
+      "worker_id": "notion_leads_worker",
+      "failure_streak": 5,
+      "open_until": "2026-03-07T04:31:57.025983+00:00",
+      "last_error": "NOTION_INTEGRATION_SECRET is not configured"
+    },
+    {
+      "worker_id": "notion_opportunity_worker",
+      "failure_streak": 5,
+      "open_until": "2026-03-07T04:31:57.026140+00:00",
+      "last_error": "No parent page found for workspace"
+    },
+    {
+      "worker_id": "facebook_worker",
+      "failure_streak": 2,
+      "open_until": null,
+      "last_error": "LLM output failed FacebookDraftPlanLLM validation"
+    },
+    {
+      "worker_id": "figma_worker",
+      "failure_streak": 0,
+      "open_until": null,
+      "last_error": null
+    }
+  ],
+  "cycle_history": [
+    {
+      "cycle_id": "cycle_87704cff-852a-471c-a3c7-e57db9a9e3bc",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T21:54:56.867563+00:00",
+      "finished_at": "2026-03-06T21:54:56.867577+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_61175c84-285b-4992-9286-a86b43b100d6",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:09:56.870006+00:00",
+      "finished_at": "2026-03-06T22:09:56.870023+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_f327a9e3-1ecf-404a-ba57-b78a150f8de2",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:24:56.873029+00:00",
+      "finished_at": "2026-03-06T22:24:56.873043+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_c8cc551b-e718-4f18-ad62-b9245eb52e1c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:39:56.876716+00:00",
+      "finished_at": "2026-03-06T22:39:56.876735+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_aef93c68-b7d2-4751-a5da-22cefac97b7c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T22:54:56.881730+00:00",
+      "finished_at": "2026-03-06T22:54:56.881753+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_b8806fde-70cf-4631-ae80-6ede9220d5b2",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:09:56.884765+00:00",
+      "finished_at": "2026-03-06T23:09:56.884790+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e275a2c9-3d89-40ee-b899-74add7ddff2d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:24:56.888231+00:00",
+      "finished_at": "2026-03-06T23:24:56.888258+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_9291d0ed-f670-4a49-af33-451e71a5900d",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:39:56.893674+00:00",
+      "finished_at": "2026-03-06T23:39:56.893706+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_ecd6d2c4-9c69-4501-a837-629d89b78775",
+      "trigger": "dispatch",
+      "started_at": "2026-03-06T23:54:56.897772+00:00",
+      "finished_at": "2026-03-06T23:54:56.897788+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_de7c3c57-a5a1-4db4-8e6e-1a04e7423efd",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T00:09:56.902945+00:00",
+      "finished_at": "2026-03-07T00:09:56.903016+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_1df2039a-d803-47d4-8c63-c605098e31db",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T00:24:56.908455+00:00",
+      "finished_at": "2026-03-07T00:24:56.908471+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_8b0ffd5f-4377-4d8a-9008-69a33981d7e7",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T00:39:56.912621+00:00",
+      "finished_at": "2026-03-07T00:39:56.912685+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_f27207b7-7e06-4cb8-ac71-64e33899dbb5",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T01:41:42.266548+00:00",
+      "finished_at": "2026-03-07T01:41:42.266778+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_6a937bf7-fed5-404b-94e4-193f1b0c5389",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T01:56:42.275215+00:00",
+      "finished_at": "2026-03-07T01:56:42.275321+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_008b89f1-29c7-45ff-b6b5-10c57fb2c72c",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T02:11:42.282944+00:00",
+      "finished_at": "2026-03-07T02:11:42.283027+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_e0ae3109-3e99-4771-b06c-161571615d05",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T02:26:42.290444+00:00",
+      "finished_at": "2026-03-07T02:26:42.290487+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_eb6269f7-9dd1-4261-bdc7-2ad66f5cf093",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T02:41:42.295536+00:00",
+      "finished_at": "2026-03-07T02:41:42.295588+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_bf8bc542-02cc-49aa-a5ab-70d9593d49b1",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T03:11:57.704756+00:00",
+      "finished_at": "2026-03-07T03:11:57.710804+00:00",
+      "executed_tasks": [
+        "task_eb6bf53d-aa45-4236-a547-796e85512b36",
+        "task_ccee6b6c-f658-4ae6-986b-19ea917e461c",
+        "task_60bb8184-f247-4bed-8947-b69a84e26e81",
+        "task_36efc7ef-11f5-4437-b278-c30b760171a6",
+        "task_be658dc1-4d40-432a-aba5-b8149da197fa",
+        "task_56630a6f-1b56-4773-8ec2-6b9a8137473b"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_816315d0-7f17-4d9a-956a-0edc77c248f4",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T03:25:53.249752+00:00",
+      "finished_at": "2026-03-07T03:26:29.246620+00:00",
+      "executed_tasks": [
+        "task_9f8350d2-424b-4055-ae5a-87a9f0958615",
+        "task_6951d0df-f066-48a3-8ad3-f66cb6ad3a76",
+        "task_2a9a6ea2-77b2-4e11-b15b-a8d61aa42f41",
+        "task_382ed648-2218-4a7d-b35b-e283f50fd68b"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_4b0c2025-6166-4d51-8532-0ed2fa036093",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T03:41:29.256051+00:00",
+      "finished_at": "2026-03-07T03:41:29.257391+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_7b1936e4-bf26-485f-b029-85bf0d180105",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T03:56:29.262469+00:00",
+      "finished_at": "2026-03-07T03:56:29.262751+00:00",
+      "executed_tasks": [],
+      "failed_tasks": [
+        "task_f53d73ac-ec4a-4473-834d-c389d3d773cd",
+        "task_a54ca986-30ee-4594-8194-8e38a34cb8aa"
+      ]
+    },
+    {
+      "cycle_id": "cycle_51318c17-e727-405b-a949-d51b7fb8ac12",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T04:11:29.268361+00:00",
+      "finished_at": "2026-03-07T04:11:57.015935+00:00",
+      "executed_tasks": [
+        "task_2e05d2f6-00ed-4056-b434-7effa97be7d5",
+        "task_bb52dd24-b94e-4fef-8537-f9f5680b85ed",
+        "task_3995c6a2-d95d-4769-80ce-f3693504c72c"
+      ],
+      "failed_tasks": []
+    },
+    {
+      "cycle_id": "cycle_4a242948-2ceb-4348-8938-442a2a122a02",
+      "trigger": "dispatch",
+      "started_at": "2026-03-07T04:26:57.025275+00:00",
+      "finished_at": "2026-03-07T04:27:16.202295+00:00",
+      "executed_tasks": [],
+      "failed_tasks": []
+    }
+  ],
+  "event_history": [
+    {
+      "event_id": "evt_1dce1606-4212-4d0f-b974-18b3932dbdff",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T21:54:56.867548+00:00"
+    },
+    {
+      "event_id": "evt_699e4047-2f14-4791-9987-1139e6210a59",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_87704cff-852a-471c-a3c7-e57db9a9e3bc",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T21:54:56.867590+00:00"
+    },
+    {
+      "event_id": "evt_6eb51cd5-4727-4ec4-9518-9306d10496c1",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:09:56.869993+00:00"
+    },
+    {
+      "event_id": "evt_d3b08658-956b-4b85-8bd8-7a3eb8cb1c04",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_61175c84-285b-4992-9286-a86b43b100d6",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:09:56.870045+00:00"
+    },
+    {
+      "event_id": "evt_efb9111e-57bb-4d9e-a0f9-591b250adfc6",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:24:56.873016+00:00"
+    },
+    {
+      "event_id": "evt_16e232ad-7392-4f2c-9ded-20eb2a4cf16c",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_f327a9e3-1ecf-404a-ba57-b78a150f8de2",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:24:56.873067+00:00"
+    },
+    {
+      "event_id": "evt_743647e4-b3c1-4f88-9aa2-805899d3f973",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:39:56.876702+00:00"
+    },
+    {
+      "event_id": "evt_d92ba2c6-719a-4717-ac45-4bad1a45e9d0",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_c8cc551b-e718-4f18-ad62-b9245eb52e1c",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:39:56.876751+00:00"
+    },
+    {
+      "event_id": "evt_edf3f047-65d0-4a63-a55f-aed058f9d5df",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T22:54:56.881699+00:00"
+    },
+    {
+      "event_id": "evt_ebfb8969-27ac-4746-9d93-ebf040750331",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_aef93c68-b7d2-4751-a5da-22cefac97b7c",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T22:54:56.881768+00:00"
+    },
+    {
+      "event_id": "evt_1acab237-6e7d-4dda-823b-0f3f8374849c",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:09:56.884740+00:00"
+    },
+    {
+      "event_id": "evt_bf246022-e7f8-43f8-8a39-dc04fc5a0926",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_b8806fde-70cf-4631-ae80-6ede9220d5b2",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:09:56.884805+00:00"
+    },
+    {
+      "event_id": "evt_5687213e-dba1-41c3-bb44-3662d1ae1eab",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:24:56.888218+00:00"
+    },
+    {
+      "event_id": "evt_fca7fd58-afbd-4ca9-a916-c4bd8cac5852",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_e275a2c9-3d89-40ee-b899-74add7ddff2d",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:24:56.888271+00:00"
+    },
+    {
+      "event_id": "evt_db747158-9b71-4826-b482-aca064a6ed00",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:39:56.893645+00:00"
+    },
+    {
+      "event_id": "evt_b887e1cf-b49f-4e30-bf6f-31e1782fc454",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_9291d0ed-f670-4a49-af33-451e71a5900d",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:39:56.893731+00:00"
+    },
+    {
+      "event_id": "evt_16cc2324-b242-4374-b881-7b065cb5f281",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-06T23:54:56.897754+00:00"
+    },
+    {
+      "event_id": "evt_db31beb4-8dee-4d93-a077-be3c65c5a666",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_ecd6d2c4-9c69-4501-a837-629d89b78775",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-06T23:54:56.897805+00:00"
+    },
+    {
+      "event_id": "evt_3b0bc0e5-b403-4919-895b-3f40b653dfab",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T00:09:56.902852+00:00"
+    },
+    {
+      "event_id": "evt_acf2e2ec-f500-4514-8ffe-226863977c0e",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_de7c3c57-a5a1-4db4-8e6e-1a04e7423efd",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-07T00:09:56.903058+00:00"
+    },
+    {
+      "event_id": "evt_07fb71f6-8334-43df-b34d-152249ed70b7",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T00:24:56.908443+00:00"
+    },
+    {
+      "event_id": "evt_ee4f1da0-24aa-446c-960a-9a8373df9b4d",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_1df2039a-d803-47d4-8c63-c605098e31db",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-07T00:24:56.908483+00:00"
+    },
+    {
+      "event_id": "evt_077d64a0-3fd6-46a1-a77f-4205c992a7de",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T00:39:56.912574+00:00"
+    },
+    {
+      "event_id": "evt_24631171-8f26-494a-9b84-ade2fccf6ffc",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_8b0ffd5f-4377-4d8a-9008-69a33981d7e7",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0
+      },
+      "created_at": "2026-03-07T00:39:56.912722+00:00"
+    },
+    {
+      "event_id": "evt_376a3d8d-a89a-40d1-8d5e-49312a43d11f",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T01:41:42.266425+00:00"
+    },
+    {
+      "event_id": "evt_c81181da-306d-4ec5-b22b-e95bb333e4a6",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_f27207b7-7e06-4cb8-ac71-64e33899dbb5",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 7
+      },
+      "created_at": "2026-03-07T01:41:42.267036+00:00"
+    },
+    {
+      "event_id": "evt_a31a142b-a342-4757-a3b2-d3e6c78629b4",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T01:56:42.275153+00:00"
+    },
+    {
+      "event_id": "evt_9d55b8ba-3775-4483-ab88-984b81371b4b",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_6a937bf7-fed5-404b-94e4-193f1b0c5389",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 3
+      },
+      "created_at": "2026-03-07T01:56:42.275422+00:00"
+    },
+    {
+      "event_id": "evt_8a9ecea1-7614-4dab-895c-1bcab0487684",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T02:11:42.282880+00:00"
+    },
+    {
+      "event_id": "evt_84be4a79-f9b4-4396-aa27-68771a1e62fc",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_008b89f1-29c7-45ff-b6b5-10c57fb2c72c",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 1
+      },
+      "created_at": "2026-03-07T02:11:42.283112+00:00"
+    },
+    {
+      "event_id": "evt_11139583-ece4-48bd-a6d8-17cf436da9c4",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T02:26:42.290404+00:00"
+    },
+    {
+      "event_id": "evt_61a1745e-b2a7-4640-93b4-09e015d36291",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_e0ae3109-3e99-4771-b06c-161571615d05",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 3
+      },
+      "created_at": "2026-03-07T02:26:42.290534+00:00"
+    },
+    {
+      "event_id": "evt_067d916d-d440-47ac-881a-59c715fa2e3f",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T02:41:42.295496+00:00"
+    },
+    {
+      "event_id": "evt_fe1b257b-9c69-4693-8a8e-3f90fa00d4d4",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_eb6269f7-9dd1-4261-bdc7-2ad66f5cf093",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 2
+      },
+      "created_at": "2026-03-07T02:41:42.295652+00:00"
+    },
+    {
+      "event_id": "evt_3539c8ee-d2a9-40c9-a1a1-f218b8e8466f",
+      "type": "scenario_activated",
+      "payload": {
+        "scenario_id": "scen_001",
+        "title": "Conversion-First Freelance Stabilization"
+      },
+      "created_at": "2026-03-07T03:11:57.702262+00:00"
+    },
+    {
+      "event_id": "evt_f9b109cb-4697-4895-a068-758561bc73a9",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "scenario_activated"
+      },
+      "created_at": "2026-03-07T03:11:57.704701+00:00"
+    },
+    {
+      "event_id": "evt_fc89d0f2-5792-492c-b24f-86669babda99",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "scenario_activated",
+        "cycle_id": "cycle_bf8bc542-02cc-49aa-a5ab-70d9593d49b1",
+        "executed": 6,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 6
+      },
+      "created_at": "2026-03-07T03:11:57.710967+00:00"
+    },
+    {
+      "event_id": "evt_bb908f8c-2266-4335-b7ce-8eab11f4a5ab",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T03:25:53.249546+00:00"
+    },
+    {
+      "event_id": "evt_5b6bac47-ddba-47df-92b3-cc74b7de0b7a",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_816315d0-7f17-4d9a-956a-0edc77c248f4",
+        "executed": 4,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 35998
+      },
+      "created_at": "2026-03-07T03:26:29.246783+00:00"
+    },
+    {
+      "event_id": "evt_2289fc25-1389-4a97-a524-f157a47f6b23",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T03:41:29.255973+00:00"
+    },
+    {
+      "event_id": "evt_4cf6d4b0-516e-4fd3-b93c-5a05fc972892",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_4b0c2025-6166-4d51-8532-0ed2fa036093",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 4
+      },
+      "created_at": "2026-03-07T03:41:29.257473+00:00"
+    },
+    {
+      "event_id": "evt_746eee60-ceec-41d7-81e5-03b5859f201a",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T03:56:29.262454+00:00"
+    },
+    {
+      "event_id": "evt_63fddbf7-7071-47e8-812c-719fefae2179",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_7b1936e4-bf26-485f-b029-85bf0d180105",
+        "executed": 0,
+        "failed": 2,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 0
+      },
+      "created_at": "2026-03-07T03:56:29.262770+00:00"
+    },
+    {
+      "event_id": "evt_4eb7d1a2-02cd-4eb0-b19b-fd8c8e55ffae",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T04:11:29.268058+00:00"
+    },
+    {
+      "event_id": "evt_5d4e1ecc-7886-4c12-89cc-07e26718b1f9",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_51318c17-e727-405b-a949-d51b7fb8ac12",
+        "executed": 3,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 27750
+      },
+      "created_at": "2026-03-07T04:11:57.016032+00:00"
+    },
+    {
+      "event_id": "evt_aa51b990-3ac5-4199-81f6-d43fc84ba4e2",
+      "type": "cycle_start",
+      "payload": {
+        "trigger": "tick"
+      },
+      "created_at": "2026-03-07T04:26:57.025212+00:00"
+    },
+    {
+      "event_id": "evt_ac37e9fa-5211-48b6-b150-19f78869bd26",
+      "type": "cycle_end",
+      "payload": {
+        "trigger": "tick",
+        "cycle_id": "cycle_4a242948-2ceb-4348-8938-442a2a122a02",
+        "executed": 0,
+        "failed": 0,
+        "approval_waiting": 0,
+        "cycle_duration_ms": 19180
+      },
+      "created_at": "2026-03-07T04:27:16.202456+00:00"
+    }
+  ],
+  "demo_artifacts": {
+    "proactive_preview": {
+      "calendar": {
+        "events": [
+          {
+            "title": "Deep Work: Portfolio Sprint (UT Library)",
+            "type": "focus_block",
+            "duration_minutes": 180,
+            "location": "UT Library"
+          },
+          {
+            "title": "Deep Work: Client Deliverable Block (UT Library)",
+            "type": "focus_block",
+            "duration_minutes": 180,
+            "location": "UT Library"
+          },
+          {
+            "title": "Admin Sprint: Invoice Follow-up",
+            "type": "admin",
+            "duration_minutes": 45,
+            "location": "Home Desk"
+          },
+          {
+            "title": "Debt-Paydown Review",
+            "type": "review",
+            "duration_minutes": 30,
+            "location": "Home Desk"
+          }
+        ]
+      },
+      "notion_leads": {
+        "database_title": "Leads",
+        "data_source_title": "Theo Leads",
+        "leads": [
+          {
+            "name": "Referral Lead",
+            "source": "Referral",
+            "lead_type": "Referral",
+            "status": "Lead",
+            "priority": "High",
+            "deal_size": 1500,
+            "next_action": "Send intro scope and availability",
+            "next_follow_up_date": "2026-03-09"
+          },
+          {
+            "name": "Portfolio Lead",
+            "source": "Portfolio",
+            "lead_type": "Inbound",
+            "status": "Proposal sent",
+            "priority": "High",
+            "deal_size": 2500,
+            "next_action": "Follow up on proposal feedback",
+            "next_follow_up_date": "2026-03-10"
+          },
+          {
+            "name": "Direct Lead",
+            "source": "Direct",
+            "lead_type": "Outbound",
+            "status": "Contacted",
+            "priority": "Medium",
+            "deal_size": 3000,
+            "next_action": "Book discovery call",
+            "next_follow_up_date": "2026-03-11"
+          }
+        ]
+      },
+      "notion_opportunity": {
+        "workspace_title": "Questline: Conversion-First Freelance Stabilization",
+        "progress_page": "Progress: Next Actions"
+      },
+      "figma": {
+        "challenge_briefs": [
+          "Challenge 1: Conversion-first landing refresh for a local service brand",
+          "Challenge 2: Brand motion system for an Austin creator collective",
+          "Challenge 3: Portfolio case-study narrative sprint with measurable KPI"
+        ],
+        "weekly_milestones": [
+          "Week 1: Brief + concept frames",
+          "Week 2: Mid-fidelity exploration",
+          "Week 3: Final polish + share-out"
+        ]
+      },
+      "kg_context": {
+        "signals": [
+          "public/private delta",
+          "learning-vs-conversion mismatch",
+          "financial stress triangulation",
+          "ADHD execution constraints"
+        ]
+      },
+      "integration_links": {
+        "calendar": [],
+        "notion": [],
+        "figma": []
+      }
+    }
+  },
+  "value_signals": {
+    "public_private_delta": {
+      "signal": "Public confidence is ahead of private certainty.",
+      "evidence_refs": [
+        "c_0001"
+      ]
+    },
+    "learning_vs_conversion_mismatch": {
+      "signal": "Learning intensity outpaces direct revenue conversion loops.",
+      "evidence_refs": [
+        "t_0120",
+        "cal_0078"
+      ]
+    },
+    "financial_stress_triangulation": {
+      "signal": "Debt stress is an execution drag, not just a budgeting issue.",
+      "evidence_refs": [
+        "ll_0142",
+        "t_0120"
+      ]
+    },
+    "adhd_execution_constraints": {
+      "signal": "Execution improves when tasks are chunked and environment-scaffolded.",
+      "evidence_refs": [
+        "cal_0078",
+        "c_0001"
+      ]
+    }
+  },
+  "workflow_state": {},
+  "updated_at": "2026-03-07T04:27:16.202475+00:00"
+}

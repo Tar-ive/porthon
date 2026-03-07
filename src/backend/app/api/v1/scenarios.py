@@ -1,0 +1,175 @@
+"""GET /v1/scenarios — List & retrieve scenarios."""
+
+from __future__ import annotations
+
+import asyncio
+import hashlib
+import logging
+import time
+from typing import Any
+
+from fastapi import APIRouter, Query, Request
+
+from app.api.v1.schemas import ListObject, epoch_now, paginate
+from app.auth import get_livemode, get_mode
+from app.middleware.errors import ApiException
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+
+# In-memory cache: maps pipeline raw id → stable scen_ resource.
+# Survives across requests within the same server process.
+_scenario_cache: dict[str, dict[str, Any]] = {}
+
+# Cache for generated scenarios with TTL (60 seconds)
+_SCENARIOS_CACHE_TTL: float = 60.0  # seconds
+
+
+def _stable_scen_id(raw_id: str) -> str:
+    """Deterministic scen_ ID from pipeline ID so it's stable across calls."""
+    if raw_id.startswith("scen_"):
+        return raw_id
+    h = hashlib.sha256(raw_id.encode()).hexdigest()[:20]
+    return f"scen_{h}"
+
+
+def _to_resource(raw: dict[str, Any], livemode: bool = True) -> dict[str, Any]:
+    """Convert a pipeline scenario dict into a Stripe-like resource."""
+    raw_id = raw.get("id", "unknown")
+    scen_id = _stable_scen_id(raw_id)
+    resource = {
+        "id": scen_id,
+        "object": "scenario",
+        "created": epoch_now(),
+        "livemode": livemode,
+        "metadata": {},
+        "title": raw.get("title", ""),
+        "horizon": raw.get("horizon", ""),
+        "likelihood": raw.get("likelihood", ""),
+        "summary": raw.get("summary", ""),
+        "tags": raw.get("tags", []),
+        "patterns": raw.get("pattern_ids", []),
+        "_raw_id": raw_id,  # keep for quest activation
+    }
+    _scenario_cache[scen_id] = resource
+    _scenario_cache[raw_id] = resource  # also index by raw ID
+    return resource
+
+
+# Cache for generated scenarios (raw data, before conversion to resources)
+_cached_scenarios: dict[str, tuple[float, list[dict[str, Any]]]] = {}
+
+
+async def _generate_scenarios(
+    persona_id: str = "p05",
+    mode: str = "live",
+    use_cache: bool = True,
+) -> list[dict]:
+    import os
+
+    cache_key = f"{mode}:{persona_id}"
+
+    # --- AnalysisCache path (incremental, skips LLM when inputs unchanged) ---
+    try:
+        from daemon.analysis_cache import get_analysis_cache
+        analysis_cache = get_analysis_cache()
+        if analysis_cache is not None:
+            has_llm = bool(
+                os.environ.get("ANTHROPIC_API_KEY")
+                or os.environ.get("OPENAI_API_KEY")
+                or os.environ.get("LLM_BINDING_API_KEY")
+            )
+            # Full mtime freshness check (no specific changed_domains — HTTP path)
+            scenarios, _ = await analysis_cache.get_scenarios(
+                changed_domains=None,
+                has_llm=has_llm if mode != "demo" else False,
+            )
+            # Keep legacy cache in sync so get_scenario(id) lookups still work
+            _cached_scenarios[cache_key] = (time.monotonic(), scenarios)
+            return scenarios
+    except Exception as e:
+        logger.warning("AnalysisCache unavailable, falling back to direct pipeline: %s", e)
+
+    # --- Legacy path (fallback if cache not initialized) ---
+    if use_cache and cache_key in _cached_scenarios:
+        now = time.monotonic()
+        generated_at, cached = _cached_scenarios[cache_key]
+        if now - generated_at < _SCENARIOS_CACHE_TTL:
+            return cached
+
+    if mode == "demo":
+        from pipeline.demo_theo import generate_demo_scenarios
+
+        scenarios = generate_demo_scenarios(persona_id)
+        _cached_scenarios[cache_key] = (time.monotonic(), scenarios)
+        return scenarios
+
+    from pipeline.extractor import extract_persona_data
+    from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
+    from simulation.scenarios import generate_scenarios as generate_scenarios_fallback
+
+    try:
+        extracted = extract_persona_data(persona_id)
+        scenarios = await asyncio.wait_for(
+            generate_scenarios_llm(extracted), timeout=30.0
+        )
+    except asyncio.TimeoutError:
+        scenarios = generate_scenarios_fallback()
+    except Exception as e:
+        logger.error(f"Scenario generation failed: {e}")
+        scenarios = generate_scenarios_fallback()
+
+    _cached_scenarios[cache_key] = (time.monotonic(), scenarios)
+    return scenarios
+
+
+@router.get("/scenarios")
+async def list_scenarios(
+    request: Request,
+    persona_id: str = Query("p05"),
+    limit: int = Query(20, ge=1, le=100),
+    starting_after: str | None = Query(None),
+    expand: list[str] | None = Query(None, alias="expand[]"),
+):
+    livemode = get_livemode(request.headers.get("Authorization"))
+    mode = get_mode(request.headers.get("Authorization"))
+    scenarios_raw = await _generate_scenarios(persona_id, mode=mode)
+    resources = [_to_resource(s, livemode=livemode) for s in scenarios_raw]
+
+    # Strip internal field from response
+    cleaned = [{k: v for k, v in r.items() if not k.startswith("_")} for r in resources]
+    page, has_more = paginate(cleaned, limit=limit, starting_after=starting_after)
+
+    return ListObject(
+        data=page,
+        has_more=has_more,
+        url="/v1/scenarios",
+    ).model_dump(mode="json")
+
+
+@router.get("/scenarios/{scenario_id}")
+async def get_scenario(
+    request: Request,
+    scenario_id: str,
+    expand: list[str] | None = Query(None, alias="expand[]"),
+):
+    livemode = get_livemode(request.headers.get("Authorization"))
+    mode = get_mode(request.headers.get("Authorization"))
+
+    # Check cache first
+    if scenario_id in _scenario_cache:
+        resource = {**_scenario_cache[scenario_id], "livemode": livemode}
+        return {k: v for k, v in resource.items() if not k.startswith("_")}
+
+    # Cache miss — regenerate and populate cache
+    scenarios_raw = await _generate_scenarios(mode=mode)
+    resources = [_to_resource(s, livemode=livemode) for s in scenarios_raw]
+    match = next((r for r in resources if r["id"] == scenario_id), None)
+    if match is None:
+        raise ApiException(
+            status_code=404,
+            code="resource_missing",
+            message="Scenario not found.",
+            param="scenario_id",
+        )
+    return {k: v for k, v in match.items() if not k.startswith("_")}

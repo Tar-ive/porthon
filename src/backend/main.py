@@ -6,28 +6,38 @@ from pathlib import Path
 from typing import List
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from agent.intent import classify_intent
-from agent.prompt_builder import build_system_prompt
-from pipeline.action_planner import generate_actions
-from pipeline.extractor import extract_persona_data
-from pipeline.scenario_gen import generate_scenarios as generate_scenarios_llm
-from simulation.scenarios import generate_scenarios as generate_scenarios_fallback
+from app.api.routes_agent import router as agent_router
+from app.api.v1 import router as v1_router
+from app.middleware.errors import (
+    ApiException,
+    api_exception_handler,
+    generic_exception_handler,
+)
+from app.middleware.idempotency import IdempotencyMiddleware
+from deepagent.contracts import ProfileScores, QuestContext, QuestMemory, PersonaConfig  # noqa: F401
+from deepagent.factory import create_master
 from utils import (
     ClientMessage,
     ClientMessagePart,  # noqa: F401 — re-exported for Pydantic schema discovery
-    extract_text,
-    iter_ollama_events,
-    iter_openai_events,
-    patch_response_with_headers,
-    wrap_stream,
 )
 
-load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+_main_path = Path(__file__).resolve()
+_dotenv_candidates = [
+    _main_path.parent / ".env",
+    _main_path.parent.parent / ".env",
+    _main_path.parent.parent.parent / ".env",
+]
+for _dotenv_path in _dotenv_candidates:
+    if _dotenv_path.exists():
+        load_dotenv(_dotenv_path)
+        break
+else:
+    load_dotenv()
 
 # Map LightRAG-style LLM env vars to OpenAI SDK env vars so the openai
 # client picks up OpenRouter (or any OpenAI-compatible provider) automatically.
@@ -38,6 +48,12 @@ if not os.environ.get("OPENAI_BASE_URL") and os.environ.get("LLM_BINDING_HOST"):
 
 logger = logging.getLogger(__name__)
 
+if not logging.getLogger().handlers:
+    logging.basicConfig(
+        level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+        format="%(levelname)s: %(message)s",
+    )
+
 ASSETS_DIR = Path(__file__).parent / "static"
 
 OLLAMA_HOST = "http://192.168.1.26:11434"
@@ -46,29 +62,58 @@ OPENAI_MODEL = os.environ.get("LLM_MODEL", "gpt-4o-mini")
 
 USE_OPENAI = bool(os.environ.get("OPENAI_API_KEY"))
 
-# RAG instance — initialized at startup only when KG env vars are set
+# RAG instance — initialized lazily when explicitly needed by live routes.
 _rag = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _rag
-    if os.environ.get("NEO4J_URI"):
-        try:
-            from agent.retriever import create_rag_instance
+    master = create_master(
+        state_path=Path(__file__).parent / "state" / "runtime_state.json",
+        tick_seconds=int(os.environ.get("AGENT_TICK_SECONDS", "900")),
+    )
+    await master.start()
+    app.state.always_on_master = master
 
-            _rag = create_rag_instance()
-            logger.info("LightRAG initialized with Neo4j + Qdrant")
-        except Exception as e:
-            logger.warning(f"LightRAG init failed (running without KG): {e}")
-            _rag = None
-    else:
-        logger.info("NEO4J_URI not set — running without knowledge graph")
+    # Init AnalysisCache (shared singleton — used by both DataWatcher and HTTP routes)
+    from daemon.analysis_cache import init_analysis_cache
+    _data_dir = Path(__file__).parent.parent.parent / "data" / "all_personas" / "persona_p05"
+    init_analysis_cache(data_dir=_data_dir, persona_id="p05")
+
+    # Start DataWatcher — polls Theo's JSONL files and publishes SSE events on change
+    from daemon.watcher import DataWatcher
+    data_watcher = DataWatcher(
+        master=master,
+        data_dir=_data_dir,
+        persona_id="p05",
+        poll_interval=float(os.environ.get("DATA_WATCHER_INTERVAL", "3.0")),
+    )
+    master.set_data_watcher(data_watcher)
+    await data_watcher.start()
+    app.state.data_watcher = data_watcher
+
+    logger.info("Skipping eager LightRAG startup; KG is lazy-initialized when needed")
     yield
+    await data_watcher.stop()
+    master.set_data_watcher(None)
+    await master.stop()
+    if _rag is not None:
+        try:
+            if hasattr(_rag, "close"):
+                await _rag.close()
+            logger.info("LightRAG instance closed")
+        except Exception as e:
+            logger.warning(f"Error closing LightRAG: {e}")
     _rag = None
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(IdempotencyMiddleware)
+app.add_exception_handler(ApiException, api_exception_handler)
+app.add_exception_handler(Exception, generic_exception_handler)
+app.include_router(v1_router)
+app.include_router(agent_router)
 
 
 class ScenarioContext(BaseModel):
@@ -86,99 +131,101 @@ class ChatRequest(BaseModel):
     model_config = {"extra": "allow"}
 
 
-@app.get("/api/health")
-def health():
-    return {
-        "status": "ok",
-        "backend": "openai" if USE_OPENAI else "ollama",
-        "rag": _rag is not None,
-    }
+@app.get("/api/health", include_in_schema=False)
+async def api_health(request: Request):
+    from app.api.v1.health import health as v1_health
+
+    return await v1_health(request)
 
 
-@app.get("/api/scenarios")
-async def get_scenarios():
+@app.get("/api/scenarios", include_in_schema=False)
+async def api_scenarios(request: Request):
+    from app.api.v1.scenarios import list_scenarios
+
+    qp = request.query_params
+    persona_id = qp.get("persona_id", "p05")
+    starting_after = qp.get("starting_after")
+    expand = qp.getlist("expand[]") if hasattr(qp, "getlist") else None
+
     try:
-        extracted = extract_persona_data("p05")
-        scenarios = await asyncio.wait_for(generate_scenarios_llm(extracted), timeout=30.0)
-        return scenarios
-    except asyncio.TimeoutError:
-        return generate_scenarios_fallback()
-    except Exception as e:
-        logger.error(f"Scenario generation failed: {e}")
-        return generate_scenarios_fallback()
+        limit = int(qp.get("limit", "20"))
+    except (TypeError, ValueError):
+        limit = 20
+    limit = max(1, min(100, limit))
 
-
-class ActionRequest(BaseModel):
-    scenario_id: str
-    scenario_title: str
-    scenario_summary: str
-    scenario_horizon: str
-    scenario_likelihood: str
-
-
-@app.post("/api/actions")
-async def get_actions(request: ActionRequest):
-    try:
-        extracted = extract_persona_data("p05")
-        scenario = {
-            "id": request.scenario_id,
-            "title": request.scenario_title,
-            "summary": request.scenario_summary,
-            "horizon": request.scenario_horizon,
-            "likelihood": request.scenario_likelihood,
-        }
-        actions = await asyncio.wait_for(generate_actions(scenario, extracted), timeout=30.0)
-        return actions
-    except asyncio.TimeoutError:
-        return {"scenario_id": request.scenario_id, "actions": [], "error": "timeout"}
-    except Exception as e:
-        logger.error(f"Action planning failed: {e}")
-        return {"scenario_id": request.scenario_id, "actions": [], "error": str(e)}
-
-
-@app.post("/api/chat")
-async def handle_chat(request: ChatRequest):
-    # Extract last user message for intent classification
-    last_user_text = ""
-    for msg in reversed(request.messages):
-        if msg.role == "user":
-            last_user_text = extract_text(msg)
-            break
-
-    # Classify intent and optionally retrieve KG context
-    intent = classify_intent(last_user_text) if last_user_text else "casual"
-    context = None
-
-    if _rag is not None:
-        try:
-            from agent.retriever import retrieve_context
-
-            context, intent = await retrieve_context(last_user_text, _rag)
-        except Exception as e:
-            logger.error(f"RAG retrieval error: {e}")
-
-    # Build scenario context string if a scenario was selected
-    scenario_context = None
-    if request.scenario:
-        scenario_context = (
-            f"The user is exploring the '{request.scenario.title}' scenario "
-            f"({request.scenario.horizon}, {request.scenario.likelihood}): "
-            f"{request.scenario.summary}"
-        )
-
-    # Build system prompt from SOUL + USER + context
-    system_prompt = build_system_prompt(context=context, intent=intent, scenario=scenario_context)
-
-    events = (
-        iter_openai_events(request.messages, model=OPENAI_MODEL, system_prompt=system_prompt)
-        if USE_OPENAI
-        else iter_ollama_events(
-            request.messages, host=OLLAMA_HOST, model=OLLAMA_MODEL, system_prompt=system_prompt
-        )
+    return await list_scenarios(
+        request=request,
+        persona_id=persona_id,
+        limit=limit,
+        starting_after=starting_after,
+        expand=expand,
     )
-    response = StreamingResponse(wrap_stream(events), media_type="text/event-stream")
-    response.headers["x-porthon-intent"] = intent
-    return patch_response_with_headers(response)
+
+
+@app.post("/api/actions", include_in_schema=False)
+async def api_actions(request: Request):
+    from app.api.v1.actions import create_actions, CreateActionRequest
+
+    body = await request.json()
+    action_req = CreateActionRequest(**body)
+    return await create_actions(action_req, request)
+
+
+@app.post("/api/chat", include_in_schema=False)
+async def api_chat(request: Request):
+    from app.api.v1.messages import create_message, CreateMessageRequest
+
+    body = await request.json()
+    msg = CreateMessageRequest(**body)
+    return await create_message(msg, request)
+
+
+@app.post("/", include_in_schema=False)
+async def root_webhook_fallback(request: Request):
+    """Fallback for providers misconfigured to POST at service root."""
+    from app.deps import get_master
+    from app.api.v1.notion_webhooks import notion_webhooks_verify
+
+    return await notion_webhooks_verify(request, master=get_master(request))
+
+
+@app.post("/notion/webhooks", include_in_schema=False)
+async def notion_webhook_fallback(request: Request):
+    """Non-versioned alias for Notion webhook verification."""
+    from app.deps import get_master
+    from app.api.v1.notion_webhooks import notion_webhooks_verify
+
+    return await notion_webhooks_verify(request, master=get_master(request))
+
+
+class QuestRequest(BaseModel):
+    scenario_id: str
+    persona_id: str = "p05"
+
+
+# Default profile scores for Theo (demo) — in production, computed by profiler
+_DEMO_PROFILE_SCORES = ProfileScores(
+    execution=0.45,
+    growth=0.65,
+    self_awareness=0.70,
+    financial_stress=0.75,
+    adhd_indicator=0.80,
+    archetype="emerging_talent",
+    deltas={"public_private": 0.40},
+)
+
+
+@app.post("/api/quest", include_in_schema=False)
+async def api_quest(request: Request):
+    from app.api.v1.quests import create_quest, CreateQuestRequest
+
+    body = await request.json()
+    quest_req = CreateQuestRequest(**body)
+    return await create_quest(quest_req, request)
+
+
+# /api/quest/outcomes is now handled by per-worker verify actions
+# The old OutcomeCollector endpoint has been removed.
 
 
 # Serve the Vite SPA — html=True handles client-side routing (returns index.html for unknown paths)

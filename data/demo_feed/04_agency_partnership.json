@@ -1,0 +1,17 @@
+{
+  "slug": "04_agency_partnership",
+  "label": "Agency Partnership Offer",
+  "description": "ATX Creative Co offers Theo a $3k/month retainer partnership",
+  "domain": "lifelog",
+  "file": "lifelog.jsonl",
+  "record": {
+    "id": "ll_0151",
+    "ts": "2026-03-06T20:00:00-05:00",
+    "source": "lifelog",
+    "type": "activity",
+    "text": "Got a message from ATX Creative Co. They want to bring me on as a motion design partner — $3k/month retainer, flexible hours, I keep my other clients. This is the thing I wrote about six months ago. It's actually happening.",
+    "tags": ["freelance", "milestone", "revenue", "austin", "partnership", "motion_design"],
+    "refs": [],
+    "pii_level": "synthetic"
+  }
+}

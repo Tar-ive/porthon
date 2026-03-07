@@ -1,7 +1,9 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
+import ChatSidebar from './components/ChatSidebar';
 import { MemoizedMarkdown } from './MemoizedMarkdown';
+import { useAgentStream } from './hooks/useAgentStream';
 
 interface Scenario {
   id: string;
@@ -27,6 +29,12 @@ const INTENT_COLORS: Record<string, string> = {
   emotional: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
 };
 
+const DEMO_TOKEN = 'Bearer sk_demo_default';
+const DEMO_JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  Authorization: DEMO_TOKEN,
+};
+
 export default function Chat({ scenario }: { scenario: Scenario }) {
   const [input, setInput] = useState('');
   const [intent, setIntent] = useState<string | null>(null);
@@ -40,34 +48,112 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [questsPhase, setQuestsPhase] = useState<'loading' | 'ready' | 'error'>('loading');
   const [questsCollapsed, setQuestsCollapsed] = useState(false);
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
+  const [workflowStatus, setWorkflowStatus] = useState<string>('');
 
+  // Demo feed state
+  const [demoEvents, setDemoEvents] = useState<{ slug: string; label: string; description: string }[]>([]);
+  const [pushingSlug, setPushingSlug] = useState<string | null>(null);
+
+  // Live data stream
+  const { isAnalyzing, analysisMessage, changedDomain, actionsVersion } = useAgentStream();
+
+  // Load demo feed event list once on mount
   useEffect(() => {
+    fetch('/api/agent/demo/events', { headers: DEMO_JSON_HEADERS })
+      .then((r) => r.json())
+      .then((d) => setDemoEvents(d.events ?? []))
+      .catch(() => {});
+  }, []);
+
+  const pushDemoEvent = async (slug: string) => {
+    setPushingSlug(slug);
+    try {
+      const response = await fetch(`/api/agent/demo/push/${slug}`, {
+        method: 'POST',
+        headers: DEMO_JSON_HEADERS,
+      });
+      const body = await response.json();
+      const notionSync = body?.notion_sync;
+      const label = body?.label || slug;
+      if (notionSync?.status === 'completed') {
+        const counts = notionSync.counts ?? {};
+        const detail =
+          Number(counts.created ?? 0) > 0
+            ? `created ${counts.created} Notion row`
+            : Number(counts.updated ?? 0) > 0
+              ? `updated ${counts.updated} Notion row`
+              : 'no material Notion change';
+        setWorkflowStatus(`${label} injected · ${detail}`);
+      } else if (notionSync?.status === 'failed') {
+        setWorkflowStatus(`${label} injected · Notion sync failed`);
+      } else if (notionSync?.status === 'skipped') {
+        setWorkflowStatus(`${label} injected · Notion sync skipped`);
+      } else {
+        setWorkflowStatus(`${label} injected · analysis queued`);
+      }
+    } finally {
+      setPushingSlug(null);
+    }
+  };
+
+  const fetchQuests = (showLoading = true) => {
+    if (showLoading) setQuestsPhase('loading');
     fetch('/api/actions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: DEMO_JSON_HEADERS,
+      body: JSON.stringify({ scenario_id: scenario.id }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        // Response is a ListObject: { data: [...] }. Each item has `action` field.
+        const items: Quest[] = (data.data || []).map((item: Record<string, string>) => ({
+          action: item.action || item.title || '',
+          rationale: item.rationale || '',
+          data_ref: item.data_ref || '',
+          compound_summary: item.compound_summary || '',
+        }));
+        setQuests(items);
+        setQuestsPhase('ready');
+      })
+      .catch(() => setQuestsPhase('error'));
+  };
+
+  useEffect(() => {
+    fetch('/api/agent/activate', {
+      method: 'POST',
+      headers: DEMO_JSON_HEADERS,
       body: JSON.stringify({
         scenario_id: scenario.id,
         scenario_title: scenario.title,
         scenario_summary: scenario.summary,
         scenario_horizon: scenario.horizon,
         scenario_likelihood: scenario.likelihood,
+        scenario_tags: scenario.tags,
       }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        setQuests(data.actions || []);
-        setQuestsPhase('ready');
-      })
-      .catch(() => setQuestsPhase('error'));
-  }, []);
+    }).catch(() => {});
+
+    fetchQuests();
+  }, [scenario.horizon, scenario.id, scenario.likelihood, scenario.summary, scenario.title]);
+
+  // Auto-refresh quests when daemon signals new actions are ready
+  useEffect(() => {
+    if (actionsVersion > 0) {
+      fetchQuests(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionsVersion]);
 
   const [transport] = useState(
     () =>
       new DefaultChatTransport({
         api: '/api/chat',
         body: { scenario },
-        fetch: async (input, init) => {
-          const res = await fetch(input, init);
+        fetch: async (requestInfo, init) => {
+          const mergedHeaders = {
+            ...(init?.headers as Record<string, string> | undefined),
+            Authorization: DEMO_TOKEN,
+          };
+          const res = await fetch(requestInfo, { ...init, headers: mergedHeaders });
           const intentHeader = res.headers.get('x-porthon-intent');
           if (intentHeader && intentHeader !== 'casual') {
             intentRef.current(intentHeader);
@@ -82,6 +168,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const { messages, sendMessage, status, stop } = useChat({ transport });
 
   const isStreaming = status === 'streaming' || status === 'submitted';
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,6 +206,9 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
           <div className="chat-header-title">Questline</div>
           <div className="chat-header-sub">
             {scenario.title} · {scenario.horizon} · Theo Nakamura
+          </div>
+          <div className="chat-header-brief">
+            For freelancers who need one operating surface for leads, delivery pressure, and the next revenue-saving move.
           </div>
         </div>
         <div className="chat-header-dot" />
@@ -201,92 +291,141 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         )}
       </div>
 
-      {/* Messages */}
-      <div className="chat-messages">
-        {messages.length === 0 && !isStreaming ? (
-          <div className="chat-empty">
-            <div className="chat-empty-glyph">◈</div>
-            <div className="chat-empty-text">Begin your inquiry</div>
-          </div>
-        ) : (
-          messages.map((message, msgIndex) => (
-            <div
-              key={message.id}
-              className={`msg msg--${message.role}`}
-            >
-              <div className="msg-meta">
-                <span className={`msg-role msg-role--${message.role}`}>
-                  {message.role === 'user' ? 'You' : 'Oracle'}
-                </span>
-                {message.role === 'assistant' && intent && msgIndex === messages.length - 1 && INTENT_COLORS[intent] && (
-                  <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border ${INTENT_COLORS[intent]}`}>
-                    {intent}
-                  </span>
-                )}
-                <span className="msg-line" />
-              </div>
-              <div className="msg-body">
-                {message.parts.map((part, i) =>
-                  part.type === 'text' ? (
-                    <MemoizedMarkdown key={i} id={`${message.id}-${i}`} content={part.text} />
-                  ) : null
-                )}
-              </div>
-            </div>
-          ))
-        )}
+      {/* Live data banner */}
+      {(isAnalyzing || changedDomain) && (
+        <div className="stream-banner stream-banner--analyzing">
+          <span className="stream-banner-dot" />
+          {isAnalyzing
+            ? (analysisMessage ?? 'Re-analyzing trajectories…')
+            : `New ${changedDomain} data — trajectories stable`}
+        </div>
+      )}
 
-        {isStreaming && (
-          <div className="thinking">
-            <span className="thinking-rune">✦</span>
-            <span className="thinking-text">
-              {status === 'submitted' ? 'Consulting the data' : 'Composing response'}
-            </span>
-          </div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input */}
-      <div className="chat-input-area">
-        <form className="chat-form" onSubmit={handleSubmit}>
-          <div className="chat-input-wrap">
-            <label className="chat-input-label" htmlFor="chat-input">
-              Your query · shift+enter for newline
-            </label>
-            <textarea
-              id="chat-input"
-              ref={textareaRef}
-              className="chat-input"
-              value={input}
-              onChange={handleTextareaChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about patterns, scenarios, or actions…"
-              disabled={isStreaming}
-              rows={1}
-            />
-          </div>
-
-          {isStreaming ? (
+      <div className="workflow-strip">
+        <div className="workflow-strip-title">Stress-Test the Freelance Pipeline</div>
+        <div className="workflow-strip-actions">
+          {demoEvents.map((evt) => (
             <button
+              key={evt.slug}
               type="button"
-              className="chat-btn chat-btn--stop"
-              onClick={stop}
+              className="workflow-btn"
+              title={evt.description}
+              onClick={() => pushDemoEvent(evt.slug)}
+              disabled={pushingSlug !== null}
             >
-              ◼ Stop
+              {pushingSlug === evt.slug ? 'Pushing…' : evt.label}
             </button>
-          ) : (
-            <button
-              type="submit"
-              className="chat-btn chat-btn--send"
-              disabled={!input.trim()}
-            >
-              Send ◆
-            </button>
-          )}
-        </form>
+          ))}
+        </div>
+        {workflowStatus && <div className="workflow-strip-status">{workflowStatus}</div>}
       </div>
+
+      {/* Left sidebar + Main chat split */}
+      <div className="chat-layout">
+        <ChatSidebar quests={quests} />
+
+        {/* Messages */}
+        <div className="chat-main">
+          <div className="chat-messages">
+            {messages.length === 0 && !isStreaming ? (
+              <div className="chat-empty">
+                <div className="chat-empty-glyph">◈</div>
+                <div className="chat-empty-text">
+                  Ask where revenue is slipping, which lead needs attention, or what Theo should protect this week.
+                </div>
+                <div className="chat-empty-prompts">
+                  <button type="button" className="chat-empty-prompt" onClick={() => setInput('Which lead is most likely to stall unless Theo follows up today?')}>
+                    Find the cooling lead
+                  </button>
+                  <button type="button" className="chat-empty-prompt" onClick={() => setInput('What should Theo do this week to protect both delivery and cash flow?')}>
+                    Protect delivery and cash flow
+                  </button>
+                  <button type="button" className="chat-empty-prompt" onClick={() => setInput('How are the proactive and reactive agents helping right now?')}>
+                    Explain the agent system
+                  </button>
+                </div>
+              </div>
+            ) : (
+              messages.map((message, msgIndex) => (
+                <div
+                  key={message.id}
+                  className={`msg msg--${message.role}`}
+                >
+                  <div className="msg-meta">
+                    <span className={`msg-role msg-role--${message.role}`}>
+                      {message.role === 'user' ? 'You' : 'Oracle'}
+                    </span>
+                    {message.role === 'assistant' && intent && msgIndex === messages.length - 1 && INTENT_COLORS[intent] && (
+                      <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border ${INTENT_COLORS[intent]}`}>
+                        {intent}
+                      </span>
+                    )}
+                    <span className="msg-line" />
+                  </div>
+                  <div className="msg-body">
+                    {message.parts.map((part, i) =>
+                      part.type === 'text' ? (
+                        <MemoizedMarkdown key={i} id={`${message.id}-${i}`} content={part.text} />
+                      ) : null
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+
+            {isStreaming && (
+              <div className="thinking">
+                <span className="thinking-rune">✦</span>
+                <span className="thinking-text">
+                  {status === 'submitted' ? 'Consulting the data' : 'Composing response'}
+                </span>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <div className="chat-input-area">
+            <form className="chat-form" onSubmit={handleSubmit}>
+              <div className="chat-input-wrap">
+                <label className="chat-input-label" htmlFor="chat-input">
+                  Your query · shift+enter for newline
+                </label>
+                <textarea
+                  id="chat-input"
+                  ref={textareaRef}
+                  className="chat-input"
+                  value={input}
+                  onChange={handleTextareaChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask about patterns, scenarios, or actions…"
+                  disabled={isStreaming}
+                  rows={1}
+                />
+              </div>
+
+              {isStreaming ? (
+                <button
+                  type="button"
+                  className="chat-btn chat-btn--stop"
+                  onClick={stop}
+                >
+                  ◼ Stop
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="chat-btn chat-btn--send"
+                  disabled={!input.trim()}
+                >
+                  Send ◆
+                </button>
+              )}
+            </form>
+          </div>
+        </div>{/* end chat-main */}
+      </div>{/* end chat-layout */}
     </div>
   );
 }
