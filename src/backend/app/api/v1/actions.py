@@ -157,6 +157,7 @@ async def create_actions(
                 "livemode": livemode,
                 "metadata": {},
                 "scenario": body.scenario_id,
+                "action": raw.get("action", ""),
                 "title": raw.get("action", ""),
                 "description": raw.get("action", ""),
                 "data_ref": raw.get("data_ref", ""),

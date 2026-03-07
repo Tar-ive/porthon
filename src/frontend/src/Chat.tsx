@@ -55,7 +55,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [pushingSlug, setPushingSlug] = useState<string | null>(null);
 
   // Live data stream
-  const { isAnalyzing, analysisMessage, changedDomain } = useAgentStream();
+  const { isAnalyzing, analysisMessage, changedDomain, actionsVersion } = useAgentStream();
 
   // Load demo feed event list once on mount
   useEffect(() => {
@@ -77,6 +77,28 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
     }
   };
 
+  const fetchQuests = (showLoading = true) => {
+    if (showLoading) setQuestsPhase('loading');
+    fetch('/api/actions', {
+      method: 'POST',
+      headers: DEMO_JSON_HEADERS,
+      body: JSON.stringify({ scenario_id: scenario.id }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        // Response is a ListObject: { data: [...] }. Each item has `action` field.
+        const items: Quest[] = (data.data || []).map((item: Record<string, string>) => ({
+          action: item.action || item.title || '',
+          rationale: item.rationale || '',
+          data_ref: item.data_ref || '',
+          compound_summary: item.compound_summary || '',
+        }));
+        setQuests(items);
+        setQuestsPhase('ready');
+      })
+      .catch(() => setQuestsPhase('error'));
+  };
+
   useEffect(() => {
     fetch('/api/agent/activate', {
       method: 'POST',
@@ -89,29 +111,18 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         scenario_likelihood: scenario.likelihood,
         scenario_tags: scenario.tags,
       }),
-    }).catch(() => {
-      // Agent map will show unavailable if activation fails.
-    });
+    }).catch(() => {});
 
-    setQuestsPhase('loading');
-    fetch('/api/actions', {
-      method: 'POST',
-      headers: DEMO_JSON_HEADERS,
-      body: JSON.stringify({
-        scenario_id: scenario.id,
-        scenario_title: scenario.title,
-        scenario_summary: scenario.summary,
-        scenario_horizon: scenario.horizon,
-        scenario_likelihood: scenario.likelihood,
-      }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        setQuests(data.actions || []);
-        setQuestsPhase('ready');
-      })
-      .catch(() => setQuestsPhase('error'));
+    fetchQuests();
   }, [scenario.horizon, scenario.id, scenario.likelihood, scenario.summary, scenario.title]);
+
+  // Auto-refresh quests when daemon signals new actions are ready
+  useEffect(() => {
+    if (actionsVersion > 0) {
+      fetchQuests(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionsVersion]);
 
   const [transport] = useState(
     () =>

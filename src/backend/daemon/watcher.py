@@ -201,6 +201,45 @@ class DataWatcher:
         except Exception as exc:
             logger.debug("DataWatcher: LightRAG ingest skipped for %s: %s", domain, exc)
 
+    async def _reanalyze_active_actions(self, cache, has_llm: bool) -> None:
+        """Re-generate actions for the currently active scenario and emit actions_updated."""
+        try:
+            state = self._master.store.load()
+            active = state.active_scenario
+            if active is None:
+                return
+            scenario = {
+                "id": active.scenario_id,
+                "title": active.title,
+                "horizon": active.horizon,
+                "likelihood": active.likelihood,
+                "summary": active.summary,
+            }
+            await self._master.stream.publish({
+                "event_id": _evt_id(),
+                "type": "analysis_running",
+                "payload": {"stage": "actions", "message": "Updating quest recommendations…"},
+                "created_at": _now_iso(),
+            })
+            actions, _ = await asyncio.wait_for(
+                cache.get_actions(scenario, changed_domains=None, has_llm=has_llm),
+                timeout=35.0,
+            )
+            await self._master.stream.publish({
+                "event_id": _evt_id(),
+                "type": "actions_updated",
+                "payload": {
+                    "scenario_id": active.scenario_id,
+                    "count": len(actions),
+                },
+                "created_at": _now_iso(),
+            })
+            logger.info("DataWatcher: actions updated (%d) for scenario=%s", len(actions), active.scenario_id)
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            logger.warning("DataWatcher: actions refresh failed: %s", exc)
+
     async def _reanalyze(self, domain: str) -> None:
         """Re-analyze via AnalysisCache — only re-extracts the changed domain
         and only calls the LLM if the prompt inputs actually changed."""
@@ -249,6 +288,11 @@ class DataWatcher:
                     "created_at": _now_iso(),
                 })
                 logger.info("DataWatcher: trajectories updated (%d) after %s change", len(scenarios), domain)
+                # Re-generate actions for the active scenario so quests auto-refresh
+                asyncio.create_task(
+                    self._reanalyze_active_actions(cache, has_llm),
+                    name="data-watcher-actions-refresh",
+                )
             else:
                 # Inputs unchanged — no LLM call needed, just let frontend know it's stable
                 await self._master.stream.publish({

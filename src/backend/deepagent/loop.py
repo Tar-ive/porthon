@@ -193,6 +193,26 @@ class AlwaysOnMaster:
         async with self._lock:
             state = self.store.load()
             event = await self._append_event(state, event_type="cycle_start", payload={"trigger": trigger})
+
+            # Re-seed tasks if active scenario exists but queue has no pending/running work.
+            # This keeps the daemon alive across ticks without requiring manual re-activation.
+            if state.active_scenario is not None:
+                busy = any(
+                    t.status in {TaskStatus.PENDING, TaskStatus.RUNNING}
+                    for t in state.queue
+                )
+                if not busy:
+                    has_llm = bool(
+                        os.environ.get("OPENAI_API_KEY")
+                        or os.environ.get("LLM_BINDING_API_KEY")
+                        or os.environ.get("ANTHROPIC_API_KEY")
+                    )
+                    self._seed_scenario_tasks(state, state.active_scenario, demo_mode=not has_llm)
+                    logger.info(
+                        "AlwaysOnMaster: re-seeded tasks for '%s' (trigger=%s)",
+                        state.active_scenario.title, trigger,
+                    )
+
             result = await self.dispatcher.dispatch_cycle(state)
             cycle_duration_ms = int((time.perf_counter() - start) * 1000)
             cycle_end = await self._append_event(

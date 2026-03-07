@@ -15,6 +15,8 @@ export interface AgentStreamState {
   changedDomain: string | null;
   /** Increments each time scenarios_updated fires — trigger a refetch in consumers */
   scenariosVersion: number;
+  /** Increments each time actions_updated fires — trigger a quest re-fetch in Chat */
+  actionsVersion: number;
   /** Message from analysis_running */
   analysisMessage: string | null;
 }
@@ -29,6 +31,7 @@ export function useAgentStream(): AgentStreamState {
     isAnalyzing: false,
     changedDomain: null,
     scenariosVersion: 0,
+    actionsVersion: 0,
     analysisMessage: null,
   });
 
@@ -65,6 +68,12 @@ export function useAgentStream(): AgentStreamState {
                 next.isAnalyzing = false;
                 next.analysisMessage = null;
                 next.scenariosVersion = prev.scenariosVersion + 1;
+                break;
+
+              case 'actions_updated':
+                next.isAnalyzing = false;
+                next.analysisMessage = null;
+                next.actionsVersion = prev.actionsVersion + 1;
                 break;
 
               case 'analysis_stable':
