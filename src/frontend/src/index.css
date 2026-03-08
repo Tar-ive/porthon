@@ -559,6 +559,89 @@ body::after {
   box-shadow: 0 0 12px rgba(192, 57, 43, 0.2);
 }
 
+/* ── Mic button ──────────────────────────────────────────────────── */
+.chat-btn--mic {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--muted);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.chat-btn--mic:hover:not(:disabled) {
+  color: var(--amber);
+  border-color: var(--amber-dim);
+  box-shadow: 0 0 10px var(--amber-glow);
+}
+
+.chat-btn--mic-active {
+  color: #e07060;
+  border-color: rgba(192, 57, 43, 0.6);
+  background: rgba(192, 57, 43, 0.08);
+  animation: mic-pulse 1.5s ease-in-out infinite;
+}
+
+.chat-btn--mic-active:hover:not(:disabled) {
+  color: #e07060;
+  border-color: #c0392b;
+}
+
+.chat-btn--mic-busy {
+  color: var(--muted);
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+
+/* Waveform bars shown while recording */
+.mic-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+
+.mic-wave span {
+  display: block;
+  width: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  animation: mic-bar 0.9s ease-in-out infinite;
+}
+
+.mic-wave span:nth-child(1) { height: 4px;  animation-delay: 0s; }
+.mic-wave span:nth-child(2) { height: 8px;  animation-delay: 0.12s; }
+.mic-wave span:nth-child(3) { height: 12px; animation-delay: 0.24s; }
+.mic-wave span:nth-child(4) { height: 8px;  animation-delay: 0.36s; }
+.mic-wave span:nth-child(5) { height: 4px;  animation-delay: 0.48s; }
+
+@keyframes mic-bar {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+  50%       { transform: scaleY(1);   opacity: 1; }
+}
+
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(192, 57, 43, 0.25); }
+  50%       { box-shadow: 0 0 20px rgba(192, 57, 43, 0.5); }
+}
+
+.mic-spin {
+  display: inline-block;
+  font-size: 14px;
+  animation: mic-spin-anim 1.2s linear infinite;
+}
+
+@keyframes mic-spin-anim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ── Keyframe animations ─────────────────────────────────────────── */
 @keyframes fadeUp {
   from {

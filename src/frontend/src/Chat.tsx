@@ -1,9 +1,192 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { MemoizedMarkdown } from './MemoizedMarkdown';
 import { useAgentStream } from './hooks/useAgentStream';
+
+// ── Voice recording hook ───────────────────────────────────────────
+type VoiceState = 'idle' | 'recording' | 'transcribing' | 'error';
+
+/** Send a blob to the transcription endpoint and stream tokens back.
+ *  Calls onToken with accumulated text (replace mode).
+ *  Returns the final accumulated string. Abortable via signal. */
+async function streamTranscribe(
+  blob: Blob,
+  format: string,
+  onToken: (accumulated: string) => void,
+  signal?: AbortSignal,
+): Promise<string> {
+  const formData = new FormData();
+  formData.append('audio', blob, `recording.${format}`);
+  formData.append('format', format);
+
+  const res = await fetch('/v1/voice/transcribe', {
+    method: 'POST',
+    headers: { Authorization: DEMO_TOKEN },
+    body: formData,
+    signal,
+  });
+  if (!res.ok) throw new Error(`Transcription ${res.status}`);
+
+  const reader = res.body?.getReader();
+  if (!reader) throw new Error('No response body');
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let accumulated = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() ?? '';
+    for (const line of lines) {
+      if (!line.startsWith('data:')) continue;
+      const raw = line.slice(5).trim();
+      if (raw === '[DONE]') break;
+      try {
+        const chunk = JSON.parse(raw) as { token?: string };
+        if (chunk.token) {
+          accumulated += chunk.token;
+          onToken(accumulated);
+        }
+      } catch { /* skip malformed */ }
+    }
+  }
+  return accumulated;
+}
+
+const TRANSCRIBE_INTERVAL_MS = 1500;
+
+function useVoiceInput(onTranscript: (text: string, replace?: boolean) => void) {
+  const [voiceState, setVoiceState] = useState<VoiceState>('idle');
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const transcribingRef = useRef(false);
+  const onTranscriptRef = useRef(onTranscript);
+  onTranscriptRef.current = onTranscript;
+
+  /** Build a blob from all chunks collected so far */
+  const buildBlob = useCallback(() => {
+    const recorder = mediaRecorderRef.current;
+    const mime = recorder?.mimeType ?? 'audio/webm';
+    return new Blob(chunksRef.current, { type: mime });
+  }, []);
+
+  /** Send accumulated audio for transcription (non-overlapping) */
+  const transcribeNow = useCallback(async () => {
+    if (transcribingRef.current) return;          // skip if previous still in-flight
+    if (chunksRef.current.length === 0) return;   // nothing recorded yet
+    transcribingRef.current = true;
+
+    // Abort any lingering previous request
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    const blob = buildBlob();
+    const format = (mediaRecorderRef.current?.mimeType ?? '').includes('webm') ? 'webm' : 'wav';
+
+    try {
+      await streamTranscribe(
+        blob, format,
+        (acc) => onTranscriptRef.current(acc, true),
+        ctrl.signal,
+      );
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        console.warn('Live transcription chunk failed', err);
+      }
+    } finally {
+      transcribingRef.current = false;
+    }
+  }, [buildBlob]);
+
+  const startRecording = useCallback(async () => {
+    setVoiceError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : 'audio/webm';
+      const recorder = new MediaRecorder(stream, { mimeType });
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      // timeslice = 500ms so chunks accumulate quickly for periodic sends
+      recorder.start(500);
+      mediaRecorderRef.current = recorder;
+      setVoiceState('recording');
+
+      // Kick off periodic transcription while user is still speaking
+      intervalRef.current = setInterval(() => { transcribeNow(); }, TRANSCRIBE_INTERVAL_MS);
+    } catch {
+      setVoiceError('Microphone access denied');
+      setVoiceState('error');
+    }
+  }, [transcribeNow]);
+
+  const stopRecording = useCallback(async () => {
+    // Clear interval
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+    // Abort in-flight partial transcription
+    abortRef.current?.abort();
+    abortRef.current = null;
+    transcribingRef.current = false;
+
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || recorder.state !== 'recording') return;
+
+    setVoiceState('transcribing');
+
+    // Wait for recorder to fully stop so we get all chunks
+    const blob = await new Promise<Blob>((resolve) => {
+      recorder.addEventListener('stop', () => {
+        streamRef.current?.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
+        resolve(new Blob(chunksRef.current, { type: recorder.mimeType }));
+      }, { once: true });
+      recorder.stop();
+    });
+
+    const format = recorder.mimeType.includes('webm') ? 'webm' : 'wav';
+
+    try {
+      await streamTranscribe(
+        blob, format,
+        (acc) => onTranscriptRef.current(acc, true),
+      );
+      setVoiceState('idle');
+    } catch (err) {
+      setVoiceError(err instanceof Error ? err.message : 'Transcription failed');
+      setVoiceState('error');
+    }
+  }, []);
+
+  const cancel = useCallback(() => {
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+    abortRef.current?.abort();
+    abortRef.current = null;
+    transcribingRef.current = false;
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state === 'recording') {
+      recorder.ondataavailable = null;
+      recorder.stop();
+    }
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+    mediaRecorderRef.current = null;
+    setVoiceState('idle');
+    setVoiceError(null);
+  }, []);
+
+  return { voiceState, voiceError, startRecording, stopRecording, cancel };
+}
 
 interface Scenario {
   id: string;
@@ -119,6 +302,21 @@ export default function Chat({ scenario, actions = [], onRestart }: { scenario: 
   const { messages, sendMessage, status, stop } = useChat({ transport });
 
   const isStreaming = status === 'streaming' || status === 'submitted';
+
+  // pendingVoicePrefix tracks what was in the input before recording started,
+  // so streaming tokens replace only the transcription portion, not prior text.
+  const voicePrefixRef = useRef('');
+  const { voiceState, voiceError, startRecording, stopRecording, cancel: cancelVoice } = useVoiceInput(
+    (transcript, replace) => {
+      if (replace) {
+        // Streaming: replace the transcription portion after the prefix
+        const sep = voicePrefixRef.current ? ' ' : '';
+        setInput(voicePrefixRef.current + sep + transcript);
+      } else {
+        setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+      }
+    }
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -381,6 +579,45 @@ export default function Chat({ scenario, actions = [], onRestart }: { scenario: 
                   rows={1}
                 />
               </div>
+
+              {/* Mic button */}
+              {!isStreaming && (
+                <button
+                  type="button"
+                  className={`chat-btn chat-btn--mic${voiceState === 'recording' ? ' chat-btn--mic-active' : ''}${voiceState === 'transcribing' ? ' chat-btn--mic-busy' : ''}`}
+                  onClick={() => {
+                    if (voiceState === 'idle' || voiceState === 'error') {
+                      voicePrefixRef.current = input;
+                      startRecording();
+                    } else if (voiceState === 'recording') {
+                      stopRecording();
+                    } else {
+                      cancelVoice();
+                    }
+                  }}
+                  title={voiceState === 'recording' ? 'Stop recording' : voiceState === 'transcribing' ? 'Transcribing…' : voiceState === 'error' ? (voiceError ?? 'Error') : 'Voice input'}
+                  disabled={voiceState === 'transcribing'}
+                >
+                  {voiceState === 'recording' ? (
+                    /* Pulsing waveform bars while recording */
+                    <span className="mic-wave">
+                      <span /><span /><span /><span /><span />
+                    </span>
+                  ) : voiceState === 'transcribing' ? (
+                    <span className="mic-spin">◌</span>
+                  ) : voiceState === 'error' ? (
+                    <span title={voiceError ?? ''}>✕</span>
+                  ) : (
+                    /* Microphone SVG icon */
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="2" width="6" height="11" rx="3" />
+                      <path d="M5 10a7 7 0 0 0 14 0" />
+                      <line x1="12" y1="19" x2="12" y2="23" />
+                      <line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                  )}
+                </button>
+              )}
 
               {isStreaming ? (
                 <button

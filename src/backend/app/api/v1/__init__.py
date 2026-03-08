@@ -18,6 +18,7 @@ from .notion_leads import router as notion_leads_router
 from .notion_webhooks import router as notion_webhooks_router
 from .knowledge_graph import router as knowledge_graph_router
 from .patterns import router as patterns_router
+from .voice import router as voice_router
 
 router = APIRouter(prefix="/v1", tags=["v1"], dependencies=[Depends(swagger_auth)])
 router.include_router(health_router)
@@ -35,3 +36,4 @@ router.include_router(figma_router)
 router.include_router(notion_leads_router)
 router.include_router(notion_webhooks_router)
 router.include_router(knowledge_graph_router)
+router.include_router(voice_router)
