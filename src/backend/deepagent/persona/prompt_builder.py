@@ -26,6 +26,7 @@ def build_system_prompt(
     context: str | None = None,
     intent: str = "casual",
     scenario: str | None = None,
+    actions: str | None = None,
 ) -> str:
     """Build the full system prompt from SOUL + USER + optional KG context.
 
@@ -37,6 +38,8 @@ def build_system_prompt(
         Classified intent (factual, pattern, advice, reflection, emotional, casual).
     scenario : str | None
         Active scenario description to ground the response.
+    actions : str | None
+        The user's active weekly action plan, pre-formatted as a numbered list.
     """
     soul = load_persona_file("SOUL.md")
     user = load_persona_file("USER.md")
@@ -58,6 +61,15 @@ def build_system_prompt(
             "\n\n*Ground your responses in this scenario. When the user asks "
             "about their future, actions, or trajectory, refer to this "
             "scenario naturally.*"
+        )
+
+    if actions:
+        parts.append("\n\n---\n\n## Active Weekly Action Plan\n")
+        parts.append(actions)
+        parts.append(
+            "\n\n*These are the concrete actions already generated for the user this week. "
+            "When they ask about what to do, reference these actions specifically. "
+            "You can elaborate, clarify, or help them prioritize — but always stay grounded in this plan.*"
         )
 
     _INTENT_INSTRUCTIONS = {

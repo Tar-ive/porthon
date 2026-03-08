@@ -44,8 +44,8 @@ export default function OpsNavbar() {
 
             <div className="ops-navbar-links">
                 <Link to="/" className="ops-navbar-link">Dashboard</Link>
-                <Link to="/app" className="ops-navbar-link">Quest</Link>
-                <Link to="/app" className="ops-navbar-cta">Begin Your Quest</Link>
+                <Link to="/ops" className="ops-navbar-link">Ops View</Link>
+                <Link to="/app" className="ops-navbar-cta">Current Questline</Link>
             </div>
         </nav>
     );

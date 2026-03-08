@@ -78,27 +78,7 @@
     transform: translateY(-1px);
 }
 
-.ops-navbar-cta {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.6rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    background: var(--amber);
-    color: #0a0807;
-    border: none;
-    border-radius: 999px;
-    padding: 0.4rem 1rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-}
-
-.ops-navbar-cta:hover {
-    background: #d9a03d;
-    box-shadow: 0 0 16px rgba(200, 146, 42, 0.4);
-    transform: translateY(-1px);
-}
+/* ops-navbar-cta is defined globally in index.css */
 
 /* ── Dashboard Grid ──────────────────────────────────────────────── */
 .dashboard-grid {

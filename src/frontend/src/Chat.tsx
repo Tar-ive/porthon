@@ -1,7 +1,7 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
-import ChatSidebar from './components/ChatSidebar';
+import { Link } from 'react-router-dom';
 import { MemoizedMarkdown } from './MemoizedMarkdown';
 import { useAgentStream } from './hooks/useAgentStream';
 
@@ -14,10 +14,13 @@ interface Scenario {
   tags: string[];
 }
 
-interface Quest {
+interface Action {
+  id: string;
   action: string;
-  rationale: string;
+  title?: string;
   data_ref: string;
+  pattern_id?: string;
+  rationale: string;
   compound_summary: string;
 }
 
@@ -35,89 +38,47 @@ const DEMO_JSON_HEADERS = {
   Authorization: DEMO_TOKEN,
 };
 
-export default function Chat({ scenario }: { scenario: Scenario }) {
+export default function Chat({ scenario, actions = [], onRestart }: { scenario: Scenario; actions?: Action[]; onRestart?: () => void }) {
   const [input, setInput] = useState('');
   const [intent, setIntent] = useState<string | null>(null);
+  const [completedActions, setCompletedActions] = useState<Set<string>>(() => {
+    try {
+      const stored = sessionStorage.getItem('completedActions');
+      return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const toggleAction = (id: string) => {
+    setCompletedActions(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      sessionStorage.setItem('completedActions', JSON.stringify([...next]));
+      return next;
+    });
+  };
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intentRef = useRef(setIntent);
   intentRef.current = setIntent;
 
-  // Quest state
-  const [quests, setQuests] = useState<Quest[]>([]);
-  const [questsPhase, setQuestsPhase] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [questsCollapsed, setQuestsCollapsed] = useState(false);
-  const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
-  const [workflowStatus, setWorkflowStatus] = useState<string>('');
-
-  // Demo feed state
-  const [demoEvents, setDemoEvents] = useState<{ slug: string; label: string; description: string }[]>([]);
-  const [pushingSlug, setPushingSlug] = useState<string | null>(null);
+  // Track previous actionsVersion to detect increments
+  const prevActionsVersion = useRef(0);
+  const [planUpdated, setPlanUpdated] = useState(false);
 
   // Live data stream
   const { isAnalyzing, analysisMessage, changedDomain, actionsVersion } = useAgentStream();
 
-  // Load demo feed event list once on mount
+  // Show "plan updated" banner when actionsVersion increments
   useEffect(() => {
-    fetch('/api/agent/demo/events', { headers: DEMO_JSON_HEADERS })
-      .then((r) => r.json())
-      .then((d) => setDemoEvents(d.events ?? []))
-      .catch(() => {});
-  }, []);
-
-  const pushDemoEvent = async (slug: string) => {
-    setPushingSlug(slug);
-    try {
-      const response = await fetch(`/api/agent/demo/push/${slug}`, {
-        method: 'POST',
-        headers: DEMO_JSON_HEADERS,
-      });
-      const body = await response.json();
-      const notionSync = body?.notion_sync;
-      const label = body?.label || slug;
-      if (notionSync?.status === 'completed') {
-        const counts = notionSync.counts ?? {};
-        const detail =
-          Number(counts.created ?? 0) > 0
-            ? `created ${counts.created} Notion row`
-            : Number(counts.updated ?? 0) > 0
-              ? `updated ${counts.updated} Notion row`
-              : 'no material Notion change';
-        setWorkflowStatus(`${label} injected · ${detail}`);
-      } else if (notionSync?.status === 'failed') {
-        setWorkflowStatus(`${label} injected · Notion sync failed`);
-      } else if (notionSync?.status === 'skipped') {
-        setWorkflowStatus(`${label} injected · Notion sync skipped`);
-      } else {
-        setWorkflowStatus(`${label} injected · analysis queued`);
+    if (actionsVersion > prevActionsVersion.current) {
+      prevActionsVersion.current = actionsVersion;
+      if (actionsVersion > 0) {
+        setPlanUpdated(true);
       }
-    } finally {
-      setPushingSlug(null);
     }
-  };
+  }, [actionsVersion]);
 
-  const fetchQuests = (showLoading = true) => {
-    if (showLoading) setQuestsPhase('loading');
-    fetch('/api/actions', {
-      method: 'POST',
-      headers: DEMO_JSON_HEADERS,
-      body: JSON.stringify({ scenario_id: scenario.id }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        // Response is a ListObject: { data: [...] }. Each item has `action` field.
-        const items: Quest[] = (data.data || []).map((item: Record<string, string>) => ({
-          action: item.action || item.title || '',
-          rationale: item.rationale || '',
-          data_ref: item.data_ref || '',
-          compound_summary: item.compound_summary || '',
-        }));
-        setQuests(items);
-        setQuestsPhase('ready');
-      })
-      .catch(() => setQuestsPhase('error'));
-  };
-
+  // Activate workers on mount
   useEffect(() => {
     fetch('/api/agent/activate', {
       method: 'POST',
@@ -131,23 +92,13 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
         scenario_tags: scenario.tags,
       }),
     }).catch(() => {});
-
-    fetchQuests();
   }, [scenario.horizon, scenario.id, scenario.likelihood, scenario.summary, scenario.title]);
-
-  // Auto-refresh quests when daemon signals new actions are ready
-  useEffect(() => {
-    if (actionsVersion > 0) {
-      fetchQuests(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionsVersion]);
 
   const [transport] = useState(
     () =>
       new DefaultChatTransport({
         api: '/api/chat',
-        body: { scenario },
+        body: { scenario, actions },
         fetch: async (requestInfo, init) => {
           const mergedHeaders = {
             ...(init?.headers as Record<string, string> | undefined),
@@ -168,7 +119,6 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const { messages, sendMessage, status, stop } = useChat({ transport });
 
   const isStreaming = status === 'streaming' || status === 'submitted';
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,122 +157,148 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
           <div className="chat-header-sub">
             {scenario.title} · {scenario.horizon} · Theo Nakamura
           </div>
-          <div className="chat-header-brief">
+          {/* <div className="chat-header-brief">
             For freelancers who need one operating surface for leads, delivery pressure, and the next revenue-saving move.
-          </div>
+          </div> */}
         </div>
         <div className="chat-header-dot" />
       </header>
 
-      {/* Quests Panel */}
-      <div className={`quests-panel${questsCollapsed ? '' : ' quests-panel--expanded'}`}>
-        <div
-          className="quests-panel-header"
-          onClick={() => setQuestsCollapsed(!questsCollapsed)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && setQuestsCollapsed(!questsCollapsed)}
-        >
-          <span className="quests-panel-icon">◈</span>
-          <span className="quests-panel-title">Recommended Quests</span>
-          {questsPhase === 'loading' && (
-            <span className="quests-loading-rune" style={{ fontSize: '0.75rem' }}>✦</span>
-          )}
-          {questsPhase === 'ready' && quests.length > 0 && (
-            <span className="quests-panel-count">{quests.length} actions</span>
-          )}
-          <span className="quests-panel-toggle">{questsCollapsed ? '▼' : '▲'}</span>
-        </div>
-
-        {!questsCollapsed && (
-          <div className="quests-body">
-            {questsPhase === 'loading' && (
-              <div className="quests-loading">
-                <span className="quests-loading-rune">✦</span>
-                <span className="quests-loading-text">Generating quest recommendations…</span>
-              </div>
-            )}
-            {questsPhase === 'error' && (
-              <div className="quests-loading">
-                <span className="quests-loading-text quests-loading-text--error">
-                  Could not load quests — try chatting directly
-                </span>
-              </div>
-            )}
-            {questsPhase === 'ready' &&
-              quests.map((q, i) => {
-                const key = `q${i}`;
-                const isExpanded = expandedQuest === key;
-                return (
-                  <div
-                    key={key}
-                    className={`quest-card${isExpanded ? ' quest-card--expanded' : ''}`}
-                    style={{ animationDelay: `${i * 0.08}s` }}
-                  >
-                    <div
-                      className="quest-card-main"
-                      onClick={() => setExpandedQuest(isExpanded ? null : key)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === 'Enter' && setExpandedQuest(isExpanded ? null : key)}
-                    >
-                      <span className="quest-card-num">Q{String(i + 1).padStart(2, '0')}</span>
-                      <span className="quest-card-action">{q.action}</span>
-                      {q.data_ref && <span className="quest-card-ref">{q.data_ref}</span>}
-                    </div>
-                    {isExpanded && (
-                      <div className="quest-card-detail">
-                        <div>
-                          <div className="quest-detail-label">Rationale</div>
-                          <div className="quest-detail-text">{q.rationale}</div>
-                        </div>
-                        {q.compound_summary && (
-                          <div>
-                            <div className="quest-detail-label">Compounds to</div>
-                            <div className="quest-detail-text">{q.compound_summary}</div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-          </div>
-        )}
-      </div>
-
-      {/* Live data banner */}
-      {(isAnalyzing || changedDomain) && (
+      {/* Live data banners */}
+      {isAnalyzing && (
         <div className="stream-banner stream-banner--analyzing">
           <span className="stream-banner-dot" />
-          {isAnalyzing
-            ? (analysisMessage ?? 'Re-analyzing trajectories…')
-            : `New ${changedDomain} data — trajectories stable`}
+          {analysisMessage ?? 'Analyzing new data...'}
+        </div>
+      )}
+      {!isAnalyzing && planUpdated && (
+        <div className="stream-banner stream-banner--analyzing">
+          <span className="stream-banner-dot" style={{ background: '#22c55e' }} />
+          Your plan was updated — view actions
+        </div>
+      )}
+      {!isAnalyzing && !planUpdated && changedDomain && (
+        <div className="stream-banner stream-banner--analyzing">
+          <span className="stream-banner-dot" />
+          {`New ${changedDomain} data — trajectories stable`}
         </div>
       )}
 
-      <div className="workflow-strip">
-        <div className="workflow-strip-title">Stress-Test the Freelance Pipeline</div>
-        <div className="workflow-strip-actions">
-          {demoEvents.map((evt) => (
-            <button
-              key={evt.slug}
-              type="button"
-              className="workflow-btn"
-              title={evt.description}
-              onClick={() => pushDemoEvent(evt.slug)}
-              disabled={pushingSlug !== null}
-            >
-              {pushingSlug === evt.slug ? 'Pushing…' : evt.label}
-            </button>
-          ))}
-        </div>
-        {workflowStatus && <div className="workflow-strip-status">{workflowStatus}</div>}
-      </div>
-
-      {/* Left sidebar + Main chat split */}
+      {/* Left context strip + Main chat split */}
       <div className="chat-layout">
-        <ChatSidebar quests={quests} />
+        {/* Slim context strip */}
+        <div style={{ width: '220px', flexShrink: 0, borderRight: '1px solid #1a1a2e', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', height: '100%', paddingBottom: '2rem', overflow: 'hidden' }}>
+          {/* Scenario context */}
+          <div>
+            <div style={{ fontSize: '0.65rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>Active Quest</div>
+            <div style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600, lineHeight: 1.4 }}>{scenario?.title}</div>
+            {scenario?.horizon && (
+              <span style={{ fontSize: '0.7rem', background: '#7B61FF22', color: '#7B61FF', borderRadius: '4px', padding: '2px 6px', marginTop: '0.4rem', display: 'inline-block' }}>
+                {scenario.horizon === '1yr' ? '1 Year' : scenario.horizon === '5yr' ? '5 Years' : scenario.horizon}
+              </span>
+            )}
+          </div>
+
+          {/* Live status */}
+          <div>
+            <div style={{ fontSize: '0.65rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>Status</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: isAnalyzing ? '#F59E0B' : '#22c55e' }} />
+              <span style={{ fontSize: '0.8rem', color: '#888' }}>{isAnalyzing ? 'Analyzing...' : 'Live'}</span>
+            </div>
+          </div>
+
+          {/* Action plan */}
+          {actions.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }}>
+              <div style={{ fontSize: '0.65rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem', flexShrink: 0 }}>
+                This Week · {actions.length} actions
+              </div>
+              <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.3rem', paddingRight: '2px' }}>
+                {actions.map((a, i) => {
+                  const done = completedActions.has(a.id);
+                  return (
+                    <button
+                      key={a.id}
+                      onClick={() => toggleAction(a.id)}
+                      style={{
+                        display: 'flex', gap: '0.5rem', alignItems: 'flex-start',
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        padding: '0.25rem 0', textAlign: 'left', width: '100%',
+                      }}
+                    >
+                      {/* Checkbox */}
+                      <span style={{
+                        flexShrink: 0, marginTop: '2px',
+                        width: '13px', height: '13px',
+                        border: `1px solid ${done ? '#7B61FF' : '#333'}`,
+                        borderRadius: '3px',
+                        background: done ? '#7B61FF' : 'transparent',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'background 0.15s ease, border-color 0.15s ease',
+                      }}>
+                        {done && (
+                          <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                            <path d="M1 3l2 2 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </span>
+                      {/* Index + label */}
+                      <span style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+                        <span style={{ fontSize: '0.6rem', color: done ? '#444' : '#7B61FF', fontFamily: 'IBM Plex Mono, monospace', opacity: done ? 0.5 : 0.7, transition: 'color 0.15s ease' }}>
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <span style={{ fontSize: '0.72rem', color: done ? '#444' : '#aaa', lineHeight: 1.35, textDecoration: done ? 'line-through' : 'none', transition: 'color 0.15s ease' }}>
+                          {a.title || a.action}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Navigation */}
+          <div style={{ marginTop: 'auto', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <Link
+              to="/"
+              className="ops-navbar-cta"
+              style={{ textAlign: 'center', display: 'block', textDecoration: 'none' }}
+            >
+              Dashboard
+            </Link>
+            {onRestart && (
+              <button
+                onClick={onRestart}
+                style={{
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontSize: '0.6rem',
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  background: 'transparent',
+                  color: '#555',
+                  border: '1px solid #222',
+                  borderRadius: '999px',
+                  padding: '0.4rem 1rem',
+                  cursor: 'pointer',
+                  transition: 'color 0.18s ease, border-color 0.18s ease',
+                  width: '100%',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.color = '#c8922a';
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = '#c8922a44';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.color = '#555';
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = '#222';
+                }}
+              >
+                ↺ Restart
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* Messages */}
         <div className="chat-main">
@@ -388,10 +364,11 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
           {/* Input */}
           <div className="chat-input-area">
             <form className="chat-form" onSubmit={handleSubmit}>
+              <label className="chat-input-label" htmlFor="chat-input" style={{ display: 'block', marginBottom: '0.5rem' }}>
+                Your query · shift+enter for newline
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div className="chat-input-wrap">
-                <label className="chat-input-label" htmlFor="chat-input">
-                  Your query · shift+enter for newline
-                </label>
                 <textarea
                   id="chat-input"
                   ref={textareaRef}
@@ -422,6 +399,7 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
                   Send ◆
                 </button>
               )}
+              </div>{/* end row */}
             </form>
           </div>
         </div>{/* end chat-main */}

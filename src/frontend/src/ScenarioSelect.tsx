@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useAgentStream } from './hooks/useAgentStream';
+import { useState } from 'react';
 
 interface Scenario {
   id: string;
@@ -19,14 +18,20 @@ const LIKELIHOOD_ICON: Record<string, string> = {
 
 const LIKELIHOOD_LABEL: Record<string, string> = {
   most_likely: 'Most Likely',
-  possible: 'Possible',
-  aspirational: 'Aspirational',
+  possible: 'Alternative',
+  aspirational: 'Stretch',
 };
 
 const LIKELIHOOD_CLASS: Record<string, string> = {
   most_likely: 'badge--likely',
   possible: 'badge--possible',
   aspirational: 'badge--aspirational',
+};
+
+const HORIZON_LABEL: Record<string, string> = {
+  '1yr': '1 Year',
+  '5yr': '5 Years',
+  '10yr': '10 Years',
 };
 
 type Phase = 'idle' | 'loading' | 'ready';
@@ -41,8 +46,6 @@ export default function ScenarioSelect({ onSelect }: Props) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [hovered, setHovered] = useState<string | null>(null);
-
-  const { isAnalyzing, analysisMessage, scenariosVersion, changedDomain } = useAgentStream();
 
   const fetchScenarios = async () => {
     setPhase('loading');
@@ -59,32 +62,14 @@ export default function ScenarioSelect({ onSelect }: Props) {
 
   const handleGenerate = () => fetchScenarios();
 
-  // Auto-refresh trajectories when the daemon signals new scenarios are ready
-  useEffect(() => {
-    if (scenariosVersion > 0 && phase === 'ready') {
-      fetchScenarios();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scenariosVersion]);
-
   return (
     <div className="scenario-root">
-      {/* Live data banner */}
-      {(isAnalyzing || changedDomain) && (
-        <div className="stream-banner stream-banner--analyzing">
-          <span className="stream-banner-dot" />
-          {isAnalyzing
-            ? (analysisMessage ?? 'Re-analyzing trajectories…')
-            : `New ${changedDomain} data received`}
-        </div>
-      )}
-
       <div className="scenario-header">
         <div className="scenario-wordmark">Questline</div>
         <div className="scenario-persona">Theo Nakamura · p05</div>
+        <h1 className="scenario-headline">Choose your questline</h1>
         <p className="scenario-lead">
-          The Oracle will analyze your behavioral data across finance, calendar, and social
-          signals to project your life 1, 5, and 10 years out.
+          Three possible futures, grounded in your patterns
         </p>
       </div>
 
@@ -92,7 +77,7 @@ export default function ScenarioSelect({ onSelect }: Props) {
         <div className="scenario-idle">
           <button className="generate-btn" onClick={handleGenerate}>
             <span className="generate-btn-icon">◈</span>
-            Generate My Trajectories
+            Generate My Quest Lines
           </button>
           <p className="generate-hint">Takes ~10 seconds · powered by behavioral pattern analysis</p>
         </div>
@@ -103,12 +88,7 @@ export default function ScenarioSelect({ onSelect }: Props) {
           <div className="loading-orb">
             <span className="loading-rune">✦</span>
           </div>
-          <div className="loading-label">Analyzing patterns</div>
-          <div className="loading-steps">
-            <LoadingStep delay={0}>Parsing financial signals</LoadingStep>
-            <LoadingStep delay={1.2}>Cross-referencing calendar data</LoadingStep>
-            <LoadingStep delay={2.5}>Projecting life trajectories</LoadingStep>
-          </div>
+          <div className="loading-label">Generating questlines…</div>
         </div>
       )}
 
@@ -130,7 +110,9 @@ export default function ScenarioSelect({ onSelect }: Props) {
                     <span className={`badge ${LIKELIHOOD_CLASS[s.likelihood]}`}>
                       {LIKELIHOOD_LABEL[s.likelihood]}
                     </span>
-                    <span className="badge badge--horizon">{s.horizon}</span>
+                    <span className="badge badge--horizon">
+                      {HORIZON_LABEL[s.horizon] ?? s.horizon}
+                    </span>
                   </div>
                 </div>
                 <div className="sc-title">{s.title}</div>
@@ -152,15 +134,6 @@ export default function ScenarioSelect({ onSelect }: Props) {
           </div>
         </>
       )}
-    </div>
-  );
-}
-
-function LoadingStep({ children, delay }: { children: string; delay: number }) {
-  return (
-    <div className="loading-step" style={{ animationDelay: `${delay}s` }}>
-      <span className="loading-step-dot" />
-      {children}
     </div>
   );
 }

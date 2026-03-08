@@ -138,6 +138,13 @@ async def api_health(request: Request):
     return await v1_health(request)
 
 
+@app.get("/api/patterns", include_in_schema=False)
+async def api_patterns(request: Request):
+    from app.api.v1.patterns import list_patterns
+
+    return await list_patterns(request=request)
+
+
 @app.get("/api/scenarios", include_in_schema=False)
 async def api_scenarios(request: Request):
     from app.api.v1.scenarios import list_scenarios

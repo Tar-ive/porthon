@@ -35,9 +35,22 @@ class ScenarioRef(BaseModel):
     summary: str
 
 
+class ActionRef(BaseModel):
+    id: str
+    action: str
+    title: str | None = None
+    data_ref: str
+    pattern_id: str | None = None
+    rationale: str
+    compound_summary: str
+
+    model_config = {"extra": "allow"}
+
+
 class CreateMessageRequest(BaseModel):
     messages: List[ClientMessage]
     scenario: ScenarioRef | None = None
+    actions: List[ActionRef] = []
 
     model_config = {"extra": "allow"}
 
@@ -98,7 +111,18 @@ async def create_message(body: CreateMessageRequest, request: Request):
             f"{body.scenario.summary}"
         )
 
-    system_prompt = build_system_prompt(context=context, intent=intent, scenario=scenario_context)
+    actions_context = None
+    if body.actions:
+        lines = []
+        for i, a in enumerate(body.actions, 1):
+            label = a.title or a.action
+            lines.append(f"{i:02d}. {label}")
+            lines.append(f"    Rationale: {a.rationale}")
+            if a.data_ref:
+                lines.append(f"    Grounded in: {a.data_ref}")
+        actions_context = "\n".join(lines)
+
+    system_prompt = build_system_prompt(context=context, intent=intent, scenario=scenario_context, actions=actions_context)
 
     events = (
         iter_openai_events(body.messages, model=OPENAI_MODEL, system_prompt=system_prompt)
