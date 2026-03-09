@@ -166,7 +166,7 @@ make test-live     # Integration tests (requires API keys)
 **Known Limitations**
 - Single persona only (Theo / p05) — multi-user auth not implemented
 - Knowledge Graph features (Neo4j/Qdrant) require local services; app falls back to in-memory patterns without them
-- Pattern analysis can take 10–20 seconds on cold start (no cache)
+- Pattern analysis can take 10–20 seconds on cold start (no cache) 
 
 **Next Steps**
 - More data connectors (Instagram API, Slack, etc.)
