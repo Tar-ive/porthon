@@ -1,0 +1,61 @@
+{
+  "persona_id": "p05",
+  "name": "Theo Nakamura",
+  "age": 23,
+  "location": "Austin, TX",
+  "job": "Freelance Graphic Designer + Part-time Barista",
+  "employer": "Self-employed + Local coffee shop",
+  "household": "Shares a house with 3 roommates, East Austin",
+  "income_approx": "$38,000/year (combined, highly variable)",
+  "goals": [
+    "Make freelancing full-time within 2 years",
+    "Build a recognizable design brand/portfolio",
+    "Pay off $6k in credit card debt",
+    "Learn motion design and 3D tools",
+    "Figure out what city feels like home long-term"
+  ],
+  "pain_points": [
+    "Feast-or-famine freelance income",
+    "Undercharging clients and not knowing how to fix it",
+    "Social anxiety making networking hard",
+    "ADHD making it hard to finish projects",
+    "Comparison to peers who seem more successful"
+  ],
+  "personality": {
+    "communication_style": "informal, uses humor, sometimes self-deprecating",
+    "privacy_sensitivity": "low \u2014 grew up sharing everything online",
+    "ai_assistant_tone": "energetic, real, no corporate speak \u2014 be a collaborator not an assistant",
+    "strengths": [
+      "creative",
+      "adaptable",
+      "authentic"
+    ],
+    "growth_areas": [
+      "follow-through",
+      "financial planning",
+      "self-belief"
+    ]
+  },
+  "tech_usage": {
+    "ai_tools": [
+      "ChatGPT",
+      "Midjourney",
+      "Runway ML",
+      "Adobe Firefly"
+    ],
+    "productivity": [
+      "Figma",
+      "Notion",
+      "Trello",
+      "Google Sheets for invoicing"
+    ],
+    "social": [
+      "Instagram (portfolio)",
+      "TikTok",
+      "Twitter/X",
+      "Discord"
+    ],
+    "wearables": "None",
+    "frequency": "Uses AI almost daily \u2014 creative exploration, client proposals, self-coaching"
+  }
+}

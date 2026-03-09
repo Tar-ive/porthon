@@ -1,0 +1,57 @@
+{
+  "persona_id": "p04",
+  "name": "Sunita Rajan",
+  "age": 58,
+  "location": "Round Rock, TX (Austin metro)",
+  "job": "High School Chemistry Teacher (22 years)",
+  "employer": "Round Rock ISD",
+  "household": "Married to Venkat (IT manager), two adult children",
+  "income_approx": "$72,000/year",
+  "goals": [
+    "Retire comfortably in 6-8 years",
+    "Help son navigate job search after layoff",
+    "Learn to use AI tools in the classroom",
+    "Travel to Portugal and Japan",
+    "Stay healthy \u2014 managing Type 2 diabetes"
+  ],
+  "pain_points": [
+    "Overwhelmed by how fast technology is changing",
+    "Worried about son's financial situation",
+    "Retirement account underperformed expectations",
+    "Feels invisible compared to younger colleagues who seem tech-native",
+    "Chronic knee pain limiting activity"
+  ],
+  "personality": {
+    "communication_style": "thoughtful and methodical, asks a lot of clarifying questions",
+    "privacy_sensitivity": "very high \u2014 skeptical of any data collection",
+    "ai_assistant_tone": "patient, clear, non-condescending \u2014 explain without jargon",
+    "strengths": [
+      "persistence",
+      "deep expertise in her domain",
+      "generosity"
+    ],
+    "growth_areas": [
+      "embracing uncertainty",
+      "trusting technology",
+      "self-advocacy at work"
+    ]
+  },
+  "tech_usage": {
+    "ai_tools": [
+      "ChatGPT (recent, learning)",
+      "Google Bard/Gemini"
+    ],
+    "productivity": [
+      "Google Classroom",
+      "Gmail",
+      "Google Calendar",
+      "Paper planner"
+    ],
+    "social": [
+      "Facebook",
+      "WhatsApp"
+    ],
+    "wearables": "None",
+    "frequency": "Uses AI 1-2x per week, still building comfort"
+  }
+}

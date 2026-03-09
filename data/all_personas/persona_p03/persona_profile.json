@@ -1,0 +1,60 @@
+{
+  "persona_id": "p03",
+  "name": "Darius Webb",
+  "age": 41,
+  "location": "Austin, TX",
+  "job": "Founder & CEO",
+  "employer": "R\u014dth Creative (brand strategy agency, 8 employees)",
+  "household": "Divorced, co-parents 2 kids (ages 9 and 12) every other week",
+  "income_approx": "$160,000/year (variable)",
+  "goals": [
+    "Grow agency revenue 40% this year",
+    "Spend more intentional time with his kids on custody weeks",
+    "Write a book on brand identity for founders",
+    "Get back to 3x/week workouts",
+    "Stop using work as avoidance after the divorce"
+  ],
+  "pain_points": [
+    "Context switching between CEO, creative director, and dad",
+    "Cash flow stress despite healthy revenue",
+    "Still processing the divorce",
+    "Inconsistent habits \u2014 great one week, collapsed the next",
+    "Hiring the wrong people and letting it go on too long"
+  ],
+  "personality": {
+    "communication_style": "expressive and strategic",
+    "privacy_sensitivity": "low \u2014 very open about sharing his story",
+    "ai_assistant_tone": "bold and honest, challenge him when he's off track",
+    "strengths": [
+      "visionary",
+      "charismatic",
+      "resilient"
+    ],
+    "growth_areas": [
+      "emotional regulation",
+      "financial discipline",
+      "letting go of control"
+    ]
+  },
+  "tech_usage": {
+    "ai_tools": [
+      "ChatGPT",
+      "Claude",
+      "Midjourney",
+      "Otter.ai"
+    ],
+    "productivity": [
+      "Notion",
+      "Asana",
+      "QuickBooks",
+      "Calendly"
+    ],
+    "social": [
+      "LinkedIn (active)",
+      "Twitter/X",
+      "Instagram"
+    ],
+    "wearables": "Whoop 4.0",
+    "frequency": "Uses AI daily \u2014 prompts, brainstorming, client prep, reflection"
+  }
+}

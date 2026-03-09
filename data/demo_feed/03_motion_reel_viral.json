@@ -1,0 +1,17 @@
+{
+  "slug": "03_motion_reel_viral",
+  "label": "Motion Reel Goes Viral",
+  "description": "50k views on motion design reel, 12 inbound DMs from potential clients",
+  "domain": "social",
+  "file": "social_posts.jsonl",
+  "record": {
+    "id": "s_0051",
+    "ts": "2026-03-05T18:00:00-05:00",
+    "source": "social",
+    "type": "post",
+    "text": "Posted my motion design reel this morning. 50k views. 12 DMs from people asking about rates. I think I undercharged for the last two years. Not anymore. #motiondesign #motiongraphics",
+    "tags": ["motion_design", "portfolio", "instagram", "viral", "inbound"],
+    "refs": [],
+    "pii_level": "synthetic"
+  }
+}

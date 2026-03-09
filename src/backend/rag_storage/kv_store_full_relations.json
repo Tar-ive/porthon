@@ -1,0 +1,1394 @@
+{
+  "doc-2ebc119646186fab606741b75843b92b": {
+    "relation_pairs": [
+      [
+        "Data Portability Hackathon 2026",
+        "P05"
+      ],
+      [
+        "P05",
+        "Prohibited Uses"
+      ],
+      [
+        "Allowed Uses",
+        "P05"
+      ],
+      [
+        "P05",
+        "Synthetic Data"
+      ],
+      [
+        "Data Portability Hackathon 2026",
+        "Synthetic Data"
+      ],
+      [
+        "P05",
+        "Retention Policy"
+      ]
+    ],
+    "count": 6,
+    "create_time": 1772265148,
+    "update_time": 1772265148,
+    "_id": "doc-2ebc119646186fab606741b75843b92b"
+  },
+  "doc-43a65c0a746bd706ccd89e6b61c98673": {
+    "relation_pairs": [
+      [
+        "Notion",
+        "Theo Nakamura"
+      ],
+      [
+        "Midjourney",
+        "Theo Nakamura"
+      ],
+      [
+        "Figma",
+        "Theo Nakamura"
+      ],
+      [
+        "Austin, TX",
+        "Theo Nakamura"
+      ],
+      [
+        "Theo Nakamura",
+        "Trello"
+      ],
+      [
+        "Theo Nakamura",
+        "Twitter/X"
+      ],
+      [
+        "Instagram",
+        "Theo Nakamura"
+      ],
+      [
+        "Google Sheets",
+        "Theo Nakamura"
+      ],
+      [
+        "Runway ML",
+        "Theo Nakamura"
+      ],
+      [
+        "Discord",
+        "Theo Nakamura"
+      ],
+      [
+        "ChatGPT",
+        "Theo Nakamura"
+      ],
+      [
+        "Self-Employed",
+        "Theo Nakamura"
+      ],
+      [
+        "Theo Nakamura",
+        "TikTok"
+      ],
+      [
+        "Adobe Firefly",
+        "Theo Nakamura"
+      ],
+      [
+        "East Austin",
+        "Theo Nakamura"
+      ],
+      [
+        "Local Coffee Shop",
+        "Theo Nakamura"
+      ]
+    ],
+    "count": 16,
+    "create_time": 1772265361,
+    "update_time": 1772265361,
+    "_id": "doc-43a65c0a746bd706ccd89e6b61c98673"
+  },
+  "doc-87c84d1635f12d0fe3656ef9affaf77c": {
+    "relation_pairs": [
+      [
+        "ADHD",
+        "Body Doubling"
+      ],
+      [
+        "After Effects",
+        "School Of Motion"
+      ],
+      [
+        "Cold Email Pitch",
+        "Pricing Anxiety"
+      ],
+      [
+        "100 Words",
+        "Business Development Email Template"
+      ],
+      [
+        "Full-time Jobs",
+        "Social Validation"
+      ],
+      [
+        "After Effects",
+        "Figma"
+      ],
+      [
+        "ADHD",
+        "Minimum Viable Progress"
+      ],
+      [
+        "Personal Growth",
+        "Reflection Prompt"
+      ],
+      [
+        "Business Development Email Template",
+        "New Mark"
+      ],
+      [
+        "Business Development Email Template",
+        "Email Draft"
+      ],
+      [
+        "Business Development",
+        "Business Development Email Template"
+      ],
+      [
+        "Instagram",
+        "Process Content"
+      ],
+      [
+        "Ai Chat",
+        "C0008"
+      ],
+      [
+        "Rebrand",
+        "Series A"
+      ],
+      [
+        "Client",
+        "Logo"
+      ],
+      [
+        "After Effects",
+        "Motion Design"
+      ],
+      [
+        "Financial Security",
+        "Full-time Jobs"
+      ],
+      [
+        "Reflection",
+        "Reflection Prompt"
+      ],
+      [
+        "Business Development Email Template",
+        "Freelance"
+      ],
+      [
+        "After Effects",
+        "Motion Design School"
+      ],
+      [
+        "C0008",
+        "Chat Turn"
+      ],
+      [
+        "Business Development Email Template",
+        "Writing"
+      ],
+      [
+        "Packaging Opportunity",
+        "Rebrand"
+      ],
+      [
+        "Figma",
+        "Motion Design"
+      ],
+      [
+        "Client",
+        "Revisions"
+      ],
+      [
+        "20-Minute Call",
+        "Business Development Email Template"
+      ],
+      [
+        "Business Development Email Template",
+        "Packaging Opportunity"
+      ],
+      [
+        "Clear Path",
+        "Full-time Jobs"
+      ],
+      [
+        "Logo",
+        "Motion Design"
+      ],
+      [
+        "Assistant",
+        "Reflection Prompt"
+      ],
+      [
+        "ADHD",
+        "Pomodoro"
+      ],
+      [
+        "C0008",
+        "Reflection Prompt"
+      ],
+      [
+        "New Mark",
+        "Rebrand"
+      ],
+      [
+        "Pricing Anxiety",
+        "Rate Card"
+      ],
+      [
+        "C0008",
+        "Pii Level"
+      ],
+      [
+        "Comparison",
+        "Full-time Jobs"
+      ],
+      [
+        "Process Content",
+        "Twitter"
+      ],
+      [
+        "2024-12-20T21:30:00-05:00",
+        "C0008"
+      ],
+      [
+        "Figma",
+        "Rive"
+      ],
+      [
+        "Brand Identity",
+        "Client"
+      ],
+      [
+        "Rebrand",
+        "Startup"
+      ],
+      [
+        "Assistant",
+        "User"
+      ],
+      [
+        "Business Development Email Template",
+        "Series A"
+      ],
+      [
+        "Cold Email Pitch",
+        "Startup"
+      ],
+      [
+        "Reflection Prompt",
+        "Year End"
+      ],
+      [
+        "Series A",
+        "Startup"
+      ]
+    ],
+    "count": 46,
+    "create_time": 1772265564,
+    "update_time": 1772265564,
+    "_id": "doc-87c84d1635f12d0fe3656ef9affaf77c"
+  },
+  "doc-0ea2f0343b0556bc88cc1432d92f9a83": {
+    "relation_pairs": [
+      [
+        "East Austin",
+        "Skate Session with Roommates"
+      ],
+      [
+        "New Client Onboarding Call",
+        "Zoom"
+      ],
+      [
+        "Austin Creatives",
+        "Design Meetup Austin Creatives"
+      ],
+      [
+        "Client Presentation - Brand Concepts",
+        "Zoom"
+      ],
+      [
+        "Café Rowan",
+        "Coffee Shop Shift"
+      ],
+      [
+        "Figma Blender Learning Session",
+        "Home Studio"
+      ],
+      [
+        "Canopy",
+        "Design Meetup Austin Creatives"
+      ],
+      [
+        "Blender",
+        "Figma Blender Learning Session"
+      ],
+      [
+        "Roommates",
+        "Skate Session"
+      ],
+      [
+        "East Austin",
+        "Roommates Event"
+      ],
+      [
+        "Home",
+        "Motion Design Course Module"
+      ],
+      [
+        "Figma",
+        "Figma Blender Learning Session"
+      ],
+      [
+        "Brand Concepts",
+        "Client Presentation"
+      ],
+      [
+        "New Client Onboarding Call",
+        "e_0031"
+      ],
+      [
+        "Austin Creatives",
+        "Design Meetup"
+      ],
+      [
+        "Client Presentation Brand Concepts",
+        "Zoom"
+      ],
+      [
+        "Case Study",
+        "Portfolio Shoot"
+      ],
+      [
+        "Client Presentation",
+        "Zoom"
+      ],
+      [
+        "East Austin",
+        "Skate Session With Roommates"
+      ],
+      [
+        "Coffee Shop Shift",
+        "e_0007"
+      ],
+      [
+        "Blender",
+        "Figma + Blender Learning Session"
+      ],
+      [
+        "Figma + Blender Learning Session",
+        "Home Studio"
+      ],
+      [
+        "Client Brand Concepts Presentation",
+        "Zoom"
+      ],
+      [
+        "Canopy",
+        "Design Meetup"
+      ],
+      [
+        "East Austin",
+        "Skate Session"
+      ],
+      [
+        "Coffee Shop",
+        "Tax Prep Attempt"
+      ],
+      [
+        "Figma",
+        "Figma + Blender Learning Session"
+      ]
+    ],
+    "count": 27,
+    "create_time": 1772265742,
+    "update_time": 1772265742,
+    "_id": "doc-0ea2f0343b0556bc88cc1432d92f9a83"
+  },
+  "doc-2a8e34aba2637365e802a0b8edda9e90": {
+    "relation_pairs": [
+      [
+        "Roommate",
+        "Zelle"
+      ],
+      [
+        "First Draft",
+        "Theo Nakamura"
+      ],
+      [
+        "Design Need",
+        "Theo Nakamura"
+      ],
+      [
+        "Brand Identity Project",
+        "Startupco"
+      ],
+      [
+        "Brand Identity Project",
+        "Theo"
+      ],
+      [
+        "Color Palette",
+        "Startupco"
+      ],
+      [
+        "Invoice #018",
+        "StartupCo"
+      ],
+      [
+        "Brand Identity Project",
+        "Invoice #018"
+      ],
+      [
+        "Startupco",
+        "Theo"
+      ],
+      [
+        "Startupco",
+        "Wordmark"
+      ],
+      [
+        "Cafe Rowan",
+        "Theo Nakamura"
+      ],
+      [
+        "Chase",
+        "Credit Card Statement"
+      ],
+      [
+        "First Draft",
+        "Warmer Color Palette"
+      ],
+      [
+        "School Of Motion",
+        "Theo"
+      ],
+      [
+        "Cafe Rowan",
+        "cal_0011"
+      ],
+      [
+        "Cal 0011",
+        "Theo Nakamura"
+      ],
+      [
+        "Jake",
+        "Theo Nakamura"
+      ],
+      [
+        "Designneed",
+        "Jake"
+      ],
+      [
+        "Roommate",
+        "Theo"
+      ],
+      [
+        "First Draft",
+        "Wordmark"
+      ],
+      [
+        "Motion Design Library",
+        "School of Motion"
+      ],
+      [
+        "Cafe Rowan",
+        "Cal 0011"
+      ],
+      [
+        "Invoice #018",
+        "Startupco"
+      ],
+      [
+        "Invoice #018",
+        "Theo"
+      ],
+      [
+        "Designneed",
+        "Theo Nakamura"
+      ],
+      [
+        "School of Motion",
+        "Theo Nakamura"
+      ],
+      [
+        "Free Trial",
+        "Motion Design Library"
+      ],
+      [
+        "Chase",
+        "Theo Nakamura"
+      ],
+      [
+        "Designneed",
+        "Rebrand"
+      ],
+      [
+        "Rent Payment",
+        "Roommate"
+      ],
+      [
+        "Motion Design Library",
+        "School Of Motion"
+      ],
+      [
+        "Rebrand",
+        "Theo"
+      ],
+      [
+        "Chase",
+        "Credit Card Balance"
+      ],
+      [
+        "First Draft",
+        "Startupco"
+      ],
+      [
+        "First Draft",
+        "Theo"
+      ],
+      [
+        "$875 Rent",
+        "Roommate"
+      ],
+      [
+        "Brand Identity Project",
+        "Theo Nakamura"
+      ],
+      [
+        "StartupCo",
+        "Theo Nakamura"
+      ],
+      [
+        "Barista Schedule",
+        "Cafe Rowan"
+      ],
+      [
+        "Startupco",
+        "Theo Nakamura"
+      ],
+      [
+        "Jake",
+        "Rebrand Project"
+      ],
+      [
+        "Cafe Rowan",
+        "Theo"
+      ],
+      [
+        "School Of Motion",
+        "Theo Nakamura"
+      ],
+      [
+        "Brand Identity Project",
+        "StartupCo"
+      ],
+      [
+        "Jake",
+        "Theo"
+      ],
+      [
+        "Rent Share",
+        "Roommate"
+      ],
+      [
+        "Startupco",
+        "Warmer Color Palette"
+      ],
+      [
+        "DesignNeed",
+        "Theo Nakamura"
+      ],
+      [
+        "Designneed",
+        "Rebrand Project"
+      ],
+      [
+        "Roommate",
+        "Theo Nakamura"
+      ],
+      [
+        "Startup Co",
+        "Theo Nakamura"
+      ],
+      [
+        "Invoice #018",
+        "Theo Nakamura"
+      ],
+      [
+        "Free Trial",
+        "Theo"
+      ],
+      [
+        "Designneed",
+        "Theo"
+      ],
+      [
+        "Chase",
+        "Theo"
+      ],
+      [
+        "Credit Card Balance $5,840",
+        "Theo Nakamura"
+      ]
+    ],
+    "count": 56,
+    "create_time": 1772265994,
+    "update_time": 1772265994,
+    "_id": "doc-2a8e34aba2637365e802a0b8edda9e90"
+  },
+  "doc-a0c9f52490110a436d08412d9f9cf3b8": {
+    "relation_pairs": [
+      [
+        "Client Onboarding Template.docx",
+        "Rate Increase Email Template.txt"
+      ],
+      [
+        "Avalanche Method",
+        "Credit Card Payoff Plan.xlsx"
+      ],
+      [
+        "East Austin Mural Walk.jpg",
+        "South 1st to 6th Street"
+      ],
+      [
+        "Austin",
+        "East Austin"
+      ],
+      [
+        "Brand Identity Project Case Study.fig",
+        "Tech Startup Client"
+      ],
+      [
+        "East Austin Mural Walk.jpg",
+        "South 1st To 6th Street"
+      ],
+      [
+        "Motion Design Learning Notes.txt",
+        "School Of Motion"
+      ],
+      [
+        "Austin",
+        "East Austin Mural Walk.jpg"
+      ],
+      [
+        "Blender",
+        "Tutorial Donut"
+      ],
+      [
+        "Blender",
+        "Blender Donut Render V3.png"
+      ],
+      [
+        "Brand Identity Project Case Study.fig",
+        "Theo Nakamura Portfolio 2024.pdf"
+      ],
+      [
+        "East Austin Mural Walk.jpg",
+        "South 1St To 6Th Street"
+      ],
+      [
+        "Theo Nakamura",
+        "Theo Nakamura Portfolio 2024.pdf"
+      ],
+      [
+        "East Austin",
+        "East Austin Mural Walk.jpg"
+      ],
+      [
+        "Brand Identity Project Case Study.fig",
+        "Figma"
+      ],
+      [
+        "Motion Design Learning Notes.txt",
+        "School of Motion"
+      ]
+    ],
+    "count": 16,
+    "create_time": 1772266000,
+    "update_time": 1772266000,
+    "_id": "doc-a0c9f52490110a436d08412d9f9cf3b8"
+  },
+  "doc-221c8f9b9ed98175c3916813dfc41b9e": {
+    "relation_pairs": [
+      [
+        "3D Design",
+        "Blender"
+      ],
+      [
+        "Freelance",
+        "Portfolio"
+      ],
+      [
+        "Austin",
+        "Mural Walk"
+      ],
+      [
+        "Instagram",
+        "Portfolio"
+      ],
+      [
+        "ADHD",
+        "Hyperfocus"
+      ],
+      [
+        "East Austin Mural Walk",
+        "Roommates"
+      ],
+      [
+        "Clients",
+        "Freelance"
+      ],
+      [
+        "Brand Identity Project",
+        "Portfolio"
+      ],
+      [
+        "Freelance",
+        "Hourly Rate"
+      ],
+      [
+        "Brand Identity Project",
+        "Graphic Design"
+      ],
+      [
+        "Freelance",
+        "Linkedin"
+      ],
+      [
+        "Designer",
+        "Hourly Rate"
+      ],
+      [
+        "Mural Walk",
+        "Roommates"
+      ],
+      [
+        "Clients",
+        "Designer"
+      ],
+      [
+        "Case Study",
+        "Portfolio"
+      ],
+      [
+        "Austin",
+        "East Austin"
+      ],
+      [
+        "ADHD",
+        "Creative Work"
+      ],
+      [
+        "Designer",
+        "Freelance"
+      ],
+      [
+        "East Austin",
+        "Roommates"
+      ],
+      [
+        "East Austin",
+        "East Austin Mural Walk"
+      ],
+      [
+        "Art",
+        "East Austin Mural Walk"
+      ],
+      [
+        "Blender",
+        "Donut"
+      ],
+      [
+        "Brand Identity Project",
+        "Case Study"
+      ],
+      [
+        "Instagram Post",
+        "Portfolio"
+      ],
+      [
+        "1k Visitors",
+        "Portfolio"
+      ],
+      [
+        "ADHD",
+        "Admin Part"
+      ],
+      [
+        "East Austin",
+        "Mural Walk"
+      ],
+      [
+        "Art",
+        "Mural Walk"
+      ],
+      [
+        "Clients",
+        "Hourly Rate"
+      ]
+    ],
+    "count": 29,
+    "create_time": 1772266382,
+    "update_time": 1772266382,
+    "_id": "doc-221c8f9b9ed98175c3916813dfc41b9e"
+  },
+  "doc-7776f88823091245a69d39aeeca2c326": {
+    "relation_pairs": [
+      [
+        "$10 Tip",
+        "Customer"
+      ],
+      [
+        "Freelancer",
+        "UT Library"
+      ],
+      [
+        "Coffee Shop",
+        "Freelance"
+      ],
+      [
+        "ADHD",
+        "Hyperfocus"
+      ],
+      [
+        "Credit Card",
+        "Freelancer"
+      ],
+      [
+        "Credit Card",
+        "Finances"
+      ],
+      [
+        "Freelance Income",
+        "Rebrand Project"
+      ],
+      [
+        "Austin",
+        "Ut Library"
+      ],
+      [
+        "6th Street Murals",
+        "Building Owners"
+      ],
+      [
+        "Coffee Shop",
+        "Coffee Shop Customer"
+      ],
+      [
+        "Logo",
+        "Revision Policy"
+      ],
+      [
+        "Students",
+        "UT Library"
+      ],
+      [
+        "ADHD",
+        "UT Library"
+      ],
+      [
+        "Claude",
+        "Proposal Emails"
+      ],
+      [
+        "Expenses",
+        "Freelance Income"
+      ],
+      [
+        "Hourly Rate",
+        "New Client"
+      ],
+      [
+        "Building Owners",
+        "Long Bike Ride"
+      ],
+      [
+        "Austin",
+        "Design Meetup"
+      ],
+      [
+        "Austin",
+        "Cost Of Living"
+      ],
+      [
+        "Austin",
+        "Roommate"
+      ],
+      [
+        "10 Dollar Tip",
+        "Coffee Shop"
+      ],
+      [
+        "Brand Identity Project",
+        "Freelancer"
+      ],
+      [
+        "Barton Springs",
+        "Roommates"
+      ],
+      [
+        "Blender",
+        "Freelancer"
+      ],
+      [
+        "Brand Identity Project",
+        "Client"
+      ],
+      [
+        "Business Cards",
+        "Design Meetup"
+      ],
+      [
+        "6th Street Murals",
+        "Long Bike Ride"
+      ],
+      [
+        "Figma",
+        "Freelancer"
+      ],
+      [
+        "Client Referral",
+        "New Client"
+      ],
+      [
+        "Austin",
+        "Brand Identity Project"
+      ],
+      [
+        "Anxiety",
+        "Credit Card Balance"
+      ],
+      [
+        "Client",
+        "Logo"
+      ],
+      [
+        "Long Bike Ride",
+        "Murals"
+      ],
+      [
+        "Coffee Shop",
+        "Freelance Milestone"
+      ],
+      [
+        "Client",
+        "Revision Policy"
+      ],
+      [
+        "Design Meetup",
+        "Downtown"
+      ],
+      [
+        "1000 Unique Visitors",
+        "Portfolio Website"
+      ],
+      [
+        "Claude",
+        "Freelance"
+      ],
+      [
+        "Austin",
+        "Community"
+      ],
+      [
+        "Portfolio",
+        "Rebrand Project"
+      ],
+      [
+        "Client Referral",
+        "Previous Client"
+      ],
+      [
+        "Freelance",
+        "Freelance Hourly Rate"
+      ],
+      [
+        "Freelance",
+        "Portfolio Website"
+      ],
+      [
+        "Building Owners",
+        "Murals"
+      ],
+      [
+        "Austin",
+        "Coffee Shop"
+      ],
+      [
+        "1000 Unique Visitors",
+        "Instagram Post"
+      ],
+      [
+        "Client Referral",
+        "Past Client"
+      ],
+      [
+        "Logo Project",
+        "Revision Policy"
+      ],
+      [
+        "6th",
+        "Murals"
+      ],
+      [
+        "ADHD",
+        "Boring Admin"
+      ],
+      [
+        "Freelancer",
+        "Roommate"
+      ],
+      [
+        "ADHD",
+        "Figma"
+      ],
+      [
+        "Coffee Shop",
+        "Freelancer"
+      ],
+      [
+        "East Austin",
+        "Long Bike Ride"
+      ],
+      [
+        "Blender",
+        "Freelance"
+      ],
+      [
+        "Freelancer",
+        "Murals"
+      ],
+      [
+        "Credit Card Balance",
+        "Taxes"
+      ],
+      [
+        "Instagram Post",
+        "Portfolio Website"
+      ],
+      [
+        "6th Street",
+        "East Austin"
+      ],
+      [
+        "Austin",
+        "Cost of Living"
+      ],
+      [
+        "Blender",
+        "Donut"
+      ],
+      [
+        "Contract",
+        "New Client"
+      ],
+      [
+        "Coffee Shop",
+        "Freelance Income"
+      ],
+      [
+        "ADHD",
+        "Freelance"
+      ],
+      [
+        "6th Street Murals",
+        "East Austin"
+      ],
+      [
+        "Credit Card Balance",
+        "Debt"
+      ],
+      [
+        "Freelancer",
+        "Revision Policy"
+      ],
+      [
+        "Instagram",
+        "Rebrand Project"
+      ],
+      [
+        "Instagram",
+        "Portfolio Website"
+      ],
+      [
+        "Austin",
+        "Freelancer"
+      ],
+      [
+        "Creative Work",
+        "Hyperfocus"
+      ],
+      [
+        "Blender",
+        "Rebrand Project"
+      ],
+      [
+        "Claude",
+        "Freelancer"
+      ],
+      [
+        "Client",
+        "Freelancer"
+      ],
+      [
+        "Followed Designers",
+        "Instagram Post"
+      ],
+      [
+        "ADHD",
+        "Taxes"
+      ],
+      [
+        "Designers",
+        "Rebrand Project"
+      ],
+      [
+        "Claude",
+        "Freelance Income"
+      ],
+      [
+        "Figma",
+        "Personal Project"
+      ],
+      [
+        "Design Meetup",
+        "Freelance"
+      ],
+      [
+        "Coffee Shop",
+        "Customer"
+      ],
+      [
+        "Design Meetup",
+        "Referral Contract"
+      ],
+      [
+        "Austin",
+        "East Austin"
+      ],
+      [
+        "Brand Identity Client",
+        "Brand Identity Project"
+      ],
+      [
+        "6th",
+        "East Austin"
+      ],
+      [
+        "Austin",
+        "Barton Springs"
+      ],
+      [
+        "All-Nighter",
+        "Brand Identity Project"
+      ],
+      [
+        "Credit Card Balance",
+        "Freelance Income"
+      ],
+      [
+        "Roommate",
+        "Startup"
+      ],
+      [
+        "Coffee Shop",
+        "Freelance Income Milestone"
+      ],
+      [
+        "All Nighter",
+        "Brand Identity Project"
+      ],
+      [
+        "Long Bike Ride",
+        "Murals On 6th"
+      ],
+      [
+        "Freelance Milestone",
+        "Freelancer"
+      ],
+      [
+        "New Client",
+        "Past Client"
+      ],
+      [
+        "Customer",
+        "Freelancer"
+      ]
+    ],
+    "count": 95,
+    "create_time": 1772267076,
+    "update_time": 1772267076,
+    "_id": "doc-7776f88823091245a69d39aeeca2c326"
+  },
+  "doc-3f96f1e48ab547ee1bc3f8bd0fbd09e7": {
+    "relation_pairs": [
+      [
+        "Milestone",
+        "T_0120"
+      ],
+      [
+        "Figma",
+        "Subscriptions"
+      ],
+      [
+        "Bank",
+        "Client Invoice Payment"
+      ],
+      [
+        "Bank",
+        "T_0120"
+      ],
+      [
+        "2025-11-27T11:00:00-05:00",
+        "T_0120"
+      ],
+      [
+        "Synthetic",
+        "T_0120"
+      ],
+      [
+        "Bank",
+        "Credit Card"
+      ],
+      [
+        "Bank",
+        "Whole Foods"
+      ],
+      [
+        "Transportation",
+        "Uber"
+      ],
+      [
+        "T_0120",
+        "Transaction"
+      ],
+      [
+        "Bank",
+        "Coffee"
+      ],
+      [
+        "Freelance",
+        "T_0120"
+      ],
+      [
+        "Bank",
+        "School of Motion"
+      ],
+      [
+        "Bank",
+        "Credit Card Minimum"
+      ],
+      [
+        "Bank",
+        "Veracruz Tacos"
+      ],
+      [
+        "Revenue",
+        "T_0120"
+      ],
+      [
+        "Groceries",
+        "Whole Foods"
+      ],
+      [
+        "Bank",
+        "Uber"
+      ],
+      [
+        "Credit Card Minimum",
+        "Debt"
+      ],
+      [
+        "Bank",
+        "Rent Roommate Split"
+      ],
+      [
+        "$2,200.00",
+        "T_0120"
+      ],
+      [
+        "Bank",
+        "Client"
+      ],
+      [
+        "Client Invoice Payment Received",
+        "Revenue"
+      ],
+      [
+        "School of Motion",
+        "Subscriptions"
+      ],
+      [
+        "Hobbies",
+        "Skating Gear"
+      ],
+      [
+        "Bank",
+        "Figma"
+      ],
+      [
+        "Dining",
+        "Veracruz Tacos"
+      ],
+      [
+        "Refs",
+        "T_0120"
+      ],
+      [
+        "Client Invoice Payment Received",
+        "Freelance"
+      ],
+      [
+        "Bank",
+        "Rent"
+      ],
+      [
+        "Adobe CC",
+        "Bank"
+      ],
+      [
+        "Rent",
+        "Roommate"
+      ],
+      [
+        "Bank",
+        "Rent (Roommate Split)"
+      ],
+      [
+        "Client Invoice",
+        "T_0120"
+      ],
+      [
+        "Bank",
+        "Skating Gear"
+      ],
+      [
+        "Learning",
+        "School of Motion"
+      ],
+      [
+        "Bank",
+        "Client Invoice"
+      ],
+      [
+        "Figma",
+        "Work"
+      ],
+      [
+        "Food",
+        "Veracruz Tacos"
+      ]
+    ],
+    "count": 39,
+    "create_time": 1772267107,
+    "update_time": 1772267107,
+    "_id": "doc-3f96f1e48ab547ee1bc3f8bd0fbd09e7"
+  }
+}

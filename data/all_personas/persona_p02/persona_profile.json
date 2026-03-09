@@ -1,0 +1,57 @@
+{
+  "persona_id": "p02",
+  "name": "Maya Patel",
+  "age": 26,
+  "location": "Austin, TX",
+  "job": "Second-year Medical Resident (Internal Medicine)",
+  "employer": "UT Health Austin",
+  "household": "Rents a studio apartment alone, family in Houston",
+  "income_approx": "$62,000/year",
+  "goals": [
+    "Survive residency without burning out",
+    "Pay down $180k in med school debt",
+    "Run again after knee injury",
+    "Stay connected with family and friends",
+    "Figure out whether to pursue fellowship or hospitalist route"
+  ],
+  "pain_points": [
+    "Chronic sleep deprivation and irregular hours",
+    "Debt anxiety",
+    "Feeling isolated since moving to Austin",
+    "Decision fatigue \u2014 makes high-stakes decisions all day then can't decide what to eat",
+    "Skipping self-care because there's never time"
+  ],
+  "personality": {
+    "communication_style": "precise and caring",
+    "privacy_sensitivity": "high \u2014 acutely aware of data privacy from medical training",
+    "ai_assistant_tone": "professional but warm, no fluff",
+    "strengths": [
+      "disciplined",
+      "detail-oriented",
+      "compassionate"
+    ],
+    "growth_areas": [
+      "asking for help",
+      "rest",
+      "patience with herself"
+    ]
+  },
+  "tech_usage": {
+    "ai_tools": [
+      "ChatGPT for research summaries",
+      "Doximity"
+    ],
+    "productivity": [
+      "Notion",
+      "Apple Calendar",
+      "Gmail",
+      "Paper to-do lists"
+    ],
+    "social": [
+      "Instagram (passive)",
+      "WhatsApp family group"
+    ],
+    "wearables": "Apple Watch",
+    "frequency": "Uses AI ~3x per week, mostly medical reference or journaling"
+  }
+}

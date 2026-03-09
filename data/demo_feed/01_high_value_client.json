@@ -1,0 +1,17 @@
+{
+  "slug": "01_high_value_client",
+  "label": "High-Value Client Inquiry",
+  "description": "NovaBit startup schedules a discovery call — $150/hr discussed",
+  "domain": "calendar",
+  "file": "calendar.jsonl",
+  "record": {
+    "id": "cal_0081",
+    "ts": "2026-03-07T14:00:00-05:00",
+    "source": "calendar",
+    "type": "event",
+    "text": "NovaBit discovery call — motion design retainer, $150/hr rate discussed (90m) - Zoom",
+    "tags": ["freelance", "business_development", "high_value", "motion_design"],
+    "refs": [],
+    "pii_level": "synthetic"
+  }
+}
