@@ -10,7 +10,7 @@ Demo persona: **Theo Nakamura (p05)** — freelance creative/barista in Austin, 
 
 ## Demo Walkthrough
 
-1. **Consent** — Toggle which data sources the agent can see (finance, calendar, lifelog, social)
+1. **Ingest** — Load data sources and construct personalized knowledge graph
 2. **Patterns** — AI surfaces cross-domain behavioral patterns (e.g. "Burnout Cascade": when Theo's meetings exceed 30h/week, his exercise drops and food delivery spend triples)
 3. **Questlines** — Choose from 3 life trajectory scenarios across 1yr / 5yr / 10yr horizons
 4. **Actions** — 5–10 time-bound micro-actions, each citing the specific data record it's based on
