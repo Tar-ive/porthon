@@ -16,7 +16,7 @@
 
 "And I'm Saksham — I built the agent pipeline and external integrations."
 
-"Together we built **Questline** — let's show you what it does."
+"Together we built **Questline** "
 
 ---
 
@@ -28,7 +28,7 @@
 
 Questline connects his calendar, finances, mood logs, and social data to find the patterns that are actually shaping his future — and then gives him a concrete path to change them.
 
-It's not a dashboard or a chatbot. It's an agent that knows your whole life and helps you do something about it."
+Its an agentic companion that knows your whole life and helps you do something about it." — let's show you what it does."
 
 ---
 
