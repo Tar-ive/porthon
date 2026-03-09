@@ -59,7 +59,7 @@ JSONL Persona Data
     ↓ (user selects scenario)
 [4] Action Planner (Claude LLM) — 3–5 time-bound actions, each cites a specific data_ref
     ↓
-[5] Agent Workers (always-on) — CalendarWorker, NotionWorker, FigmaWorker deploy actions live
+[5] Agent Workers (always-on) — CalendarWorker, NotionWorker, GmailWorker deploy actions live
 ```
 
 Each step has a 30-second timeout with graceful fallback. Responses stream in real-time (no blank loading screens). Analysis is hash-cached — unchanged data skips LLM calls entirely.
@@ -165,13 +165,11 @@ make test-live     # Integration tests (requires API keys)
 
 **Known Limitations**
 - Single persona only (Theo / p05) — multi-user auth not implemented
-- Agent workers (Notion, Figma, Calendar) require Composio setup and won't run in demo mode
 - Knowledge Graph features (Neo4j/Qdrant) require local services; app falls back to in-memory patterns without them
 - Pattern analysis can take 10–20 seconds on cold start (no cache)
 
 **Next Steps**
-- More data connectors (Plaid, Google Calendar OAuth, Instagram API)
+- More data connectors (Instagram API, Slack, etc.)
 - Multi-user support with per-user consent and data isolation
-- Approval queue UI for human-in-the-loop action review
 - Mobile app with push notifications for daily action reminders
 - Longitudinal tracking: did following the actions actually change the trajectory?
