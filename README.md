@@ -28,7 +28,7 @@ Demo persona: **Theo Nakamura (p05)** — freelance creative/barista in Austin, 
 
 ---
 
-## Why Track 2?
+## Why Questline?
 
 Questline is a companion that knows your whole life — not just your tasks, not just your calendar, not just your bank account. It connects the dots across all of them to show you patterns you can't see from any one app. The "Burnout Cascade" pattern Theo's agent discovers — where packed meeting weeks cause exercise to collapse and food delivery spend to spike — is only visible when you look at calendar + lifelog + finance together. Questline's job is to catch those loops before they compound, and give you a concrete path out.
 
