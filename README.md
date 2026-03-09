@@ -1,6 +1,6 @@
 # Questline
 
-**Track 2 — AI Companions**
+**AI Companions**
 
 An AI agent that reads your behavioral data — calendar, finances, mood logs, social posts — discovers cross-domain patterns in your life, and generates personalized 1/5/10-year life scenarios with concrete daily micro-actions to make them real.
 
